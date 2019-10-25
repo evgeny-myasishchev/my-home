@@ -1,5 +1,6 @@
 *.o
 *.pyc
+.envrc
 
 # eclipse setting
 .settings

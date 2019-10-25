@@ -6,6 +6,15 @@ ESP8266 firmware to control [light-controller](../light-controller/README.md)
 
 Make sure to setup [ESP8266_RTOS_SDK](https://github.com/espressif/ESP8266_RTOS_SDK)
 
+Make sure to have .envrc of a content similar to below:
+
+```
+export TOOLCHAIN_PATH=${HOME}/opt/xtensa-lx106-elf
+export IDF_PATH=${HOME}/projects/esp/ESP8266_RTOS_SDK
+
+PATH_add ${HOME}/opt/xtensa-lx106-elf/bin
+```
+
 Build:
 * `make menuconfig`:
     * API Configuration ->
