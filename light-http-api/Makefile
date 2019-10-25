@@ -3,7 +3,6 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := simple
+PROJECT_NAME := light-http-api
 
 include $(IDF_PATH)/make/project.mk
-
