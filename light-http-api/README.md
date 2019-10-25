@@ -1,6 +1,6 @@
 # ESP Home API
 
-ESP8266 firmware to control [this](https://github.com/evgeny-myasishchev/arduino-home-light)
+ESP8266 firmware to control [light-controller](../light-controller/README.md)
 
 # Develop
 
