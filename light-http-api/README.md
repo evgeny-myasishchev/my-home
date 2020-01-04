@@ -2,29 +2,6 @@
 
 ESP8266 firmware to control [light-controller](../light-controller/README.md)
 
-# Develop
-
-Make sure to setup [ESP8266_RTOS_SDK](https://github.com/espressif/ESP8266_RTOS_SDK)
-
-Make sure to have .envrc of a content similar to below:
-
-```
-export TOOLCHAIN_PATH=${HOME}/opt/xtensa-lx106-elf
-export IDF_PATH=${HOME}/projects/esp/ESP8266_RTOS_SDK
-
-PATH_add ${HOME}/opt/xtensa-lx106-elf/bin
-```
-
-Build:
-* `make menuconfig`:
-    * API Configuration ->
-        1. WIFI SSID: WIFI network to which your PC is also connected to.
-        2. WIFI Password: WIFI password
-
-* `make all` (or `make app`)
-* `make flash` (or `make app-flash`)
-* `make monitor`
-
 # API
 
 The API will be communicating with Arduino via UART. A subset of AT commands will be used to send or request some data.
