@@ -2,6 +2,42 @@
 
 ESP8266 firmware to control [light-controller](../light-controller/README.md)
 
+# Dependencies
+
+```
+# esptool
+pip install esptool
+
+# PlatformIO
+pip install -U platformio
+```
+
+# Configure build system
+
+Generate build config file
+```
+make build-env
+```
+
+Edit generated .build-env file. Following variables available:
+
+* **FIRMWARE** is a name of a firmware file to flash (if flashing). 
+* **ESP_PORT** is a port where ESP is connected. Can be found with `pio device list`
+
+Currently available firmware can be found [here](http://micropython.org/download#esp8266)
+
+# Prepare board
+
+## Flash micropython firmware
+
+```
+# Erase the flash
+make erase_flash
+
+# Write a new flash. Note: you may have to reset the board
+make write_flash
+```
+
 # API
 
 The API will be communicating with Arduino via UART. A subset of AT commands will be used to send or request some data.
