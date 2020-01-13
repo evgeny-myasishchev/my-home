@@ -10,6 +10,9 @@ pip install esptool
 
 # PlatformIO
 pip install -U platformio
+
+# rshell
+pip3 install rshell
 ```
 
 # Configure build system
@@ -23,6 +26,8 @@ Edit generated .build-env file. Following variables available:
 
 * **FIRMWARE** is a name of a firmware file to flash (if flashing). 
 * **ESP_PORT** is a port where ESP is connected. Can be found with `pio device list`
+* **WIFI_SSID**
+* **WIFI_PASSWORD**
 
 Currently available firmware can be found [here](http://micropython.org/download#esp8266)
 
@@ -36,6 +41,18 @@ make erase_flash
 
 # Write a new flash. Note: you may have to reset the board
 make write_flash
+```
+
+## Setup networking
+
+Make sure to have .build-env setup
+
+```
+# Connect to a wifi network
+make setup_wifi_sta
+
+# Check wifi status
+make wifi_status
 ```
 
 # API
