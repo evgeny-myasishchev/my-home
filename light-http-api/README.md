@@ -26,8 +26,10 @@ Edit generated .build-env file. Following variables available:
 
 * **FIRMWARE** is a name of a firmware file to flash (if flashing). 
 * **ESP_PORT** is a port where ESP is connected. Can be found with `pio device list`
-* **WIFI_SSID**
-* **WIFI_PASSWORD**
+* **WIFI_AP_SSID** AP SSID if you want your board to operate in AP mode
+* **WIFI_AP_PASSWORD** corresponding AP password
+* **WIFI_STA_SSID** STA SSID if you want your board to operate in STA mode (e.g client) 
+* **WIFI_STA_PASSWORD** corresponding STA password
 
 Currently available firmware can be found [here](http://micropython.org/download#esp8266)
 
@@ -43,13 +45,23 @@ make erase_flash
 make write_flash
 ```
 
+## Sync code
+
+```
+make sync_code
+```
+You may have to do it periodically to upload a new code
+
 ## Setup networking
 
 Make sure to have .build-env setup
 
 ```
-# Connect to a wifi network
+# Connect to a wifi network (STA mode)
 make setup_wifi_sta
+
+# Or setup AP network
+make setup_wifi_ap
 
 # Check wifi status
 make wifi_status

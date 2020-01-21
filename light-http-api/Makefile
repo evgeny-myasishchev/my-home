@@ -1,4 +1,4 @@
-.PHONY: tmp build-env erase_flash write_flash repl
+.PHONY: tmp build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell
 
 include .build-env
 
@@ -11,8 +11,10 @@ build-env:
 	@echo Generating .build-env. Please edit it as needed
 	@echo export FIRMWARE=$(FIRMWARE) > .build-env
 	@echo export ESP_PORT=$(ESP_PORT) >> .build-env
-	@echo export WIFI_SSID=TODO >> .build-env
-	@echo export WIFI_PASSWORD=TODO >> .build-env
+	@echo export WIFI_AP_SSID=TODO >> .build-env
+	@echo export WIFI_AP_PASSWORD=TODO >> .build-env
+	@echo export WIFI_STA_SSID=TODO >> .build-env
+	@echo export WIFI_STA_PASSWORD=TODO >> .build-env
 
 erase_flash:
 	@esptool.py --port $(ESP_PORT) erase_flash
@@ -26,25 +28,20 @@ $(FIRMWARE_BIN): tmp
 write_flash: $(FIRMWARE_BIN)
 	@esptool.py --port $(ESP_PORT) --baud 460800 write_flash --flash_size=detect 0 $(FIRMWARE_BIN)
 
+shell:
+	@rshell -p $(ESP_PORT) shell
+
+sync_code: 
+	@rshell -p $(ESP_PORT) rsync -m ./scripts /pyboard/scripts
+
 setup_wifi_sta:
-	@rshell -p $(ESP_PORT) "repl ~ \
-	import network ~\
-	import machine ~\
-	ap = network.WLAN(network.AP_IF) ~\
-	ap.active(False) ~\
-	sta = network.WLAN(network.STA_IF) ~\
-	sta.active(True) ~\
-	sta.connect(\"$(WIFI_SSID)\", \"$(WIFI_PASSWORD)\") ~\
-	machine.reset() ~\
-	"
+	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.setupSTA("$(WIFI_STA_SSID)", "$(WIFI_STA_PASSWORD)")'
+
+setup_wifi_ap:
+	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.setupAP("$(WIFI_AP_SSID)", "$(WIFI_AP_PASSWORD)")'
+
 wifi_status:
-	@rshell -p $(ESP_PORT) "repl ~ \
-	import network ~\
-	ap = network.WLAN(network.AP_IF) ~\
-	print(\"ap active:\", ap.active()) ~\
-	sta = network.WLAN(network.STA_IF) ~\
-	print(\"sta active:\", sta.active()) ~\
-	"
+	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.status()'
 
 repl:
 	@picocom $(ESP_PORT) -b115200
