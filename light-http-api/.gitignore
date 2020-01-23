@@ -3,6 +3,7 @@
 .envrc
 .build-env
 tmp
+.python-version
 
 # eclipse setting
 .settings
