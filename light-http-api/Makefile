@@ -1,11 +1,22 @@
 .PHONY: tmp build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell
 
 include .build-env
+include .vendor-versions
+
+MICRO_WEB_SRV2_ZIP=https://github.com/jczic/MicroWebSrv2/archive/v$(MICRO_WEB_SRV2_VERSION).zip
 
 FIRMWARE ?= esp8266-20191220-v1.12.bin
 ESP_PORT ?= /dev/cu.usbserial-1420
 
 FIRMWARE_BIN = tmp/$(FIRMWARE)
+
+vendor/MicroWebSrv2: .vendor-versions
+	curl -L -o tmp/MicroWebSrv2-$(MICRO_WEB_SRV2_VERSION).zip $(MICRO_WEB_SRV2_ZIP)
+	unzip -o tmp/MicroWebSrv2-$(MICRO_WEB_SRV2_VERSION).zip -d tmp/
+	rm -r -f vendor/MicroWebSrv2
+	cp -R tmp/MicroWebSrv2-$(MICRO_WEB_SRV2_VERSION)/MicroWebSrv2 vendor/MicroWebSrv2
+
+vendor: vendor/MicroWebSrv2
 
 build-env:
 	@echo Generating .build-env. Please edit it as needed
