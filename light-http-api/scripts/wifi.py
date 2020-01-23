@@ -1,16 +1,4 @@
 import sys
-# import machine
-
-# ap = network.WLAN(network.AP_IF)
-# ap.active(False)
-# sta = network.WLAN(network.STA_IF)
-# sta.active(True)
-# sta.connect("$(WIFI_SSID)", "$(WIFI_PASSWORD)")
-# machine.reset()
-
-def showHelp():
-    print("Wifi management. Commands: setup-ap, setup-sta, status, help")
-    print("Args: --ssid <ssid>, --password <password> (for setup commands only)")
 
 def hex_string(val):
     return '%X' % val
