@@ -12,19 +12,23 @@ def showHelp():
     print("Wifi management. Commands: setup-ap, setup-sta, status, help")
     print("Args: --ssid <ssid>, --password <password> (for setup commands only)")
 
+def hex_string(val):
+    return '%X' % val
+
 def status():
     import network
     sta = network.WLAN(network.STA_IF)
     ap = network.WLAN(network.AP_IF)
     if sta.active(): 
         print("STA active")
-        print("ifconfig", sta.ifconfig())
-        print("essid", sta.config('essid'))
+        print("ifconfig:", sta.ifconfig())
+        print("essid:", sta.config('essid'))
+        print("mac:", ':'.join(map(hex_string, sta.config('mac'))))
     if ap.active():
         print("AP active")
-        print("ifconfig", ap.ifconfig())
-        print("essid", ap.config('essid'))
-        print("authmode", ap.config('authmode'))
+        print("ifconfig:", ap.ifconfig())
+        print("essid:", ap.config('essid'))
+        print("authmode:", ap.config('authmode'))
 
 def setupSTA(ssid, password):
     import network
