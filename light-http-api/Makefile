@@ -43,7 +43,8 @@ shell:
 	@rshell -p $(ESP_PORT) shell
 
 sync_code: 
-	@rshell -p $(ESP_PORT) rsync -m ./scripts /pyboard/scripts
+	@rshell -p $(ESP_PORT) rsync -m ./src /pyboard/src
+	@rshell -p $(ESP_PORT) rsync -m ./vendor /pyboard/vendor
 
 setup_wifi_sta:
 	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.setupSTA("$(WIFI_STA_SSID)", "$(WIFI_STA_PASSWORD)")'
