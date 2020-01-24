@@ -47,13 +47,13 @@ sync_code:
 	@rshell -p $(ESP_PORT) rsync -m ./vendor /pyboard/vendor
 
 setup_wifi_sta:
-	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.setupSTA("$(WIFI_STA_SSID)", "$(WIFI_STA_PASSWORD)")'
+	@pyboard --device $(ESP_PORT) -c 'from src import wifi;wifi.setupSTA("$(WIFI_STA_SSID)", "$(WIFI_STA_PASSWORD)")'
 
 setup_wifi_ap:
-	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.setupAP("$(WIFI_AP_SSID)", "$(WIFI_AP_PASSWORD)")'
+	@pyboard --device $(ESP_PORT) -c 'from src import wifi;wifi.setupAP("$(WIFI_AP_SSID)", "$(WIFI_AP_PASSWORD)")'
 
 wifi_status:
-	@pyboard --device $(ESP_PORT) -c 'from scripts import wifi;wifi.status()'
+	@pyboard --device $(ESP_PORT) -c 'from src import wifi;wifi.status()'
 
 repl:
 	@picocom $(ESP_PORT) -b115200
