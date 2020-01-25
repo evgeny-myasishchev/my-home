@@ -7,3 +7,6 @@ import gc
 #import webrepl
 #webrepl.start()
 gc.collect()
+
+import sys
+sys.path.append('/src')
