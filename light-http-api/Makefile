@@ -46,6 +46,9 @@ sync_code:
 	@rshell -p $(ESP_PORT) rsync -m ./src /pyboard/src
 	@rshell -p $(ESP_PORT) rsync -m ./vendor /pyboard/vendor
 
+sync_boot: 
+	@rshell -p $(ESP_PORT) cp boot.py /pyboard/boot.py
+
 setup_wifi_sta:
 	@pyboard --device $(ESP_PORT) -c 'from src import wifi;wifi.setupSTA("$(WIFI_STA_SSID)", "$(WIFI_STA_PASSWORD)")'
 
