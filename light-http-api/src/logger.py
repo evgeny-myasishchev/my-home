@@ -41,7 +41,7 @@ def setupPrintLogger():
 def disable():
     _logger = None
 
-setupUDPLogger("localhost", 9000)
+# setupUDPLogger("localhost", 9000)
 # setupPrintLogger()
 
-log("Hello world")
+# log("Hello world")
