@@ -1,3 +1,5 @@
+TODO: Try https://github.com/pfalcon/picoweb
+
 # ESP Home API
 
 ESP8266 firmware to control [light-controller](../light-controller/README.md)
@@ -46,6 +48,16 @@ make write_flash
 ```
 
 ## Sync code
+
+```
+make sync_boot
+```
+Do it once and if you ever change boot.py
+
+```
+make sync_main
+```
+Do it once and if you ever change main.py
 
 ```
 make sync_code
