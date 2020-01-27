@@ -81,6 +81,10 @@ make wifi_status
 
 ## Running locally
 
+Optional dependencies:
+* [direnv](https://github.com/direnv/direnv)
+* [reflex](https://github.com/cespare/reflex)
+
 Install micropython
 
 Install unit tests
@@ -95,6 +99,18 @@ make test
 
 # One file only
 bin/run-tests.py -f tests/test_server.py
+```
+
+Optionally use reflex to watch changes and restart tests:
+```
+# Directly
+reflex $(cat .reflex) -- bin/run-tests.py
+
+# With a helper script (assume direnv installed)
+tests-watch
+
+# Single file
+tests-watch -f tests/test_server.py
 ```
 
 # API

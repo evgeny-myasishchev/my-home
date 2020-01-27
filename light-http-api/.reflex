@@ -1,0 +1,1 @@
+-d none -s -R tmp. -R test.log -r \.py$
