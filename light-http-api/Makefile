@@ -1,4 +1,4 @@
-.PHONY: build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell
+.PHONY: build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell test
 
 include .build-env
 
@@ -52,3 +52,6 @@ wifi_status:
 
 repl:
 	@rshell -p $(ESP_PORT) repl
+
+test:
+	@bin/run-tests.py

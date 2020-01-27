@@ -79,6 +79,24 @@ make setup_wifi_ap
 make wifi_status
 ```
 
+## Running locally
+
+Install micropython
+
+Install unit tests
+```
+micropython -m upip install micropython-unittest
+```
+
+Run unit tests
+```
+# All tests
+make test
+
+# One file only
+bin/run-tests.py -f tests/test_server.py
+```
+
 # API
 
 The API will be communicating with Arduino via UART. A subset of AT commands will be used to send or request some data.
