@@ -1,9 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env micropython
 
 import unittest
 import sys
 
-sys.path.insert(0, sys.path[0] + '/..')
+binPath = sys.path[0]
+sys.path.insert(0, binPath + '/..')
+sys.path.insert(0, binPath + '/../src')
 
 moduleName = 'tests'
 

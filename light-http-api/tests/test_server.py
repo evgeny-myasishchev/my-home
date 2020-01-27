@@ -1,17 +1,20 @@
 import unittest
+import uio
+import server
+import random
+import urandom
+import utime
 
-class TestStringMethods(unittest.TestCase):
+class TestHTTPContext(unittest.TestCase):
+    def test_parse_req_line(self):
+        urandom.seed(utime.ticks_ms())
+        methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
+        expectedMethod = methods[random.randint(0, len(methods)-1)]
+        expectedURI = '/some/%s/path?q=%s' % (random.randint(0, 1000), random.randint(0, 1000))
+        expectedVersion = ['HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2'][random.randint(0, 2)]
 
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
-
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+        reqLine = "%s %s %s\n" % (expectedMethod, expectedURI, expectedVersion)
+        (method, uri, httpVersion) = server._parse_req_line(reqLine)
+        self.assertEqual(method, expectedMethod)
+        self.assertEqual(uri, expectedURI)
+        self.assertEqual(httpVersion, expectedVersion)

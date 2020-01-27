@@ -26,6 +26,26 @@ def start(port=80, log=logger.log):
     server = HTTPServer(port, log)
     server.start()
 
-logger.setupPrintLogger()
+class HTTPContext():
+    __slots__ = ['method', 'uri', 'httpVersion']
+    def __init__(self, input):
+        reqLine = _parse_req_line(input.readline())
+        self.method = reqLine[0]
+        self.uri = reqLine[1]
+        self.httpVersion = reqLine[2]
+        pass
 
-start(8080)
+def _parse_req_line(req_line):
+    firstSP = 0
+    nextSP = req_line.index(' ', firstSP)
+    
+    method = req_line[firstSP:nextSP]
+    
+    firstSP = nextSP+1
+    nextSP = req_line.index(' ', firstSP)
+
+    uri = req_line[firstSP:nextSP]
+    version = req_line[nextSP+1:]
+    if version[-1] == '\n':
+        version = version[:-1]
+    return (method, uri, version)

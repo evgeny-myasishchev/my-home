@@ -85,12 +85,15 @@ Optional dependencies:
 * [direnv](https://github.com/direnv/direnv)
 * [reflex](https://github.com/cespare/reflex)
 
-Install micropython
+Install [micropython](https://github.com/micropython/micropython#the-unix-version)
 
-Install unit tests
+Install deps tests
 ```
 micropython -m upip install micropython-unittest
+micropython -m upip install micropython-random
 ```
+
+Unittest framework for micropython is quite silent. In order to see more details you need to edit `<lib>/unittest.py` and uncomment `raise` on line 204. Usually `<lib>` is a ${HOME}/.micropython/lib/.
 
 Run unit tests
 ```
