@@ -50,3 +50,17 @@ def _parse_req_line(req_line):
     if version[-1] == '\n':
         version = version[:-1]
     return (method, uri, version)
+
+def _parse_headers(input):
+    # TODO: Fail if bad header line
+    # TODO: Maybe limit number of headers
+    # TODO: Multiple values?
+    # Review spec https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
+
+    headers = {}
+    nextHeaderLine = input.readline()
+    while nextHeaderLine != "\n":
+        pairs = nextHeaderLine.split(':', 1)
+        headers[pairs[0].lower()] = pairs[1].strip(' \n')
+        nextHeaderLine = input.readline()
+    return headers
