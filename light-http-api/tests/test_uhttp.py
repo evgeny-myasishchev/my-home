@@ -1,13 +1,13 @@
 import unittest
 import uio
-import server
+import uhttp
 import random
 import urandom
 import utime
 
 urandom.seed(utime.ticks_ms())
 
-class TestHTTPContext(unittest.TestCase):
+class TestRequest(unittest.TestCase):
     def test_parse_req_line(self):
         methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
         expectedMethod = methods[random.randint(0, len(methods)-1)]
@@ -15,7 +15,7 @@ class TestHTTPContext(unittest.TestCase):
         expectedVersion = ['HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2'][random.randint(0, 2)]
 
         reqLine = "%s %s %s\n" % (expectedMethod, expectedURI, expectedVersion)
-        (method, uri, httpVersion) = server._parse_req_line(reqLine)
+        (method, uri, httpVersion) = uhttp._parse_req_line(reqLine)
         self.assertEqual(method, expectedMethod)
         self.assertEqual(uri, expectedURI)
         self.assertEqual(httpVersion, expectedVersion)
@@ -30,9 +30,21 @@ class TestHTTPContext(unittest.TestCase):
             "X-With-Multi-Spaces:   " + withMultiSpaces + "\n"
             "\n"
         ))
-        headers = server._parse_headers(input)
+        headers = uhttp._parse_headers(input)
         self.assertEqual(len(headers), 3)
         self.assertEqual(host, headers["host"])
         self.assertEqual(withoutSpace, headers["x-without-space"])
         self.assertEqual(withMultiSpaces, headers["x-with-multi-spaces"])
+
+    def test_init(self):
+        input = uio.StringIO((
+            "GET /some-resource?qs=value HTTP/1.1\n"
+            "Host: domain.com\n"
+            "X-Header-1: value1\n"
+            "X-Header-2: value2\n"
+            "\n"
+        ))
+        req = uhttp.Request(input)
+        self.assertEqual("GET", req.method)
+        self.assertEqual("/some-resource?qs=value", req.uri)
         pass

@@ -26,8 +26,12 @@ def start(port=80, log=logger.log):
     server = HTTPServer(port, log)
     server.start()
 
-class HTTPContext():
-    __slots__ = ['method', 'uri', 'httpVersion']
+class Request():
+    __slots__ = [
+        'method', 
+        'uri', 
+        'httpVersion'
+    ]
     def __init__(self, input):
         reqLine = _parse_req_line(input.readline())
         self.method = reqLine[0]
