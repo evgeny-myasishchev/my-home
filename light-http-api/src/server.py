@@ -36,11 +36,12 @@ class HTTPContext():
         pass
 
 def _parse_req_line(req_line):
+    # TODO: Validate and throw appropriate error
     firstSP = 0
     nextSP = req_line.index(' ', firstSP)
-    
+
     method = req_line[firstSP:nextSP]
-    
+
     firstSP = nextSP+1
     nextSP = req_line.index(' ', firstSP)
 
