@@ -47,4 +47,46 @@ class TestRequest(unittest.TestCase):
         req = uhttp.Request(input)
         self.assertEqual("GET", req.method)
         self.assertEqual("/some-resource?qs=value", req.uri)
-        pass
+
+class TestResponseWriter(unittest.TestCase):
+    def test_write_header_known_status(self):
+        output = uio.StringIO()
+        writer = uhttp.ResponseWriter(output)
+
+        writer.write_header(uhttp.HTTP_STATUS_OK)
+        output.seek(0)
+        status_line = output.readline()
+        self.assertEqual("HTTP/1.1 200 OK", status_line)
+
+        output.seek(0)
+        writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE)
+        output.seek(0)
+        status_line = output.readline()
+        self.assertEqual("HTTP/1.1 415 Unsupported Media Type", status_line)
+
+        output.seek(0)
+        writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 'Custom reason phrase 123321')
+        output.seek(0)
+        status_line = output.readline()
+        self.assertEqual("HTTP/1.1 415 Custom reason phrase 123321", status_line)
+
+    def test_write_header_unknown_status(self):
+        output = uio.StringIO()
+        writer = uhttp.ResponseWriter(output)
+
+        writer.write_header(534, 'Custom Reason Phrase')
+        output.seek(0)
+        status_line = output.readline()
+        self.assertEqual("HTTP/1.1 534 Custom Reason Phrase", status_line)
+
+
+        thrown = False
+        err = None
+        try:
+            output.seek(0)
+            writer.write_header(534)
+        except Exception as e:
+            thrown = True
+            err = e
+        self.assertTrue(thrown)
+        self.assertEqual('reason_phrase must be provided', str(err))
