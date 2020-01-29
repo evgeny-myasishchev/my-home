@@ -4,6 +4,8 @@ import uhttp
 import random
 import urandom
 import utime
+import sys
+import uos
 
 urandom.seed(utime.ticks_ms())
 
@@ -25,10 +27,10 @@ class TestRequest(unittest.TestCase):
         withoutSpace = "value1-%s" % random.randint(0, 10000)
         withMultiSpaces = "value2-%s" % random.randint(0, 10000)
         input = uio.StringIO((
-            "Host: " + host + "\n"
-            "X-Without-Space:" + withoutSpace + "\n"
-            "X-With-Multi-Spaces:   " + withMultiSpaces + "\n"
-            "\n"
+            "Host: " + host + "\r\n"
+            "X-Without-Space:" + withoutSpace + "\r\n"
+            "X-With-Multi-Spaces:   " + withMultiSpaces + "\r\n"
+            "\r\n"
         ))
         headers = uhttp._parse_headers(input)
         self.assertEqual(len(headers), 3)
@@ -56,19 +58,19 @@ class TestResponseWriter(unittest.TestCase):
         writer.write_header(uhttp.HTTP_STATUS_OK)
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 200 OK", status_line)
+        self.assertEqual("HTTP/1.1 200 OK", status_line.rstrip())
 
         output.seek(0)
         writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE)
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 415 Unsupported Media Type", status_line)
+        self.assertEqual("HTTP/1.1 415 Unsupported Media Type", status_line.rstrip())
 
         output.seek(0)
         writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 'Custom reason phrase 123321')
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 415 Custom reason phrase 123321", status_line)
+        self.assertEqual("HTTP/1.1 415 Custom reason phrase 123321", status_line.rstrip())
 
     def test_write_header_unknown_status(self):
         output = uio.StringIO()
@@ -77,8 +79,7 @@ class TestResponseWriter(unittest.TestCase):
         writer.write_header(534, 'Custom Reason Phrase')
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 534 Custom Reason Phrase", status_line)
-
+        self.assertEqual("HTTP/1.1 534 Custom Reason Phrase", status_line.rstrip())
 
         thrown = False
         err = None
@@ -90,3 +91,41 @@ class TestResponseWriter(unittest.TestCase):
             err = e
         self.assertTrue(thrown)
         self.assertEqual('reason_phrase must be provided', str(err))
+
+    def test_write_header_default_headers(self):
+        output = uio.StringIO()
+        writer = uhttp.ResponseWriter(output)
+
+        writer.write_header(534, 'Custom Reason Phrase')
+        output.write('\n\n')
+        output.seek(0)
+        output.readline()
+        got_headers = uhttp._parse_headers(output)
+
+        pythonName = sys.implementation.name
+        pythonVersion = '.'.join(map(str, sys.implementation.version))
+        self.assertEqual(got_headers, {
+            'server': 'uhttp/0.1 %s/%s %s' % (pythonName, pythonVersion, sys.platform),
+            'connection': 'close'
+        })
+
+    def test_write_header_custom_headers(self):
+        output = uio.StringIO()
+        writer = uhttp.ResponseWriter(output)
+        writer.headers['X-Header-1'] = 'value1'
+        writer.headers['X-Header-2'] = 'value2'
+        writer.write_header(534, 'Custom Reason Phrase')
+        output.write('\n\n')
+        output.seek(0)
+        output.readline()
+        got_headers = uhttp._parse_headers(output)
+
+        pythonName = sys.implementation.name
+        pythonVersion = '.'.join(map(str, sys.implementation.version))
+        self.assertEqual(got_headers, {
+            'server': 'uhttp/0.1 %s/%s %s' % (pythonName, pythonVersion, sys.platform),
+            'connection': 'close',
+            'x-header-1': 'value1',
+            'x-header-2': 'value2'
+        })
+        

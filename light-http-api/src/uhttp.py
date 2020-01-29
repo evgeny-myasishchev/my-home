@@ -1,4 +1,5 @@
 import usocket
+import sys
 import logger
 
 HTTP_STATUS_OK=200
@@ -100,18 +101,22 @@ def _parse_headers(input):
 
     headers = {}
     nextHeaderLine = input.readline()
-    while nextHeaderLine != '\n':
+    while nextHeaderLine != '\n' and nextHeaderLine != '\r\n':
         pairs = nextHeaderLine.split(':', 1)
-        headers[pairs[0].lower()] = pairs[1].strip(' \n')
+        headers[pairs[0].lower()] = pairs[1].strip(' \r\n')
         nextHeaderLine = input.readline()
     return headers
+
+
+SERVER_FINGERPRINT='uhttp/0.1 %s/%s %s' % (
+    sys.implementation.name, 
+    '.'.join(map(str, sys.implementation.version)), 
+    sys.platform)
 
 class ResponseWriter():
     def __init__(self, output):
         self._output = output
-        self.headers = {
-            'Connection': 'close' # For now we do not support keep-alive connections
-        }
+        self.headers = {}
 
     def write_header(self, status, reason_phrase = None):
         # Status line
@@ -125,4 +130,13 @@ class ResponseWriter():
             raise Exception('reason_phrase must be provided')
 
         self._output.write(reason_phrase)
-        pass
+        self._output.write('\r\n')
+        self._output.write('Server: ')
+        self._output.write(SERVER_FINGERPRINT)
+        self._output.write('\r\n')
+        self._output.write('Connection: close\r\n') # For now we do not support keep-alive connections
+        for key, val in self.headers.items():
+            self._output.write(key)
+            self._output.write(': ')
+            self._output.write(val)
+            self._output.write('\r\n')
