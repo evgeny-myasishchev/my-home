@@ -171,7 +171,7 @@ class TestHTTPServer(unittest.TestCase):
         # print(socket.readline())
         # print(socket.readline())
         # print(socket.readline())
-        # responseLine = socket.readline()
+        responseLine = socket.readline()
         self.assertEqual(responseLine, 'HTTP/1.1 200 OK')
 
         server.stop()
