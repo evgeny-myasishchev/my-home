@@ -170,3 +170,14 @@ class ResponseWriter():
         self._output.write('\r\n')
         self._output.write('\r\n')
         self._output.write(buf)
+
+def main():
+    server = HTTPServer(
+        handler=lambda w, req: w.write('PONG'),
+        port=8080,
+        log=print,
+    )
+    server.start()
+
+if __name__ == '__main__':
+    main()
