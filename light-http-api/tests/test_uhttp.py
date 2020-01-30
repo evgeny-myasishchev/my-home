@@ -189,6 +189,17 @@ class TestResponseWriter(unittest.TestCase):
         self.assertEqual(got_data, data)
 
 class TestHTTPServer(unittest.TestCase):
+    def do_req(self, port):
+        addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
+        socket = usocket.socket()
+        socket.connect(addr)
+        socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
+        status_line = socket.readline()
+        headers = uhttp._parse_headers(socket)
+        body = socket.readline()
+        socket.close()
+        return (status_line, headers, body)
+
     def test_req_res(self):
         port = random.randint(10000, 30000)
         server = uhttp.HTTPServer(
@@ -197,20 +208,11 @@ class TestHTTPServer(unittest.TestCase):
             log=lambda *args: None,
         )
         _thread.start_new_thread(lambda: server.start(), ())
+        status_line, headers, body = self.do_req(port)
 
-        addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
-        socket = usocket.socket()
-        socket.connect(addr)
-        socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
-        responseLine = socket.readline()
-        self.assertEqual(responseLine.decode().strip(), 'HTTP/1.1 200 OK')
-
-        headers = uhttp._parse_headers(socket)
+        self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(3, len(headers), 'Expected 4 headers but got: %s' % str(headers))
-
-        got_body = socket.readline()
-        self.assertEqual(b'Some response data', got_body)
-        socket.close()
+        self.assertEqual(b'Some response data', body)
 
         server.stop()
 
@@ -223,18 +225,30 @@ class TestHTTPServer(unittest.TestCase):
         )
         _thread.start_new_thread(lambda: server.start(), ())
 
-        addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
-        socket = usocket.socket()
-        socket.connect(addr)
-        socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
-        responseLine = socket.readline()
-        self.assertEqual(responseLine.decode().strip(), 'HTTP/1.1 200 OK')
-
-        headers = uhttp._parse_headers(socket)
+        status_line, headers, body = self.do_req(port)
+        self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(2, len(headers), 'Expected 2 headers but got: %s' % str(headers))
+        self.assertEqual(b'', body)
 
-        got_body = socket.readline()
-        self.assertEqual(b'', got_body)
+        server.stop()
 
-        socket.close()
+    def test_multiple_requests(self):
+        port = random.randint(10000, 30000)
+        server = uhttp.HTTPServer(
+            handler=lambda w, req: w.write('PONG'),
+            port=port,
+            log=lambda *args: None,
+        )
+        _thread.start_new_thread(lambda: server.start(), ())
+
+        status_line, headers, body = self.do_req(port)
+        self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
+        self.assertEqual(3, len(headers), 'Expected 3 headers but got: %s' % str(headers))
+        self.assertEqual(b'PONG', body)
+
+        status_line, headers, body = self.do_req(port)
+        self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
+        self.assertEqual(3, len(headers), 'Expected 3 headers but got: %s' % str(headers))
+        self.assertEqual(b'PONG', body)
+
         server.stop()

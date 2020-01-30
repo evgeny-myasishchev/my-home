@@ -1,6 +1,7 @@
 import usocket
 import sys
 import logger
+import errno
 
 HTTP_STATUS_OK=200
 HTTP_STATUS_CREATED=201
@@ -61,13 +62,20 @@ class HTTPServer:
         self._socket.listen(addr[0][-1])
         self._log("Server started on port: %s" % self._port)
 
-        client, addr = self._socket.accept()
-        req = Request(client)
-        writer = ResponseWriter(client)
-        self._handler(writer, req)
-        if not writer._header_sent:
-            writer.write_header(HTTP_STATUS_OK)
-        client.close()
+        while True:
+            try:
+                client, addr = self._socket.accept()
+            except OSError as err:
+                # Server probably stopped
+                if err.args[0] == errno.ECONNABORTED:
+                    return
+                raise err
+            req = Request(client)
+            writer = ResponseWriter(client)
+            self._handler(writer, req)
+            if not writer._header_sent:
+                writer.write_header(HTTP_STATUS_OK)
+            client.close()
 
     def stop(self):
         self._socket.close()
