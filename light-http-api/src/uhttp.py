@@ -69,13 +69,15 @@ class Request():
     __slots__ = [
         'method', 
         'uri', 
-        'httpVersion'
+        'httpVersion',
+        'headers'
     ]
     def __init__(self, input):
         reqLine = _parse_req_line(input.readline())
         self.method = reqLine[0]
         self.uri = reqLine[1]
         self.httpVersion = reqLine[2]
+        self.headers = _parse_headers(input)
 
 def _parse_req_line(req_line):
     # TODO: Validate and throw appropriate error

@@ -49,6 +49,11 @@ class TestRequest(unittest.TestCase):
         req = uhttp.Request(input)
         self.assertEqual("GET", req.method)
         self.assertEqual("/some-resource?qs=value", req.uri)
+        self.assertEqual(req.headers, {
+            'host': 'domain.com',
+            'x-header-1': 'value1',
+            'x-header-2': 'value2'
+        })
 
 class TestResponseWriter(unittest.TestCase):
     def test_write_header_known_status(self):
