@@ -6,6 +6,8 @@ import urandom
 import utime
 import sys
 import uos
+import _thread
+import usocket
 
 urandom.seed(utime.ticks_ms())
 
@@ -16,7 +18,7 @@ class TestRequest(unittest.TestCase):
         expectedURI = '/some/%s/path?q=%s' % (random.randint(0, 1000), random.randint(0, 1000))
         expectedVersion = ['HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2'][random.randint(0, 2)]
 
-        reqLine = "%s %s %s\n" % (expectedMethod, expectedURI, expectedVersion)
+        reqLine = b'%s %s %s\n' % (expectedMethod, expectedURI, expectedVersion)
         (method, uri, httpVersion) = uhttp._parse_req_line(reqLine)
         self.assertEqual(method, expectedMethod)
         self.assertEqual(uri, expectedURI)
@@ -26,7 +28,7 @@ class TestRequest(unittest.TestCase):
         host = "domain%s.com" % random.randint(0, 10000)
         withoutSpace = "value1-%s" % random.randint(0, 10000)
         withMultiSpaces = "value2-%s" % random.randint(0, 10000)
-        input = uio.StringIO((
+        input = uio.BytesIO((
             "Host: " + host + "\r\n"
             "X-Without-Space:" + withoutSpace + "\r\n"
             "X-With-Multi-Spaces:   " + withMultiSpaces + "\r\n"
@@ -39,12 +41,12 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(withMultiSpaces, headers["x-with-multi-spaces"])
 
     def test_init(self):
-        input = uio.StringIO((
-            "GET /some-resource?qs=value HTTP/1.1\n"
-            "Host: domain.com\n"
-            "X-Header-1: value1\n"
-            "X-Header-2: value2\n"
-            "\n"
+        input = uio.BytesIO((
+            'GET /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            'X-Header-1: value1\n'
+            'X-Header-2: value2\n'
+            '\n'
         ))
         req = uhttp.Request(input)
         self.assertEqual("GET", req.method)
@@ -57,34 +59,34 @@ class TestRequest(unittest.TestCase):
 
 class TestResponseWriter(unittest.TestCase):
     def test_write_header_known_status(self):
-        output = uio.StringIO()
+        output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
 
         writer.write_header(uhttp.HTTP_STATUS_OK)
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 200 OK", status_line.rstrip())
+        self.assertEqual(b"HTTP/1.1 200 OK", status_line.rstrip())
 
         output.seek(0)
         writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE)
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 415 Unsupported Media Type", status_line.rstrip())
+        self.assertEqual(b"HTTP/1.1 415 Unsupported Media Type", status_line.rstrip())
 
         output.seek(0)
         writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 'Custom reason phrase 123321')
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 415 Custom reason phrase 123321", status_line.rstrip())
+        self.assertEqual(b"HTTP/1.1 415 Custom reason phrase 123321", status_line.rstrip())
 
     def test_write_header_unknown_status(self):
-        output = uio.StringIO()
+        output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
 
         writer.write_header(534, 'Custom Reason Phrase')
         output.seek(0)
         status_line = output.readline()
-        self.assertEqual("HTTP/1.1 534 Custom Reason Phrase", status_line.rstrip())
+        self.assertEqual(b"HTTP/1.1 534 Custom Reason Phrase", status_line.rstrip())
 
         thrown = False
         err = None
@@ -98,7 +100,7 @@ class TestResponseWriter(unittest.TestCase):
         self.assertEqual('reason_phrase must be provided', str(err))
 
     def test_write_header_default_headers(self):
-        output = uio.StringIO()
+        output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
 
         writer.write_header(534, 'Custom Reason Phrase')
@@ -115,7 +117,7 @@ class TestResponseWriter(unittest.TestCase):
         })
 
     def test_write_header_custom_headers(self):
-        output = uio.StringIO()
+        output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
         writer.headers['X-Header-1'] = 'value1'
         writer.headers['X-Header-2'] = 'value2'
@@ -135,10 +137,10 @@ class TestResponseWriter(unittest.TestCase):
         })
 
     def test_write_buffer(self):
-        output = uio.StringIO()
+        output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
 
-        data = bytes("This is a buffer that will be written", "utf-8")
+        data = b'This is a buffer that will be written'
         writer.write(data)
 
         output.seek(0)
@@ -149,4 +151,27 @@ class TestResponseWriter(unittest.TestCase):
             'content-length': str(want_len)
         })
         got_data = output.read(want_len)
-        self.assertEqual(got_data, data.decode('utf-8'))
+        self.assertEqual(got_data, data)
+
+class TestHTTPServer(unittest.TestCase):
+
+    def test_start_stop(self):
+        port = random.randint(10000, 30000)
+        server = uhttp.HTTPServer(
+            handler=lambda w, req: w.write(b'Some response data'),
+            port=port,
+            log=lambda *args: None,
+        )
+        _thread.start_new_thread(lambda: server.start(), ())
+
+        addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
+        socket = usocket.socket()
+        socket.connect(addr)
+        socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
+        # print(socket.readline())
+        # print(socket.readline())
+        # print(socket.readline())
+        # responseLine = socket.readline()
+        self.assertEqual(responseLine, 'HTTP/1.1 200 OK')
+
+        server.stop()

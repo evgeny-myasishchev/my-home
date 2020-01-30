@@ -42,28 +42,34 @@ HTTP_REASON_PHRASE = {
 
 class HTTPServer:
     def __init__(self, 
+        *,
+        handler,
+        host='0.0.0.0',
         port, 
         log,
         maxClients = 5):
+        self._host = host
         self._port = port
         self._log = log
         self._maxClients = maxClients
+        self._handler = handler
         self._socket = usocket.socket()
-        pass
 
     def start(self): 
-        addr = usocket.getaddrinfo('127.0.0.1', self._port, 0, usocket.SOCK_STREAM)
+        addr = usocket.getaddrinfo(self._host, self._port, 0, usocket.SOCK_STREAM)
         self._socket.bind(addr[0][-1])
         self._socket.listen(addr[0][-1])
         self._log("Server started on port: %s" % self._port)
 
         client, addr = self._socket.accept()
-        self._log(addr)
+        req = Request(client)
+        writer = ResponseWriter(client)
+        self._handler(writer, req)
+        client.close()
 
-
-def start(port=80, log=logger.log):
-    server = HTTPServer(port, log)
-    server.start()
+    def stop(self):
+        self._socket.close()
+        self._log('Server stopped')
 
 class Request():
     __slots__ = [
@@ -81,6 +87,7 @@ class Request():
 
 def _parse_req_line(req_line):
     # TODO: Validate and throw appropriate error
+    req_line = req_line.decode()
     firstSP = 0
     nextSP = req_line.index(' ', firstSP)
 
@@ -102,11 +109,11 @@ def _parse_headers(input):
     # Review spec https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
 
     headers = {}
-    nextHeaderLine = input.readline()
+    nextHeaderLine = input.readline().decode('utf-8')
     while nextHeaderLine != '' and nextHeaderLine != '\n' and nextHeaderLine != '\r\n':
         pairs = nextHeaderLine.split(':', 1)
         headers[pairs[0].lower()] = pairs[1].strip(' \r\n')
-        nextHeaderLine = input.readline()
+        nextHeaderLine = input.readline().decode('utf-8')
     return headers
 
 
@@ -149,5 +156,3 @@ class ResponseWriter():
         self._output.write('\r\n')
         self._output.write('\r\n')
         self._output.write(buf)
-
-        pass
