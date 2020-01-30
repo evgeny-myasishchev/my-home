@@ -65,6 +65,8 @@ class HTTPServer:
         req = Request(client)
         writer = ResponseWriter(client)
         self._handler(writer, req)
+        if not writer._header_sent:
+            writer.write_header(HTTP_STATUS_OK)
         client.close()
 
     def stop(self):
@@ -126,6 +128,7 @@ class ResponseWriter():
     def __init__(self, output):
         self._output = output
         self.headers = {}
+        self._header_sent = False
 
     def write_header(self, status, reason_phrase = None):
         # Status line
@@ -149,8 +152,11 @@ class ResponseWriter():
             self._output.write(': ')
             self._output.write(val)
             self._output.write('\r\n')
+        self._header_sent = True
 
     def write(self, buf):
+        if not self._header_sent:
+            self.write_header(HTTP_STATUS_OK)
         self._output.write('Content-Length: ')
         self._output.write(str(len(buf)))
         self._output.write('\r\n')

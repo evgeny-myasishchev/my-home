@@ -136,7 +136,34 @@ class TestResponseWriter(unittest.TestCase):
             'x-header-2': 'value2'
         })
 
-    def test_write_buffer(self):
+    # TODO: Write header & buffer same time
+    def test_write_header_and_buffer(self):
+        output = uio.BytesIO()
+        writer = uhttp.ResponseWriter(output)
+
+        data = b'This is a buffer that will be written'
+        writer.write_header(uhttp.HTTP_STATUS_NOT_FOUND)
+        writer.write(data)
+
+        output.seek(0)
+        statusLine = output.readline()
+        self.assertEqual(statusLine.decode().strip(), 'HTTP/1.1 404 Not Found')
+        got_headers = uhttp._parse_headers(output)
+        want_len = len(data)
+
+        # Default headers should be there
+        self.assertTrue('server' in got_headers, 'No server header')
+        self.assertTrue('connection' in got_headers, 'No connection header')
+
+        self.assertEqual(got_headers, {
+            'server': got_headers['server'],
+            'connection': got_headers['connection'],
+            'content-length': str(want_len)
+        })
+        got_data = output.read(want_len)
+        self.assertEqual(got_data, data)
+
+    def test_write_only(self):
         output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
 
@@ -144,18 +171,25 @@ class TestResponseWriter(unittest.TestCase):
         writer.write(data)
 
         output.seek(0)
+        statusLine = output.readline()
+        self.assertEqual(statusLine.decode().strip(), 'HTTP/1.1 200 OK')
         got_headers = uhttp._parse_headers(output)
         want_len = len(data)
 
+        # Default headers should be there
+        self.assertTrue('server' in got_headers, 'No server header')
+        self.assertTrue('connection' in got_headers, 'No connection header')
+
         self.assertEqual(got_headers, {
+            'server': got_headers['server'],
+            'connection': got_headers['connection'],
             'content-length': str(want_len)
         })
         got_data = output.read(want_len)
         self.assertEqual(got_data, data)
 
 class TestHTTPServer(unittest.TestCase):
-
-    def test_start_stop(self):
+    def test_req_res(self):
         port = random.randint(10000, 30000)
         server = uhttp.HTTPServer(
             handler=lambda w, req: w.write(b'Some response data'),
@@ -168,10 +202,39 @@ class TestHTTPServer(unittest.TestCase):
         socket = usocket.socket()
         socket.connect(addr)
         socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
-        # print(socket.readline())
-        # print(socket.readline())
-        # print(socket.readline())
         responseLine = socket.readline()
-        self.assertEqual(responseLine, 'HTTP/1.1 200 OK')
+        self.assertEqual(responseLine.decode().strip(), 'HTTP/1.1 200 OK')
 
+        headers = uhttp._parse_headers(socket)
+        self.assertEqual(3, len(headers), 'Expected 4 headers but got: %s' % str(headers))
+
+        got_body = socket.readline()
+        self.assertEqual(b'Some response data', got_body)
+        socket.close()
+
+        server.stop()
+
+    def test_empty_handler(self):
+        port = random.randint(10000, 30000)
+        server = uhttp.HTTPServer(
+            handler=lambda w, req: None,
+            port=port,
+            log=lambda *args: None,
+        )
+        _thread.start_new_thread(lambda: server.start(), ())
+
+        addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
+        socket = usocket.socket()
+        socket.connect(addr)
+        socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
+        responseLine = socket.readline()
+        self.assertEqual(responseLine.decode().strip(), 'HTTP/1.1 200 OK')
+
+        headers = uhttp._parse_headers(socket)
+        self.assertEqual(2, len(headers), 'Expected 2 headers but got: %s' % str(headers))
+
+        got_body = socket.readline()
+        self.assertEqual(b'', got_body)
+
+        socket.close()
         server.stop()
