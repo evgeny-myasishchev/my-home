@@ -101,7 +101,7 @@ def _parse_headers(input):
 
     headers = {}
     nextHeaderLine = input.readline()
-    while nextHeaderLine != '\n' and nextHeaderLine != '\r\n':
+    while nextHeaderLine != '' and nextHeaderLine != '\n' and nextHeaderLine != '\r\n':
         pairs = nextHeaderLine.split(':', 1)
         headers[pairs[0].lower()] = pairs[1].strip(' \r\n')
         nextHeaderLine = input.readline()
@@ -140,3 +140,12 @@ class ResponseWriter():
             self._output.write(': ')
             self._output.write(val)
             self._output.write('\r\n')
+
+    def write(self, buf):
+        self._output.write('Content-Length: ')
+        self._output.write(str(len(buf)))
+        self._output.write('\r\n')
+        self._output.write('\r\n')
+        self._output.write(buf)
+
+        pass

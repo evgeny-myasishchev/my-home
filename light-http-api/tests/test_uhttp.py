@@ -128,4 +128,20 @@ class TestResponseWriter(unittest.TestCase):
             'x-header-1': 'value1',
             'x-header-2': 'value2'
         })
-        
+
+    def test_write_buffer(self):
+        output = uio.StringIO()
+        writer = uhttp.ResponseWriter(output)
+
+        data = bytes("This is a buffer that will be written", "utf-8")
+        writer.write(data)
+
+        output.seek(0)
+        got_headers = uhttp._parse_headers(output)
+        want_len = len(data)
+
+        self.assertEqual(got_headers, {
+            'content-length': str(want_len)
+        })
+        got_data = output.read(want_len)
+        self.assertEqual(got_data, data.decode('utf-8'))
