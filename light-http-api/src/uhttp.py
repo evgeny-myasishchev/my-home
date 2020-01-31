@@ -59,7 +59,7 @@ class HTTPServer:
     def start(self): 
         addr = usocket.getaddrinfo(self._host, self._port, 0, usocket.SOCK_STREAM)
         self._socket.bind(addr[0][-1])
-        self._socket.listen(addr[0][-1])
+        self._socket.listen(5)
         self._log("Server started on port: %s" % self._port)
 
         while True:
