@@ -200,6 +200,10 @@ class TestHTTPServer(unittest.TestCase):
         socket.close()
         return (status_line, headers, body)
 
+    def start_server(self, server):
+        _thread.start_new_thread(lambda: server.start(), ())
+        utime.sleep_ms(10) # give a chance for server to start listening
+
     def test_req_res(self):
         port = random.randint(10000, 30000)
         server = uhttp.HTTPServer(
@@ -207,13 +211,11 @@ class TestHTTPServer(unittest.TestCase):
             port=port,
             log=lambda *args: None,
         )
-        _thread.start_new_thread(lambda: server.start(), ())
+        self.start_server(server)
         status_line, headers, body = self.do_req(port)
-
         self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(3, len(headers), 'Expected 4 headers but got: %s' % str(headers))
         self.assertEqual(b'Some response data', body)
-
         server.stop()
 
     def test_empty_handler(self):
@@ -223,13 +225,11 @@ class TestHTTPServer(unittest.TestCase):
             port=port,
             log=lambda *args: None,
         )
-        _thread.start_new_thread(lambda: server.start(), ())
-
+        self.start_server(server)
         status_line, headers, body = self.do_req(port)
         self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(2, len(headers), 'Expected 2 headers but got: %s' % str(headers))
         self.assertEqual(b'', body)
-
         server.stop()
 
     def test_multiple_requests(self):
@@ -239,16 +239,13 @@ class TestHTTPServer(unittest.TestCase):
             port=port,
             log=lambda *args: None,
         )
-        _thread.start_new_thread(lambda: server.start(), ())
-
+        self.start_server(server)
         status_line, headers, body = self.do_req(port)
         self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(3, len(headers), 'Expected 3 headers but got: %s' % str(headers))
         self.assertEqual(b'PONG', body)
-
         status_line, headers, body = self.do_req(port)
         self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(3, len(headers), 'Expected 3 headers but got: %s' % str(headers))
         self.assertEqual(b'PONG', body)
-
         server.stop()

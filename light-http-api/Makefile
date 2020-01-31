@@ -33,7 +33,6 @@ shell:
 
 sync_code: 
 	@rshell -p $(ESP_PORT) rsync -m ./src /pyboard/src
-	@rshell -p $(ESP_PORT) rsync -m ./vendor /pyboard/vendor
 
 sync_boot: 
 	@rshell -p $(ESP_PORT) cp boot.py /pyboard/boot.py
