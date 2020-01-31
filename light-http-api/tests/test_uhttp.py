@@ -201,7 +201,7 @@ class TestHTTPServer(unittest.TestCase):
         return (status_line, headers, body)
 
     def start_server(self, server):
-        _thread.start_new_thread(lambda: server.start(), ())
+        server.start_async()
         utime.sleep_ms(10) # give a chance for server to start listening
 
     def test_req_res(self):

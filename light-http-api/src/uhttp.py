@@ -2,6 +2,7 @@ import usocket
 import sys
 import logger
 import errno
+import _thread
 
 HTTP_STATUS_OK=200
 HTTP_STATUS_CREATED=201
@@ -76,6 +77,9 @@ class HTTPServer:
             if not writer._header_sent:
                 writer.write_header(HTTP_STATUS_OK)
             client.close()
+
+    def start_async(self):
+        _thread.start_new_thread(lambda srv: srv.start(), (self,))
 
     def stop(self):
         self._socket.close()
