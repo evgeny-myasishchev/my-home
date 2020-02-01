@@ -8,7 +8,7 @@ def use(handler, *middleware):
 def not_found(next):
     return lambda writer,req: writer.write_header(uhttp.HTTP_STATUS_NOT_FOUND)
 
-def recover(next, *, log=logger.log, debug=False):
+def recover(next, *, debug=False):
     def middleware(writer, req):
         try:
             next(writer, req)
