@@ -87,16 +87,40 @@ class TestRFC3339Now(unittest.TestCase):
         got = logger.rfc_3339_now(lambda: localtime)
         self.assertEqual(got, want)
 
-# class TestLoggerMethods(unittest.TestCase):
-#     def test_write_msg(self):
-#         err = Exception('Test error')
-#         test_data = {"key1": 'val1', "key2": 'val2'}
+class TestSetupLogger(unittest.TestCase):
+    def test_write_msg(self):
+        class target():
+            pass
+        err = Exception('Test error')
+        test_data = {"key1": 'val1', "key2": 'val2'}
+        now = '2020-01-02T03:04:05Z'
 
-#         def mock_transport(message):
-#             pass
+        got_messages = []
+        def mock_transport(message):
+            got_messages.append(message)
 
-#         logger.error('Hello Error', data=test_data)
-#         logger.warn('Hello Warn', data=test_data)
-#         logger.info('Hello Info', data=test_data)
-#         logger.debug('Hello Debug', data=test_data)
-#         pass
+        logger.setup(
+            target=target,
+            transport=mock_transport,
+            now_fn=lambda: now,
+        )
+
+        target.error('Hello Error', data=test_data, err=err)
+        target.warn('Hello Warn', data=test_data, err=err)
+        target.info('Hello Info', data=test_data, err=err)
+        target.debug('Hello Debug', data=test_data, err=err)
+
+        self.assertEqual(got_messages, [
+            logger.json_formatter(
+                msg='Hello Error', level='error', now=now, data=test_data, err=err
+            ),
+            logger.json_formatter(
+                msg='Hello Warn', level='warn', now=now, data=test_data, err=err
+            ),
+            logger.json_formatter(
+                msg='Hello Info', level='info', now=now, data=test_data, err=err
+            ),
+            logger.json_formatter(
+                msg='Hello Debug', level='debug', now=now, data=test_data, err=err
+            ),
+        ])
