@@ -1,5 +1,6 @@
 import sys
 import ujson
+import utime
 
 _levels = {
     'error' : 50,
@@ -8,8 +9,18 @@ _levels = {
     'debug' : 20,
 }
 
-def rfc_3339_now():
-    pass
+RFC_3339_UTC_FORMAT='%d-%02d-%02dT%02d:%02d:%02dZ'
+
+def rfc_3339_now(localtime=utime.localtime):
+    now = localtime()
+    return RFC_3339_UTC_FORMAT % (
+        now[0],
+        now[1],
+        now[2],
+        now[3],
+        now[4],
+        now[5],
+    )
 
 # class UDPLogger:
 #     def __init__(self, host, port):

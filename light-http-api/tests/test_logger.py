@@ -55,6 +55,38 @@ class TestJsonFormatter(unittest.TestCase):
         got_message = logger.json_formatter(msg=msg, level=level, now=now, err=err)
         self.assertEqual(got_message, ujson.dumps(want_payload))
 
+
+class TestRFC3339Now(unittest.TestCase):
+    def test_format_localtime(self):
+        localtime = (
+            2020,
+            10,
+            20,
+            12,
+            30,
+            59,
+            0,
+            0
+        )
+        want = '2020-10-20T12:30:59Z'
+        got = logger.rfc_3339_now(lambda: localtime)
+        self.assertEqual(got, want)
+
+    def test_pad_values(self):
+        localtime = (
+            2020,
+            1,
+            2,
+            3,
+            4,
+            5,
+            0,
+            0
+        )
+        want = '2020-01-02T03:04:05Z'
+        got = logger.rfc_3339_now(lambda: localtime)
+        self.assertEqual(got, want)
+
 # class TestLoggerMethods(unittest.TestCase):
 #     def test_write_msg(self):
 #         err = Exception('Test error')
