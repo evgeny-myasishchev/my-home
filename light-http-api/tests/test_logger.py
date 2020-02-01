@@ -40,6 +40,25 @@ class TestJsonFormatter(unittest.TestCase):
         got_message = logger.json_formatter(msg=msg, level=level, now=now, data=data)
         self.assertEqual(got_message, ujson.dumps(want_payload))
 
+    def test_format_with_context(self):
+        msg = 'Hello'
+        level = 'info'
+        now = 'now'
+        context = {
+            'key1': 'val1',
+            'key2': 'val2',
+            'key3': 'val3',
+        }
+        want_payload = {
+            'msg': msg,
+            'time': now,
+            'level': level,
+            'v': 1,
+        }
+        want_payload['context'] = context
+        got_message = logger.json_formatter(msg=msg, level=level, now=now, context=context)
+        self.assertEqual(got_message, ujson.dumps(want_payload))
+
     def test_format_with_error(self):
         msg = 'Hello'
         level = 'info'
@@ -92,6 +111,7 @@ class TestSetupLogger(unittest.TestCase):
         class target():
             pass
         err = Exception('Test error')
+        test_context = {"ctx-key1": 'val1', "ctx-key2": 'val2'}
         test_data = {"key1": 'val1', "key2": 'val2'}
         now = '2020-01-02T03:04:05Z'
 
@@ -105,22 +125,22 @@ class TestSetupLogger(unittest.TestCase):
             now_fn=lambda: now,
         )
 
-        target.error('Hello Error', data=test_data, err=err)
-        target.warn('Hello Warn', data=test_data, err=err)
-        target.info('Hello Info', data=test_data, err=err)
-        target.debug('Hello Debug', data=test_data, err=err)
+        target.error('Hello Error', context=test_context, data=test_data, err=err)
+        target.warn('Hello Warn', context=test_context, data=test_data, err=err)
+        target.info('Hello Info', context=test_context, data=test_data, err=err)
+        target.debug('Hello Debug', context=test_context, data=test_data, err=err)
 
         self.assertEqual(got_messages, [
             logger.json_formatter(
-                msg='Hello Error', level='error', now=now, data=test_data, err=err
+                msg='Hello Error', level='error', now=now, context=test_context, data=test_data, err=err
             ),
             logger.json_formatter(
-                msg='Hello Warn', level='warn', now=now, data=test_data, err=err
+                msg='Hello Warn', level='warn', now=now, context=test_context, data=test_data, err=err
             ),
             logger.json_formatter(
-                msg='Hello Info', level='info', now=now, data=test_data, err=err
+                msg='Hello Info', level='info', now=now, context=test_context, data=test_data, err=err
             ),
             logger.json_formatter(
-                msg='Hello Debug', level='debug', now=now, data=test_data, err=err
+                msg='Hello Debug', level='debug', now=now, context=test_context, data=test_data, err=err
             ),
         ])

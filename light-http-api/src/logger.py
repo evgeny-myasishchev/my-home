@@ -24,13 +24,15 @@ def rfc_3339_now(localtime=utime.localtime):
         now[5],
     )
 
-def json_formatter(*, msg, level, now, data=None, err=None):
+def json_formatter(*, msg, level, now, context=None, data=None, err=None):
     payload = {
         "msg": msg,
         "time": now,
         "level": level,
         "v": 1,
     }
+    if context != None:
+        payload['context'] = context
     if data != None:
         payload['data'] = data
     if err != None:
@@ -56,22 +58,29 @@ def make_file_transport(path):
 
 # Setup level logger functions
 def make_log(*, level, now_fn, transport):
-    def log(msg, *, data=None, err=None):
-        message = json_formatter(msg=msg, level=level, now=now_fn(), data=data, err=err)
+    def log(msg, *, context=None, data=None, err=None):
+        message = json_formatter(
+            msg=msg, 
+            level=level, 
+            now=now_fn(), 
+            context=context, 
+            data=data, 
+            err=err)
         transport(message)
     return log
 
 # Logging methods
 # To be actually defined by setup function
-def error(msg, data=None, err=None):
+def error(msg, context=None, data=None, err=None):
     pass
-def warn(msg, data=None, err=None):
+def warn(msg, context=None, data=None, err=None):
     pass
-def info(msg, data=None, err=None):
+def info(msg, context=None, data=None, err=None):
     pass
-def debug(msg, data=None, err=None):
+def debug(msg, context=None, data=None, err=None):
     pass
 
+# TODO: Log levels
 def setup(*,
     target=__import__(__name__),
     transport=print_transport,
