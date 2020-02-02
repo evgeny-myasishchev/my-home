@@ -4,6 +4,8 @@
 .build-env
 tmp
 .python-version
+.vendor-versions
+test.log
 
 # eclipse setting
 .settings

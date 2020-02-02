@@ -1,6 +1,7 @@
 .PHONY: build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell test
 
 include .build-env
+include .vendor-versions
 
 FIRMWARE ?= esp8266-20191220-v1.12.bin
 ESP_PORT ?= /dev/cu.usbserial-1420
@@ -27,6 +28,12 @@ $(FIRMWARE_BIN): tmp
 
 write_flash: $(FIRMWARE_BIN)
 	@esptool.py --port $(ESP_PORT) --baud 460800 write_flash --flash_size=detect 0 $(FIRMWARE_BIN)
+
+vendor/uuid/uuid.py: .vendor-versions
+	mkdir -p vendor/uuid
+	curl https://raw.githubusercontent.com/pfalcon/pycopy-lib/$(PYCOPY_LIB_UUID_VERSION)/uuid/uuid.py -o vendor/uuid/uuid.py
+
+vendor: vendor/uuid/uuid.py
 
 shell:
 	@rshell -p $(ESP_PORT) shell
