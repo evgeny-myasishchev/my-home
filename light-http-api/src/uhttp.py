@@ -90,7 +90,8 @@ class Request():
         'method', 
         'uri', 
         'httpVersion',
-        'headers'
+        'headers',
+        'context',
     ]
     def __init__(self, input):
         reqLine = _parse_req_line(input.readline())

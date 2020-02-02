@@ -53,3 +53,14 @@ class TestRecover(unittest.TestCase):
         middleware.recover(next_mw, debug=True)(writer, req)
         self.assertEqual(writer.written_status, uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR)
         self.assertEqual(writer.written_body, str(err))
+
+class TestTrace(unittest.TestCase):
+    def test_call_next(self):
+        req = MockReq()
+        writer = MockWriter()
+        next_called = False
+        def next_mw(w, r):
+            nonlocal next_called
+            next_called = True
+        middleware.trace(next_mw)(writer, req)
+        self.assertTrue(next_called)
