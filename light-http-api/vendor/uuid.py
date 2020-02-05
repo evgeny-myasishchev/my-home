@@ -1,4 +1,4 @@
-import os
+import osext as os
 import ubinascii
 
 
