@@ -9,4 +9,4 @@ import gc
 gc.collect()
 
 import sys
-sys.path.extend(['/src', 'vendor'])
+sys.path.extend(['/src', '/vendor'])
