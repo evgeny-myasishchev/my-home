@@ -1,9 +1,13 @@
 import unittest
 import middleware
 import uhttp
+import uio
+from uuid import uuid4
 
-class MockReq:
-    pass
+class MockReq(uhttp.Request):
+    def __init__(self):
+        uhttp.Request.__init__(self, uio.BytesIO(b"GET / HTTP/1.1\n\n"))
+        pass
 
 class MockWriter:
     def __init__(self):
@@ -64,3 +68,28 @@ class TestTrace(unittest.TestCase):
             next_called = True
         middleware.trace(next_mw)(writer, req)
         self.assertTrue(next_called)
+
+    def test_inject_new_req_id_to_context(self):
+        req = MockReq()
+        req_id = uuid4()
+
+        writer = MockWriter()
+        next_called = False
+        def next_mw(w, r):
+            nonlocal next_called
+            next_called = True
+        middleware.trace(next_mw, uuid_fn=lambda: req_id)(writer, req)
+        self.assertEqual(req.context['requestId'], req_id)
+
+    def test_inject_req_id_from_header(self):
+        req = MockReq()
+        req_id = uuid4()
+        req.headers['x-request-id'] = req_id
+
+        writer = MockWriter()
+        next_called = False
+        def next_mw(w, r):
+            nonlocal next_called
+            next_called = True
+        middleware.trace(next_mw)(writer, req)
+        self.assertEqual(req.context['requestId'], req_id)

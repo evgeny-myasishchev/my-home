@@ -99,6 +99,7 @@ class Request():
         self.uri = reqLine[1]
         self.httpVersion = reqLine[2]
         self.headers = _parse_headers(input)
+        self.context = {}
 
 def _parse_req_line(req_line):
     # TODO: Validate and throw appropriate error

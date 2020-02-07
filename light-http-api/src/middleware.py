@@ -1,6 +1,7 @@
 import uhttp
 import logger
 import sys
+from uuid import uuid4
 
 def use(handler, *middleware):
     pass
@@ -20,7 +21,11 @@ def recover(next, *, debug=False, logger=logger):
 
     return middleware
 
-def trace(next, *, logger=logger):
+def trace(next, *, logger=logger, uuid_fn=uuid4):
     def middleware(writer, req):
+        if "x-request-id" in req.headers:
+            req.context['requestId'] = req.headers['x-request-id']
+        else:
+            req.context['requestId'] = uuid_fn()
         next(writer, req)
     return middleware
