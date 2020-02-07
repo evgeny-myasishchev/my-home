@@ -115,7 +115,7 @@ class TestTrace(unittest.TestCase):
             nonlocal next_called
             next_called = True
         middleware.trace(next_mw, uuid_fn=lambda: req_id)(writer, req)
-        self.assertEqual(req.context['requestId'], req_id)
+        self.assertEqual(req.context['requestId'], str(req_id))
 
     def test_inject_req_id_from_header(self):
         req = MockReq()
@@ -167,6 +167,7 @@ class TestTrace(unittest.TestCase):
             "context": req.context,
             "data": {
                 "status": writer.status,
+                "headers": writer.headers,
             },
             "err": None
         })

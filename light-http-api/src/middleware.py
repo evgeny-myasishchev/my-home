@@ -28,7 +28,7 @@ def trace(next, *, logger=logger, uuid_fn=uuid4):
         if "x-request-id" in req.headers:
             req.context['requestId'] = req.headers['x-request-id']
         else:
-            req.context['requestId'] = uuid_fn()
+            req.context['requestId'] = str(uuid_fn())
         logger.info(
             "BEGIN REQ: %s %s" % (req.method, req.uri),
             context=req.context,
@@ -45,6 +45,7 @@ def trace(next, *, logger=logger, uuid_fn=uuid4):
             context=req.context,
             data={
                 "status": writer.status,
+                "headers": writer.headers,
             }
         )
     return middleware
