@@ -80,6 +80,20 @@ def info(msg, context=None, data=None, err=None):
 def debug(msg, context=None, data=None, err=None):
     pass
 
+class TestLogger:
+    def __init__(self):
+        info_logs = []
+        self.info_logs = info_logs
+        for level in _levels:
+            def method(msg, context=None, data=None, err=None):
+                info_logs.append({
+                    "msg": msg,
+                    "context": context,
+                    "data": data,
+                    "err": err
+                })
+            setattr(self, level, method)
+
 # TODO: Log levels
 def setup(*,
     target=__import__(__name__),

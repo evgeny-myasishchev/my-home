@@ -2,6 +2,7 @@ import unittest
 import middleware
 import uhttp
 import uio
+import logger
 from uuid import uuid4
 
 class MockReq(uhttp.Request):
@@ -141,19 +142,7 @@ class TestTrace(unittest.TestCase):
         req.context["requestId"] = req_id
         req.context["something-else"] = "value 123"
 
-        class MockLogger:
-            def __init__(self):
-                self.info_logs = []
-            def info(self, msg, context=None, data=None, err=None):
-                self.info_logs.append({
-                    "msg": msg,
-                    "context": context,
-                    "data": data,
-                    "err": err
-                })
-                pass
-
-        mock_logger = MockLogger()
+        mock_logger = logger.TestLogger()
 
         writer = MockWriter()
         next_called = False
