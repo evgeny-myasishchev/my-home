@@ -13,8 +13,8 @@ class MockReq(uhttp.Request):
     ):
         uhttp.Request.__init__(self, uio.BytesIO((
             b"%s %s HTTP/1.1\n"
-            b"Host: %s"
-            b"UserAgent: %s" % (method, uri, host, userAgent)
+            b"Host: %s\n"
+            b"User-Agent: %s\n\n" % (method, uri, host, userAgent)
         )))
 
 class MockWriter:
@@ -110,7 +110,9 @@ class TestTrace(unittest.TestCase):
             userAgent="Test-Logs V1"
         )
         req_id = uuid4()
-        req.headers['x-request-id'] = req_id
+        req.headers["x-request-id"] = req_id
+        req.context["requestId"] = req_id
+        req.context["something-else"] = "value 123"
 
         class MockLogger:
             def __init__(self):
@@ -132,10 +134,21 @@ class TestTrace(unittest.TestCase):
             nonlocal next_called
             next_called = True
         middleware.trace(next_mw, logger=mock_logger)(writer, req)
-        self.assertEqual(len(mock_logger.info_logs), 1)
+        self.assertEqual(len(mock_logger.info_logs), 2)
         self.assertEqual(mock_logger.info_logs[0], {
             "msg": "BEGIN REQ: POST /v1/something/logs",
-            "context": None,
+            "context": req.context,
+            "data": {
+                "method": req.method,
+                "host": req.headers["host"],
+                "uri": req.uri,
+                "userAgent": req.headers["user-agent"]
+            },
+            "err": None
+        })
+        self.assertEqual(mock_logger.info_logs[1], {
+            "msg": "END REQ",
+            "context": req.context,
             "data": None,
             "err": None
         })
