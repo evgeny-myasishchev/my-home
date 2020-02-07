@@ -4,7 +4,10 @@ import sys
 from uuid import uuid4
 
 def use(handler, *middleware):
-    pass
+    next = handler
+    for mw in reversed(middleware):
+        next = mw(next)
+    return next
 
 def not_found(next):
     return lambda writer,req: writer.write_header(uhttp.HTTP_STATUS_NOT_FOUND)
@@ -18,7 +21,6 @@ def recover(next, *, debug=False, logger=logger):
             message = uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR] if debug == False else str(err)
             writer.write_header(uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR)
             writer.write(message)
-
     return middleware
 
 def trace(next, *, logger=logger, uuid_fn=uuid4):

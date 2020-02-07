@@ -29,6 +29,32 @@ class MockWriter(uhttp.ResponseWriter):
     def write(self, body):
         self.written_body = body
 
+class TestUse(unittest.TestCase):
+    def test_use_wrap_handler(self):
+        req = MockReq()
+        writer = MockWriter()
+        calls_order = []
+        req.context["calls_order"] = calls_order
+
+        def create_mw(arg):
+            def mw(next):
+                def mw_handler(w, req):
+                    req.context["calls_order"].append(arg)
+                    next(w, req)
+                return mw_handler
+            return mw
+
+        def handler(w, req):
+            req.context["calls_order"].append("handler")
+
+        middleware.use(handler, 
+            create_mw("mw1"), 
+            create_mw("mw2"), 
+            create_mw("mw3"),
+        )(writer, req)
+
+        self.assertEqual(calls_order, ['mw1', 'mw2', 'mw3', 'handler'])
+
 class TestNotFound(unittest.TestCase):
     def test_responds_with_404(self):
         req = MockReq()
