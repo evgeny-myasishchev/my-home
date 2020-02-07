@@ -5,9 +5,17 @@ import uio
 from uuid import uuid4
 
 class MockReq(uhttp.Request):
-    def __init__(self):
-        uhttp.Request.__init__(self, uio.BytesIO(b"GET / HTTP/1.1\n\n"))
-        pass
+    def __init__(self, *, 
+        method="GET", 
+        host="example.com", 
+        uri="/v1/something",
+        userAgent="test-middleware/v0"
+    ):
+        uhttp.Request.__init__(self, uio.BytesIO((
+            b"%s %s HTTP/1.1\n"
+            b"Host: %s"
+            b"UserAgent: %s" % (method, uri, host, userAgent)
+        )))
 
 class MockWriter:
     def __init__(self):
@@ -93,3 +101,41 @@ class TestTrace(unittest.TestCase):
             next_called = True
         middleware.trace(next_mw)(writer, req)
         self.assertEqual(req.context['requestId'], req_id)
+
+    def test_log_requests(self):
+        req = MockReq(
+            method="POST", 
+            host="logs.example.com", 
+            uri="/v1/something/logs",
+            userAgent="Test-Logs V1"
+        )
+        req_id = uuid4()
+        req.headers['x-request-id'] = req_id
+
+        class MockLogger:
+            def __init__(self):
+                self.info_logs = []
+            def info(self, msg, context=None, data=None, err=None):
+                self.info_logs.append({
+                    "msg": msg,
+                    "context": context,
+                    "data": data,
+                    "err": err
+                })
+                pass
+
+        mock_logger = MockLogger()
+
+        writer = MockWriter()
+        next_called = False
+        def next_mw(w, r):
+            nonlocal next_called
+            next_called = True
+        middleware.trace(next_mw, logger=mock_logger)(writer, req)
+        self.assertEqual(len(mock_logger.info_logs), 1)
+        self.assertEqual(mock_logger.info_logs[0], {
+            "msg": "BEGIN REQ: POST /v1/something/logs",
+            "context": None,
+            "data": None,
+            "err": None
+        })
