@@ -72,6 +72,7 @@ class TestResponseWriter(unittest.TestCase):
         output.seek(0)
         status_line = output.readline()
         self.assertEqual(b"HTTP/1.1 415 Unsupported Media Type", status_line.rstrip())
+        self.assertEqual(writer.status, uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE)
 
         output.seek(0)
         writer.write_header(uhttp.HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, 'Custom reason phrase 123321')
@@ -216,6 +217,23 @@ class TestHTTPServer(unittest.TestCase):
         self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(3, len(headers), 'Expected 4 headers but got: %s' % str(headers))
         self.assertEqual(b'Some response data', body)
+        server.stop()
+
+    def test_res_default_status(self):
+        port = random.randint(10000, 30000)
+        def handler(w, req):
+            w.status = uhttp.HTTP_STATUS_CONFLICT
+        server = uhttp.HTTPServer(
+            handler=handler,
+            port=port,
+            log=lambda *args: None,
+        )
+        self.start_server(server)
+        status_line, headers, body = self.do_req(port)
+        self.assertEqual(
+            status_line.decode().strip(), 
+            'HTTP/1.1 %s %s' % (uhttp.HTTP_STATUS_CONFLICT, uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_CONFLICT])
+        )
         server.stop()
 
     def test_empty_handler(self):

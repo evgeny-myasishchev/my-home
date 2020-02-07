@@ -75,7 +75,7 @@ class HTTPServer:
             writer = ResponseWriter(client)
             self._handler(writer, req)
             if not writer._header_sent:
-                writer.write_header(HTTP_STATUS_OK)
+                writer.write_header(writer.status)
             client.close()
 
     def start_async(self):
@@ -141,10 +141,13 @@ SERVER_FINGERPRINT='uhttp/0.1 %s/%s %s' % (
 class ResponseWriter():
     def __init__(self, output):
         self._output = output
+        self.status = HTTP_STATUS_OK
         self.headers = {}
         self._header_sent = False
 
     def write_header(self, status, reason_phrase = None):
+        self.status = status
+
         # Status line
         self._output.write('HTTP/1.1 ')
         self._output.write(str(status))
