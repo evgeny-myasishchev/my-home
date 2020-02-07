@@ -36,7 +36,8 @@ def trace(next, *, logger=logger, uuid_fn=uuid4):
                 "method": req.method,
                 "host": req.headers["host"],
                 "uri": req.uri,
-                "userAgent": req.headers["user-agent"]
+                "userAgent": req.headers["user-agent"],
+                "headers": req.headers,
             }
         )
         next(writer, req)

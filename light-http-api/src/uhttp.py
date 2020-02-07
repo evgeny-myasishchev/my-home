@@ -142,7 +142,12 @@ class ResponseWriter():
     def __init__(self, output):
         self._output = output
         self.status = HTTP_STATUS_OK
-        self.headers = {}
+        self.headers = {
+            'Server': SERVER_FINGERPRINT,
+
+            # For now we do not support keep-alive connections
+            'Connection': 'close',
+        }
         self._header_sent = False
 
     def write_header(self, status, reason_phrase = None):
@@ -160,10 +165,6 @@ class ResponseWriter():
 
         self._output.write(reason_phrase)
         self._output.write('\r\n')
-        self._output.write('Server: ')
-        self._output.write(SERVER_FINGERPRINT)
-        self._output.write('\r\n')
-        self._output.write('Connection: close\r\n') # For now we do not support keep-alive connections
         for key, val in self.headers.items():
             self._output.write(key)
             self._output.write(': ')
@@ -172,10 +173,12 @@ class ResponseWriter():
         self._header_sent = True
 
     def write(self, buf):
+        content_length = len(buf)
         if not self._header_sent:
             self.write_header(HTTP_STATUS_OK)
+        self.headers["Content-Length"] = content_length
         self._output.write('Content-Length: ')
-        self._output.write(str(len(buf)))
+        self._output.write(str(content_length))
         self._output.write('\r\n')
         self._output.write('\r\n')
         self._output.write(buf)

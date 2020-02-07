@@ -158,7 +158,8 @@ class TestTrace(unittest.TestCase):
                 "method": req.method,
                 "host": req.headers["host"],
                 "uri": req.uri,
-                "userAgent": req.headers["user-agent"]
+                "userAgent": req.headers["user-agent"],
+                "headers": req.headers,
             },
             "err": None
         })

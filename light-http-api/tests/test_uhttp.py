@@ -102,8 +102,16 @@ class TestResponseWriter(unittest.TestCase):
         self.assertEqual('reason_phrase must be provided', str(err))
 
     def test_write_header_default_headers(self):
+        pythonName = sys.implementation.name
+        pythonVersion = '.'.join(map(str, sys.implementation.version))
+        want_server = 'uhttp/0.1 %s/%s %s' % (pythonName, pythonVersion, sys.platform)
+
         output = uio.BytesIO()
         writer = uhttp.ResponseWriter(output)
+        self.assertEqual(writer.headers, {
+            "Server": want_server,
+            "Connection": "close",
+        })
 
         writer.write_header(534, 'Custom Reason Phrase')
         output.write('\n\n')
@@ -111,10 +119,8 @@ class TestResponseWriter(unittest.TestCase):
         output.readline()
         got_headers = uhttp._parse_headers(output)
 
-        pythonName = sys.implementation.name
-        pythonVersion = '.'.join(map(str, sys.implementation.version))
         self.assertEqual(got_headers, {
-            'server': 'uhttp/0.1 %s/%s %s' % (pythonName, pythonVersion, sys.platform),
+            'server': want_server,
             'connection': 'close'
         })
 
@@ -147,11 +153,13 @@ class TestResponseWriter(unittest.TestCase):
         writer.write_header(uhttp.HTTP_STATUS_NOT_FOUND)
         writer.write(data)
 
+        want_len = len(data)
+        self.assertEqual(writer.headers["Content-Length"], want_len)
+        
         output.seek(0)
         statusLine = output.readline()
         self.assertEqual(statusLine.decode().strip(), 'HTTP/1.1 404 Not Found')
         got_headers = uhttp._parse_headers(output)
-        want_len = len(data)
 
         # Default headers should be there
         self.assertTrue('server' in got_headers, 'No server header')
