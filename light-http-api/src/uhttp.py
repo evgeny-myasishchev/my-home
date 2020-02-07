@@ -48,11 +48,11 @@ class HTTPServer:
         handler,
         host='0.0.0.0',
         port, 
-        log,
+        logger=logger,
         maxClients = 5):
         self._host = host
         self._port = port
-        self._log = log
+        self._logger = logger
         self._maxClients = maxClients
         self._handler = handler
         self._socket = usocket.socket()
@@ -61,7 +61,7 @@ class HTTPServer:
         addr = usocket.getaddrinfo(self._host, self._port, 0, usocket.SOCK_STREAM)
         self._socket.bind(addr[0][-1])
         self._socket.listen(5)
-        self._log("Server started on port: %s" % self._port)
+        self._logger.info("Server started on port: %s" % self._port)
 
         while True:
             try:
@@ -83,7 +83,7 @@ class HTTPServer:
 
     def stop(self):
         self._socket.close()
-        self._log('Server stopped')
+        self._logger.info('Server stopped')
 
 class Request():
     __slots__ = [
@@ -179,14 +179,3 @@ class ResponseWriter():
         self._output.write('\r\n')
         self._output.write('\r\n')
         self._output.write(buf)
-
-def main():
-    server = HTTPServer(
-        handler=lambda w, req: w.write('PONG'),
-        port=8080,
-        log=print,
-    )
-    server.start()
-
-if __name__ == '__main__':
-    main()

@@ -8,6 +8,7 @@ import sys
 import uos
 import _thread
 import usocket
+import logger
 
 urandom.seed(utime.ticks_ms())
 
@@ -210,7 +211,7 @@ class TestHTTPServer(unittest.TestCase):
         server = uhttp.HTTPServer(
             handler=lambda w, req: w.write(b'Some response data'),
             port=port,
-            log=lambda *args: None,
+            logger=logger.TestLogger(),
         )
         self.start_server(server)
         status_line, headers, body = self.do_req(port)
@@ -226,10 +227,10 @@ class TestHTTPServer(unittest.TestCase):
         server = uhttp.HTTPServer(
             handler=handler,
             port=port,
-            log=lambda *args: None,
+            logger=logger.TestLogger(),
         )
         self.start_server(server)
-        status_line, headers, body = self.do_req(port)
+        status_line, _, _ = self.do_req(port)
         self.assertEqual(
             status_line.decode().strip(), 
             'HTTP/1.1 %s %s' % (uhttp.HTTP_STATUS_CONFLICT, uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_CONFLICT])
@@ -241,7 +242,7 @@ class TestHTTPServer(unittest.TestCase):
         server = uhttp.HTTPServer(
             handler=lambda w, req: None,
             port=port,
-            log=lambda *args: None,
+            logger=logger.TestLogger(),
         )
         self.start_server(server)
         status_line, headers, body = self.do_req(port)
@@ -255,7 +256,7 @@ class TestHTTPServer(unittest.TestCase):
         server = uhttp.HTTPServer(
             handler=lambda w, req: w.write('PONG'),
             port=port,
-            log=lambda *args: None,
+            logger=logger.TestLogger(),
         )
         self.start_server(server)
         status_line, headers, body = self.do_req(port)
