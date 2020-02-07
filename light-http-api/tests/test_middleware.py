@@ -17,8 +17,9 @@ class MockReq(uhttp.Request):
             b"User-Agent: %s\n\n" % (method, uri, host, userAgent)
         )))
 
-class MockWriter:
+class MockWriter(uhttp.ResponseWriter):
     def __init__(self):
+        uhttp.ResponseWriter.__init__(self, None)
         self.written_status = None
         self.written_body = None
 
@@ -147,8 +148,10 @@ class TestTrace(unittest.TestCase):
             "err": None
         })
         self.assertEqual(mock_logger.info_logs[1], {
-            "msg": "END REQ",
+            "msg": "END REQ: %s" % writer.status,
             "context": req.context,
-            "data": None,
+            "data": {
+                "status": writer.status,
+            },
             "err": None
         })

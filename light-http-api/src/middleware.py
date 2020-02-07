@@ -38,5 +38,11 @@ def trace(next, *, logger=logger, uuid_fn=uuid4):
             }
         )
         next(writer, req)
-        logger.info("END REQ", context=req.context)
+        logger.info(
+            "END REQ: %s" % writer.status, 
+            context=req.context,
+            data={
+                "status": writer.status,
+            }
+        )
     return middleware
