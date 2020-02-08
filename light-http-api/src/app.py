@@ -7,10 +7,17 @@ def pong(w, req):
 
 def main():
     logger.setup()
+
+    router = middleware.create_router([
+        ("/ping", pong)
+    ])
+
+    default_handler = middleware.not_found(None)
     server = uhttp.HTTPServer(
-        handler=middleware.use(pong,
+        handler=middleware.use(default_handler,
             middleware.recover,
             middleware.trace,
+            router,
         ),
         port=8080,
     )
