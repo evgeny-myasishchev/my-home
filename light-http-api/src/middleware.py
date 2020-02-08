@@ -60,7 +60,12 @@ def create_router(routes):
             for route in routes:
                 pattern = route[0]
                 handler = route[1]
-                if req.uri.startswith(pattern):
+                if hasattr(pattern, "match"):
+                    match = pattern.match(req.uri)
+                    if match != None:
+                        handler(w, req, match)
+                        return
+                elif req.uri.startswith(pattern):
                     handler(w, req)
                     return
             next(w, req)

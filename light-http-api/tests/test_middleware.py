@@ -3,6 +3,7 @@ import middleware
 import uhttp
 import uio
 import logger
+import ure
 from uuid import uuid4
 
 class MockReq(uhttp.Request):
@@ -247,4 +248,46 @@ class TestRouter(unittest.TestCase):
         calls = []
         next_called = False
 
+    def test_re_routes(self):
+        req = MockReq()
+
+        next_called = False
+        def next_mw(w, r):
+            nonlocal next_called
+            next_called = True
+
+        calls = []
+        def users_create_handler(w, req, match):
+            nonlocal calls
+            calls.append(('users_create_handler', match.group(1)))
+
+        def user_transactions_handler(w, req, match):
+            nonlocal calls
+            calls.append(('user_transactions_handler', match.group(1), match.group(2)))
+
+        router = middleware.create_router([
+            (ure.compile(r"/v1/users/([A-Za-z0-9\-]+)/create"), users_create_handler),
+            (ure.compile(r"/v1/users/([A-Za-z0-9\-]+)/transactions/([A-Za-z0-9\-]+)"), user_transactions_handler),
+        ])(next_mw)
+
+        user1 = str(uuid4())
+        req.uri = "/v1/users/%s/create" % user1
+        router(None, req)
+        self.assertEqual(calls, [("users_create_handler", user1)])
+        self.assertEqual(next_called, False)
+        calls = []
+
+        trx1 = str(uuid4())
+        req.uri = "/v1/users/%s/transactions/%s" % (user1, trx1)
+        router(None, req)
+        self.assertEqual(calls, [("user_transactions_handler", user1, trx1)])
+        self.assertEqual(next_called, False)
+        calls = []
+
+        trx1 = str(uuid4())
+        req.uri = "/v1/users/%s/update" % (user1)
+        router(None, req)
+        self.assertEqual(calls, [])
+        self.assertEqual(next_called, True)
+        calls = []
 
