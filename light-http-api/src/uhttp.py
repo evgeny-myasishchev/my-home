@@ -2,7 +2,6 @@ import usocket
 import sys
 import logger
 import errno
-import _thread
 
 HTTP_STATUS_OK=200
 HTTP_STATUS_CREATED=201
@@ -79,6 +78,7 @@ class HTTPServer:
             client.close()
 
     def start_async(self):
+        import _thread
         _thread.start_new_thread(lambda srv: srv.start(), (self,))
 
     def stop(self):
