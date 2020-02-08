@@ -131,6 +131,20 @@ class TestTrace(unittest.TestCase):
         self.assertEqual(req.context['requestId'], req_id)
 
     def test_log_requests(self):
+        class MockGC:
+            def __init__(self):
+                self.mock_mem_alloc = 0
+                self.mock_mem_free = 0
+            def mem_alloc(self, mock_mem_alloc=None):
+                if mock_mem_alloc == None:
+                    return self.mock_mem_alloc
+                self.mock_mem_alloc = mock_mem_alloc
+            def mem_free(self, mock_mem_free=None):
+                if mock_mem_free == None:
+                    return self.mock_mem_free
+                self.mock_mem_free = mock_mem_free
+
+
         req = MockReq(
             method="POST", 
             host="logs.example.com", 
@@ -138,18 +152,29 @@ class TestTrace(unittest.TestCase):
             userAgent="Test-Logs V1"
         )
         req_id = uuid4()
-        req.headers["x-request-id"] = req_id
-        req.context["requestId"] = req_id
+        req.headers["x-request-id"] = str(req_id)
+        req.context["requestId"] = str(req_id)
         req.context["something-else"] = "value 123"
 
         mock_logger = logger.TestLogger()
+
+        mock_gc = MockGC()
+        mem_alloc_before = 101
+        mem_alloc_after = 102
+        mem_free_before = 103
+        mem_free_after = 104
+
+        mock_gc.mem_alloc(mem_alloc_before)
+        mock_gc.mem_free(mem_free_before)
 
         writer = MockWriter()
         next_called = False
         def next_mw(w, r):
             nonlocal next_called
             next_called = True
-        middleware.trace(next_mw, logger=mock_logger)(writer, req)
+            mock_gc.mem_alloc(mem_alloc_after)
+            mock_gc.mem_free(mem_free_after)
+        middleware.trace(next_mw, logger=mock_logger, gc=mock_gc)(writer, req)
         self.assertEqual(len(mock_logger.info_logs), 2)
         self.assertEqual(mock_logger.info_logs[0], {
             "msg": "BEGIN REQ: POST /v1/something/logs",
@@ -160,6 +185,7 @@ class TestTrace(unittest.TestCase):
                 "uri": req.uri,
                 "userAgent": req.headers["user-agent"],
                 "headers": req.headers,
+                "memoryUsage": "(mem_alloc: %s, mem_free: %s)" % (mem_alloc_before, mem_free_before),
             },
             "err": None
         })
@@ -169,6 +195,7 @@ class TestTrace(unittest.TestCase):
             "data": {
                 "status": writer.status,
                 "headers": writer.headers,
+                "memoryUsage": "(mem_alloc: %s, mem_free: %s)" % (mem_alloc_after, mem_free_after),
             },
             "err": None
         })

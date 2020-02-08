@@ -2,6 +2,7 @@ import uhttp
 import logger
 import sys
 from uuid import uuid4
+import gc
 
 def use(handler, *middleware):
     next = handler
@@ -23,7 +24,7 @@ def recover(next, *, debug=False, logger=logger):
             writer.write(message)
     return middleware
 
-def trace(next, *, logger=logger, uuid_fn=uuid4):
+def trace(next, *, logger=logger, uuid_fn=uuid4, gc=gc):
     def middleware(writer, req):
         if "x-request-id" in req.headers:
             req.context['requestId'] = req.headers['x-request-id']
@@ -38,6 +39,7 @@ def trace(next, *, logger=logger, uuid_fn=uuid4):
                 "uri": req.uri,
                 "userAgent": req.headers["user-agent"],
                 "headers": req.headers,
+                "memoryUsage": "(mem_alloc: %s, mem_free: %s)" % (gc.mem_alloc(), gc.mem_free()),
             }
         )
         next(writer, req)
@@ -47,6 +49,7 @@ def trace(next, *, logger=logger, uuid_fn=uuid4):
             data={
                 "status": writer.status,
                 "headers": writer.headers,
+                "memoryUsage": "(mem_alloc: %s, mem_free: %s)" % (gc.mem_alloc(), gc.mem_free()),
             }
         )
     return middleware
