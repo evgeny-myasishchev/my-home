@@ -53,3 +53,16 @@ def trace(next, *, logger=logger, uuid_fn=uuid4, gc=gc):
             }
         )
     return middleware
+
+def create_router(routes):
+    def router(next):
+        def middleware(w, req):
+            for route in routes:
+                pattern = route[0]
+                handler = route[1]
+                if req.uri.startswith(pattern):
+                    handler(w, req)
+                    return
+            next(w, req)
+        return middleware
+    return router

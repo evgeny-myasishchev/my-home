@@ -199,3 +199,52 @@ class TestTrace(unittest.TestCase):
             },
             "err": None
         })
+
+class TestRouter(unittest.TestCase):
+    def test_string_routes(self):
+        req = MockReq()
+
+        next_called = False
+        def next_mw(w, r):
+            nonlocal next_called
+            next_called = True
+
+        calls = []
+        def ping_handler(w, req):
+            nonlocal calls
+            calls.append('ping')
+
+        def time_handler(w, req):
+            nonlocal calls
+            calls.append('time')
+
+        router = middleware.create_router([
+            ("/ping", ping_handler),
+            ("/time", time_handler)
+        ])(next_mw)
+        
+        req.uri = "/ping"
+        router(None, req)
+        self.assertEqual(calls, ["ping"])
+        calls = []
+
+        req.uri = "/ping?something"
+        router(None, req)
+        self.assertEqual(calls, ["ping"])
+        self.assertEqual(next_called, False)
+        calls = []
+
+        req.uri = "/time"
+        router(None, req)
+        self.assertEqual(calls, ["time"])
+        self.assertEqual(next_called, False)
+        calls = []
+
+        req.uri = "/v1/time"
+        router(None, req)
+        self.assertEqual(calls, [])
+        self.assertEqual(next_called, True)
+        calls = []
+        next_called = False
+
+
