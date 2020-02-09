@@ -9,8 +9,11 @@ def pong(w, req):
 def get_pin(w, req, match):
     w.write("PIN: %s" % match.group(1))
 
-def main():
-    logger.setup()
+def start_server(*, 
+    logger_transport=logger.print_transport,
+    port=8080,
+):
+    logger.setup(transport=logger_transport)
 
     router = middleware.create_router([
         ("/ping", pong),
@@ -24,12 +27,6 @@ def main():
             middleware.trace,
             router,
         ),
-        port=8080,
+        port=port,
     )
-    try:
-        server.start()
-    except KeyboardInterrupt:
-        server.stop()
-
-if __name__ == '__main__':
-    main()
+    server.start()
