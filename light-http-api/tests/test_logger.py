@@ -121,6 +121,33 @@ class TestRFC3339Now(unittest.TestCase):
         got = logger.rfc_3339_now(lambda: localtime)
         self.assertEqual(got, want)
 
+class TestCombinedTransport(unittest.TestCase):
+    def test_writes_to_all(self):
+        messages = [[], []]
+        def transport1(msg):
+            messages[0].append(msg)
+        def transport2(msg):
+            messages[1].append(msg)
+        combined = logger.make_combined_transport(transport1, transport2)
+        combined('msg1')
+        combined('msg2')
+        self.assertEqual(messages, [['msg1', 'msg2'], ['msg1', 'msg2']])
+
+    def test_ignores_errors(self):
+        messages = [[], []]
+        def transport1(msg):
+            if msg == 'msg1':
+                raise Exception('msg1 failed to send')
+            messages[0].append(msg)
+        def transport2(msg):
+            if msg == 'msg2':
+                raise Exception('msg2 failed to send')
+            messages[1].append(msg)
+        combined = logger.make_combined_transport(transport1, transport2)
+        combined('msg1')
+        combined('msg2')
+        self.assertEqual(messages, [['msg2'], ['msg1']])
+
 class TestSetupLogger(unittest.TestCase):
     def test_write_msg(self):
         class target():

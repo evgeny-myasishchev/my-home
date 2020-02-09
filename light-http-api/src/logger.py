@@ -49,6 +49,15 @@ def json_formatter(*, msg, level, now, context=None, data=None, err=None):
 def print_transport(message):
     print(message)
 
+def make_combined_transport(*transports):
+    def firehose(message):
+        for transport in transports:
+            try:
+                transport(message)
+            except:
+                pass
+    return firehose
+
 def make_udp_transport(host, port):
     addr = None
     initial_buffer = []
