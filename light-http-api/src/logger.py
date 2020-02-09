@@ -43,10 +43,26 @@ def print_transport(message):
     print(message)
 
 def make_udp_transport(host, port):
-    addr = usocket.getaddrinfo(host, port, usocket.AF_INET6, usocket.SOCK_DGRAM)[0][-1]
-    socket = usocket.socket(usocket.AF_INET6, usocket.SOCK_DGRAM)
+    addr = None
+    initial_buffer = []
+    socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
     def send(message):
+        nonlocal addr
+        if addr == None:
+            try:
+                addr = usocket.getaddrinfo(host, port, usocket.AF_INET, usocket.SOCK_DGRAM)[0][-1]
+                if len(initial_buffer) > 0:
+                    for msg in initial_buffer:
+                        socket.sendto(msg, addr)
+                        socket.sendto("\n", addr)
+                    initial_buffer.clear()
+            except:
+                if len(initial_buffer) > 100:
+                    initial_buffer.clear()
+                initial_buffer.append(message)
+                return
         socket.sendto(message, addr)
+        socket.sendto("\n", addr)
     return send
 
 def make_file_transport(path):
