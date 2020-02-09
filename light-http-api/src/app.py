@@ -9,12 +9,7 @@ def pong(w, req):
 def get_pin(w, req, match):
     w.write("PIN: %s" % match.group(1))
 
-def start_server(*, 
-    logger_transport=logger.print_transport,
-    port=8080,
-):
-    logger.setup(transport=logger_transport)
-
+def start_server(*, port=8080):
     router = middleware.create_router([
         ("/ping", pong),
         (ure.compile(r"^/pins/(\d+)$"), get_pin)
@@ -30,3 +25,4 @@ def start_server(*,
         port=port,
     )
     server.start()
+    return server
