@@ -1,0 +1,22 @@
+{
+    "port": 8080,
+    "runtime-env": "unix",
+    "log": {
+        "transports": [
+            {
+                "enabled": false,
+                "type": "print"
+            },
+            {
+                "enabled": false,
+                "type": "file",
+                "path": "application.log"
+            },
+            {
+                "enabled": false,
+                "type": "udp",
+                "host": "255.255.255.255"
+            }
+        ]
+    }
+}
