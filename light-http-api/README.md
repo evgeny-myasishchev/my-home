@@ -116,6 +116,15 @@ tests-watch
 tests-watch -f tests/test_server.py
 ```
 
+# Debugging
+
+## UDP logger transport hints
+
+Listen for UDP port with `nc`:
+```
+nc -kluw 0 0.0.0.0 50001 | npx pino-pretty
+```
+
 # API
 
 The API will be communicating with Arduino via UART. A subset of AT commands will be used to send or request some data.
