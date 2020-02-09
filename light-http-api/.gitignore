@@ -5,7 +5,7 @@
 tmp
 .python-version
 .vendor-versions
-test.log
+*.log
 
 # eclipse setting
 .settings
