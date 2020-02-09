@@ -55,6 +55,7 @@ class HTTPServer:
         self._maxClients = maxClients
         self._handler = handler
         self._socket = usocket.socket()
+        self._socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_REUSEADDR, 1)
 
     def start(self): 
         addr = usocket.getaddrinfo(self._host, self._port, 0, usocket.SOCK_STREAM)
