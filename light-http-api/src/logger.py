@@ -36,7 +36,14 @@ def json_formatter(*, msg, level, now, context=None, data=None, err=None):
     if data != None:
         payload['data'] = data
     if err != None:
-        payload['err'] = err
+        err_data = None
+        if err != None:
+            err_data = uio.StringIO()
+            sys.print_exception(err, err_data)
+            err_data.seek(0)
+            err_data = err_data.read().strip().split('\n')
+        payload['err'] = err_data[-1]
+        payload['trace'] = err_data[:-1]
     return ujson.dumps(payload)
 
 def print_transport(message):

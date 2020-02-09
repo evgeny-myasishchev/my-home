@@ -4,6 +4,8 @@ import random
 import urandom
 import utime
 import ujson
+import uio
+import sys
 
 urandom.seed(utime.ticks_ms())
 
@@ -64,13 +66,26 @@ class TestJsonFormatter(unittest.TestCase):
         level = 'info'
         now = 'now'
         err = Exception('Some error')
+        try:
+            raise err
+        except Exception as e:
+            err = e
+
+        err_data = None
+        if err != None:
+            err_data = uio.StringIO()
+            sys.print_exception(err, err_data)
+            err_data.seek(0)
+            err_data = err_data.read().strip().split('\n')
+
         want_payload = {
             'msg': msg,
             'time': now,
             'level': level,
             'v': 1,
         }
-        want_payload['err'] = err
+        want_payload['err'] = err_data[-1]
+        want_payload['trace'] = err_data[:-1]
         got_message = logger.json_formatter(msg=msg, level=level, now=now, err=err)
         self.assertEqual(got_message, ujson.dumps(want_payload))
 
