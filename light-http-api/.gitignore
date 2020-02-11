@@ -6,6 +6,7 @@ tmp
 .python-version
 .vendor-versions
 *.log
+config/platform*.json
 
 # eclipse setting
 .settings

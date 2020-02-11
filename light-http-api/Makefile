@@ -1,15 +1,18 @@
 .PHONY: build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell test
+.PHONY: fetch_config push_config
 
 include .build-env
 include .vendor-versions
 
-FIRMWARE ?= esp8266-20191220-v1.12.bin
+PLATFORM ?= esp8266
+FIRMWARE ?= $(PLATFORM)-20191220-v1.12.bin
 ESP_PORT ?= /dev/cu.usbserial-1420
 
 FIRMWARE_BIN := tmp/$(FIRMWARE)
 
 build-env:
 	@echo Generating .build-env. Please edit it as needed
+	@echo export PLATFORM=$(PLATFORM) > .build-env
 	@echo export FIRMWARE=$(FIRMWARE) > .build-env
 	@echo export ESP_PORT=$(ESP_PORT) >> .build-env
 	@echo export WIFI_AP_SSID=TODO >> .build-env
@@ -34,6 +37,13 @@ vendor/uuid.py: .vendor-versions
 	curl https://raw.githubusercontent.com/pfalcon/pycopy-lib/$(PYCOPY_LIB_UUID_VERSION)/uuid/uuid.py -o vendor/uuid.py
 
 vendor: vendor/uuid.py
+
+fetch_config:
+	@rshell -p $(ESP_PORT) cp /pyboard/config/platform-$(PLATFORM).json config/platform-$(PLATFORM).json
+
+push_config:
+	@rshell -p $(ESP_PORT) mkdir -p /pyboard/config
+	@rshell -p $(ESP_PORT) cp config/platform-$(PLATFORM).json /pyboard/config/platform-$(PLATFORM).json
 
 shell:
 	@rshell -p $(ESP_PORT) shell

@@ -47,6 +47,22 @@ make erase_flash
 make write_flash
 ```
 
+## Config
+
+Copy `config/template.json` to `config/platform-<platform>.json` where `<platform>` is value of `sys.platform`.
+
+Some platforms:
+* OSX - `darwin`
+* ESP8266 - `esp8266`
+
+```
+# To fetch existing config
+make fetch_config
+
+# To write new config
+make push_config
+```
+
 ## Sync code
 
 ```
