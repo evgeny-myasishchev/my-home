@@ -36,12 +36,12 @@ def setup_logger_transport(config):
 config = load_config()
 logger.setup(transport=setup_logger_transport(config))
 
-server = None
+server = app.create_server(
+    port=config["server"]["port"]
+)
 try:
-    server = app.start_server(
-        port=config["server"]["port"]
-    )
+    server.start()
 except KeyboardInterrupt as err:
-    logger.warn("Keyboard interrupt ignored", err=err)
+    server.stop()
 except BaseException as err:
     logger.error("Failed to start server\n", err=err)
