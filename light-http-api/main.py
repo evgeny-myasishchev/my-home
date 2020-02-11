@@ -26,7 +26,11 @@ def setup_logger_transport(config):
         transports.append(logger.make_file_transport(file_cfg["path"]))
     if transports_config["udp"]["enabled"]:
         udp_cfg = transports_config["udp"]
-        transports.append(logger.make_udp_transport(udp_cfg["host"], udp_cfg["port"]))
+        transports.append(logger.make_udp_transport(
+            udp_cfg["host"], 
+            udp_cfg["port"],
+            broadcast=udp_cfg["broadcast"]
+        ))
     return logger.make_combined_transport(*transports)
 
 config = load_config()

@@ -60,7 +60,6 @@ def make_combined_transport(*transports):
 
 def make_udp_transport(host, port, broadcast=False):
     addr = None
-    initial_buffer = []
     socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
     if broadcast:
         socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_BROADCAST, 1)
@@ -69,18 +68,9 @@ def make_udp_transport(host, port, broadcast=False):
         if addr == None:
             try:
                 addr = usocket.getaddrinfo(host, port, usocket.AF_INET, usocket.SOCK_DGRAM)[0][-1]
-                if len(initial_buffer) > 0:
-                    for msg in initial_buffer:
-                        socket.sendto(msg, addr)
-                        socket.sendto("\n", addr)
-                    initial_buffer.clear()
             except:
-                if len(initial_buffer) > 100:
-                    initial_buffer.clear()
-                initial_buffer.append(message)
                 return
-        socket.sendto(message, addr)
-        socket.sendto("\n", addr)
+        socket.sendto(message + "\n", addr)
     return send
 
 def make_file_transport(path):
