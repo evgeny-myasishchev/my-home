@@ -58,10 +58,12 @@ def make_combined_transport(*transports):
                 pass
     return firehose
 
-def make_udp_transport(host, port):
+def make_udp_transport(host, port, broadcast=False):
     addr = None
     initial_buffer = []
     socket = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
+    if broadcast:
+        socket.setsockopt(usocket.SOL_SOCKET, usocket.SO_BROADCAST, 1)
     def send(message):
         nonlocal addr
         if addr == None:
