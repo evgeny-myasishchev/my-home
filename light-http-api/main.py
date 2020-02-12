@@ -39,9 +39,14 @@ logger.setup(transport=setup_logger_transport(config))
 server = app.create_server(
     port=config["server"]["port"]
 )
-try:
-    server.start()
-except KeyboardInterrupt as err:
-    server.stop()
-except BaseException as err:
-    logger.error("Failed to start server\n", err=err)
+
+def startServer():
+    try:
+        server.start()
+    except KeyboardInterrupt as err:
+        server.stop()
+    except BaseException as err:
+        logger.error("Failed to start server\n", err=err)
+
+if config["server"]["enabled"] == True:
+    startServer()
