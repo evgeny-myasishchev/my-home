@@ -22,6 +22,7 @@ def recover(next, *, debug=False, logger=logger):
             message = uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR] if debug == False else str(err)
             writer.write_header(uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR)
             writer.write(message)
+            logger.error("Failed to handle request", context=req.context, err=err)
     return middleware
 
 def trace(next, *, logger=logger, uuid_fn=uuid4, gc=gc):
