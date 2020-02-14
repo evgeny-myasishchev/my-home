@@ -175,7 +175,7 @@ The response is:
 
 AT command: 
 
-```AT+PIN=<pinNumber>?```
+```AT+PIN?=<pinNumber>```
 
 AT response:
 
