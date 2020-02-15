@@ -15,4 +15,13 @@ TEST(atResponder, writeOk)
     ASSERT_STREQ("OK\n", testStream.lastWrittenBuffer);
 }
 
+TEST(atResponder, writeError)
+{
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+    responder.writeError();
+
+    ASSERT_STREQ("ERROR\n", testStream.lastWrittenBuffer);
+}
+
 } // namespace

@@ -18,4 +18,10 @@ void Responder::writeOk()
     this->_stream->write(ok, sizeof(ok));
 }
 
+void Responder::writeError()
+{
+    const char ok[] = "ERROR\n";
+    this->_stream->write(ok, sizeof(ok));
+}
+
 } // namespace at
