@@ -3,6 +3,7 @@
 #include <pin-bus.h>
 #include <switch-service-v2.h>
 #include <switches-router-v2.h>
+#include <at.h>
 
 // Test mode will only use pin bus, see below
 // #define TEST_MODE
@@ -17,6 +18,9 @@ PCF8574Bus bus(RELAY_BOARDS, INPUT_BOARDS, true);
 SwitchesRouter *router;
 
 ArrayPtr<Switch *> routes = createRoutes();
+
+io::SerialTextStream atStream(&Serial);
+at::Responder responder(&atStream);
 
 void setup()
 {
