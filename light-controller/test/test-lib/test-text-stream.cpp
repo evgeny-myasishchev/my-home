@@ -2,6 +2,8 @@
 
 TestTextStream::TestTextStream()
 {
+    this->lastWrittenBuffer = 0;
+    this->lastWrittenBufferLength = 0;
 }
 
 TestTextStream::~TestTextStream()
