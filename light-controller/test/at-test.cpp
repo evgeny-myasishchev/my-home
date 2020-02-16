@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <array-ptr.h>
 #include "test-lib/test-text-stream.h"
+#include "test-lib/test-at-handler.h"
 #include "at.h"
 
 namespace
@@ -74,35 +75,14 @@ TEST(atEngine, handleUnknownCommand)
     testStream.reset();
 }
 
-class testHandler : public at::Handler
-{
-private:
-    const char *_response;
-public:
-    bool called = false;
-    const char *gotInput = 0;
-    testHandler(const char *name, const char *response) : at::Handler(name)
-    {
-        _response = response;
-    }
-
-    void Handle(const char *input, at::Responder *resp)
-    {
-        called = true;
-        gotInput = input;
-        resp->writeLine(_response);
-        resp->writeOk();
-    }
-};
-
 TEST(atEngine, handleCommandNoInput)
 {
     TestTextStream testStream;
     at::Engine engine(&testStream);
 
-    testHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
-    testHandler cmd2("AT+CMD2", "CMD2-RESPONSE");
-    testHandler cmd3("AT+CMD3", "CMD3-RESPONSE");
+    TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
+    TestATHandler cmd2("AT+CMD2", "CMD2-RESPONSE");
+    TestATHandler cmd3("AT+CMD3", "CMD3-RESPONSE");
 
     engine.addCommandHandler(&cmd1);
     engine.addCommandHandler(&cmd2);
