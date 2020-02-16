@@ -8,6 +8,13 @@
 #include <stdarg.h>
 #include <Timers.h>
 
+#ifndef ARDUINO
+#include <iostream>
+#define println(msg)  std::cout << msg << std::endl;
+#else
+#define println
+#endif
+
 namespace logger
 {
     #define DEC 10
