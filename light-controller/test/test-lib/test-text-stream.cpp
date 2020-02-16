@@ -22,7 +22,7 @@ size_t TestTextStream::read(char *buffer, size_t length)
     {
         return 0;
     }
-    this->readBuffer.copy(buffer, length);
+    return this->readBuffer.copy(buffer, length);
 }
 
 size_t TestTextStream::write(const char *buffer, size_t size)
