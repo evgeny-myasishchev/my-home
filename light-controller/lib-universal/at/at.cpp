@@ -100,7 +100,7 @@ void Engine::loop()
     const size_t available = _stream->available();
     if (available > 0)
     {
-        if(available + _cmdBufferConsumed > MAX_COMMAND_SIZE)
+        if (available + _cmdBufferConsumed > MAX_COMMAND_SIZE)
         {
             this->resetBuffer();
             Responder(_stream).writeError();
@@ -123,6 +123,11 @@ void Engine::loop()
         if (!cmdEndFound)
         {
             return;
+        }
+        // Ignore CR
+        if (_cmdBuffer[cmdEnd - 1] == '\r')
+        {
+            cmdEnd = cmdEnd - 1;
         }
 
         Responder responder(_stream);

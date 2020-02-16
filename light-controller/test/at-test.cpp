@@ -153,6 +153,33 @@ TEST(atEngine, handleChunkedWrites)
     testStream.reset();
 }
 
+TEST(atEngine, ignoreCR)
+{
+    TestTextStream testStream;
+    at::Engine engine(&testStream);
+
+    TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
+
+    engine.addCommandHandler(&cmd1);
+    engine.setup();
+
+    testStream.readBuffer.assign("AT\r\n");
+    engine.loop();
+
+    char *want = "OK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
+
+    testStream.readBuffer.assign("AT+CMD1\r\n");
+    engine.loop();
+
+    ASSERT_STREQ(cmd1.gotInput, NULL);
+    ASSERT_TRUE(cmd1.called) << "cmd1 not called";
+    want = "+CMD1-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
+}
+
 TEST(atEngine, errorIfLargeCommand)
 {
     TestTextStream testStream;
