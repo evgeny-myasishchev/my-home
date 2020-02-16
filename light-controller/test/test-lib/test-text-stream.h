@@ -9,6 +9,9 @@ public:
     const char *lastWrittenBuffer;
     size_t lastWrittenBufferLength;
 
+    const char *bufferToRead;
+    size_t bufferToReadLength;
+
     TestTextStream();
     ~TestTextStream();
 

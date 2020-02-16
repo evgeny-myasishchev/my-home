@@ -23,14 +23,37 @@ void Responder::writeLine(const char *line)
 
 void Responder::writeOk()
 {
-    const char ok[] = "OK\n";
-    this->_stream->write(ok, strlen(ok));
+    this->_stream->write(RESPONSE_OK, strlen(RESPONSE_OK));
 }
 
 void Responder::writeError()
 {
-    const char ok[] = "ERROR\n";
-    this->_stream->write(ok, strlen(ok));
+    this->_stream->write(RESPONSE_ERROR, strlen(RESPONSE_ERROR));
+}
+
+Engine::Engine(io::TextStream *stream)
+{
+    _stream = stream;
+}
+
+void Engine::loop()
+{
+    const size_t available = _stream->available();
+    if(available > 0)
+    {
+        char cmdBuffer[MAX_COMMAND_SIZE] = {};
+        auto commandSize = _stream->read(cmdBuffer, MAX_COMMAND_SIZE);
+        Responder responder(_stream);
+        if(strncmp("AT\n", cmdBuffer, commandSize) == 0)
+        {
+            responder.writeOk();
+        }
+        else
+        {
+            responder.writeError();
+        }
+        
+    }
 }
 
 } // namespace at

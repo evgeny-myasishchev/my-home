@@ -20,7 +20,7 @@ SwitchesRouter *router;
 ArrayPtr<Switch *> routes = createRoutes();
 
 io::SerialTextStream atStream(&Serial);
-at::Responder responder(&atStream);
+at::Engine atEngine(&atStream);
 
 void setup()
 {
@@ -44,6 +44,8 @@ void setup()
 void loop()
 {
     bus.readState();
+
+    atEngine.loop();
 
     #ifndef TEST_MODE
 

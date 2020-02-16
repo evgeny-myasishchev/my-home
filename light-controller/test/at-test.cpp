@@ -41,4 +41,38 @@ TEST(atResponder, writeLine)
     ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
 }
 
+TEST(atEngine, handleAT)
+{
+    TestTextStream testStream;
+    at::Engine engine(&testStream);
+
+    const char input[] = "AT\n";
+    testStream.bufferToRead = input;
+    testStream.bufferToReadLength = strlen(input);
+
+    engine.loop();
+
+    char want[] = "OK\n";
+
+    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
+    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+}
+
+TEST(atEngine, handleUnknownCommand)
+{
+    TestTextStream testStream;
+    at::Engine engine(&testStream);
+
+    const char input[] = "UNKNOWN\n";
+    testStream.bufferToRead = input;
+    testStream.bufferToReadLength = strlen(input);
+
+    engine.loop();
+
+    char want[] = "ERROR\n";
+
+    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
+    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+}
+
 } // namespace

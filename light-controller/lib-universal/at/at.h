@@ -7,6 +7,10 @@ namespace at
 {
 
 #define COMMAND_HANDLER void (*handler)(const char *input, Responder *resp)
+#define MAX_COMMAND_SIZE 30
+
+#define RESPONSE_OK "OK\n"
+#define RESPONSE_ERROR "ERROR\n"
 
 class Responder
 {
@@ -20,15 +24,15 @@ public:
     void writeError();
 };
 
-class CommandHandler
+class Engine
 {
 private:
     io::TextStream *_stream;
 
 public:
-    CommandHandler(io::TextStream *stream);
+    Engine(io::TextStream *stream);
 
-    void addHandler(const char *cmd, COMMAND_HANDLER);
+    void addCommandHandler(const char *cmd, COMMAND_HANDLER);
 
     void loop();
 };
