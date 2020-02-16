@@ -39,6 +39,10 @@ Handler::Handler(const char *name)
     _name = name;
 }
 
+Handler::~Handler()
+{
+}
+
 const char *Handler::Name()
 {
     return _name;
@@ -57,7 +61,6 @@ Engine::Engine(io::TextStream *stream)
 {
     _stream = stream;
     _defaultHandler = new DefaultHandler();
-    this->addCommandHandler(_defaultHandler);
 }
 
 Engine::~Engine()
@@ -84,6 +87,12 @@ void Engine::addCommandHandler(Handler *handler)
     nextHandlers[_handlersCount++] = handler;
     free(_handlers);
     _handlers = nextHandlers;
+}
+
+void Engine::setup()
+{
+    this->addCommandHandler(_defaultHandler);
+    at_engine_log("AT engine initialized. Total handlers: %d", _handlersCount);
 }
 
 void Engine::loop()

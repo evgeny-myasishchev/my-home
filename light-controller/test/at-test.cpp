@@ -43,6 +43,7 @@ TEST(atEngine, handleAT)
 {
     TestTextStream testStream;
     at::Engine engine(&testStream);
+    engine.setup();
 
     testStream.readBuffer.assign("AT\n");
 
@@ -57,6 +58,7 @@ TEST(atEngine, handleUnknownCommand)
 {
     TestTextStream testStream;
     at::Engine engine(&testStream);
+    engine.setup();
     const char want[] = "ERROR\n";
 
     testStream.readBuffer.assign("UNKNOWN\n");
@@ -79,7 +81,7 @@ TEST(atEngine, handleCommandNoInput)
 {
     TestTextStream testStream;
     at::Engine engine(&testStream);
-
+    
     TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
     TestATHandler cmd2("AT+CMD2", "CMD2-RESPONSE");
     TestATHandler cmd3("AT+CMD3", "CMD3-RESPONSE");
@@ -87,6 +89,7 @@ TEST(atEngine, handleCommandNoInput)
     engine.addCommandHandler(&cmd1);
     engine.addCommandHandler(&cmd2);
     engine.addCommandHandler(&cmd3);
+    engine.setup();
 
     testStream.readBuffer.assign("AT+CMD1\n");
     engine.loop();
@@ -123,6 +126,7 @@ TEST(atEngine, handleChunkedWrites)
     TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
 
     engine.addCommandHandler(&cmd1);
+    engine.setup();
 
     testStream.readBuffer.assign("A");
     engine.loop();
@@ -157,6 +161,7 @@ TEST(atEngine, errorIfLargeCommand)
     TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
 
     engine.addCommandHandler(&cmd1);
+    engine.setup();
 
     testStream.readBuffer.assign("012345678901234567890123456789");
     engine.loop();

@@ -37,6 +37,7 @@ private:
 
 public:
     Handler(const char *name);
+    virtual ~Handler();
     const char *Name();
     virtual void Handle(const char *input, Responder *resp) = 0;
 };
@@ -65,7 +66,7 @@ public:
     ~Engine();
 
     void addCommandHandler(Handler *handler);
-
+    void setup();
     void loop();
 };
 

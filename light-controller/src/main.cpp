@@ -37,6 +37,7 @@ void setup()
     });
 
     bus.setup(0xFF);
+    atEngine.setup();
 
     logger_log("Controller initialized.");
 }
