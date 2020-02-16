@@ -12,8 +12,7 @@ TEST(atResponder, writeOk)
     at::Responder responder(&testStream);
     responder.writeOk();
 
-    ASSERT_STREQ("OK\n", testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen("OK\n"), testStream.lastWrittenBufferLength);
+    ASSERT_EQ("OK\n", testStream.writeBuffer);
 }
 
 TEST(atResponder, writeError)
@@ -22,8 +21,7 @@ TEST(atResponder, writeError)
     at::Responder responder(&testStream);
     responder.writeError();
 
-    ASSERT_STREQ("ERROR\n", testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen("ERROR\n"), testStream.lastWrittenBufferLength);
+    ASSERT_EQ("ERROR\n", testStream.writeBuffer);
 }
 
 TEST(atResponder, writeLine)
@@ -37,8 +35,7 @@ TEST(atResponder, writeLine)
     strcat(want, line);
     strcat(want, "\n");
 
-    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    ASSERT_EQ(want, testStream.writeBuffer);
 }
 
 TEST(atEngine, handleAT)
@@ -46,16 +43,13 @@ TEST(atEngine, handleAT)
     TestTextStream testStream;
     at::Engine engine(&testStream);
 
-    const char input[] = "AT\n";
-    testStream.bufferToRead = input;
-    testStream.bufferToReadLength = strlen(input);
+    testStream.readBuffer.assign("AT\n");
 
     engine.loop();
 
     char want[] = "OK\n";
 
-    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    ASSERT_EQ(want, testStream.writeBuffer);
 }
 
 TEST(atEngine, handleUnknownCommand)
@@ -64,23 +58,20 @@ TEST(atEngine, handleUnknownCommand)
     at::Engine engine(&testStream);
     const char want[] = "ERROR\n";
 
-    testStream.bufferToRead = "UNKNOWN\n";
-    testStream.bufferToReadLength = strlen(testStream.bufferToRead);
+    testStream.readBuffer.assign("UNKNOWN\n");
     engine.loop();
-    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
 
-    testStream.bufferToRead = "AT1\n";
-    testStream.bufferToReadLength = strlen(testStream.bufferToRead);
+    testStream.readBuffer.assign("AT1\n");
     engine.loop();
-    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
 
-    testStream.bufferToRead = "0AT\n";
-    testStream.bufferToReadLength = strlen(testStream.bufferToRead);
+    testStream.readBuffer.assign("0AT\n");
     engine.loop();
-    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
 }
 
 class testHandler : public at::Handler
@@ -106,46 +97,42 @@ public:
 
 TEST(atEngine, handleCommandNoInput)
 {
-    GTEST_SKIP();
-
     TestTextStream testStream;
     at::Engine engine(&testStream);
 
-
-    testHandler cmd1("CMD1", "CMD1-RESPONSE");
-    testHandler cmd2("CMD2", "CMD2-RESPONSE");
-    testHandler cmd3("CMD3", "CMD3-RESPONSE");
+    testHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
+    testHandler cmd2("AT+CMD2", "CMD2-RESPONSE");
+    testHandler cmd3("AT+CMD3", "CMD3-RESPONSE");
 
     engine.addCommandHandler(&cmd1);
     engine.addCommandHandler(&cmd2);
     engine.addCommandHandler(&cmd3);
 
-    testStream.setReadBuffer("AT+CMD1\n");
+    testStream.readBuffer.assign("AT+CMD1\n");
     engine.loop();
 
     ASSERT_STREQ(cmd1.gotInput, NULL);
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    char *want = "CMD1-RESPONSE\nOK\n";
-    ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    char *want = "+CMD1-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
 
-    // testStream.setReadBuffer("AT+CMD2\n");
-    // engine.loop();
+    testStream.readBuffer.assign("AT+CMD2\n");
+    engine.loop();
 
     // ASSERT_STREQ(cmd2.gotInput, NULL);
     // ASSERT_TRUE(cmd2.called) << "cmd2 not called";
-    // want = "CMD2-RESPONSE\nOK\n";
-    // ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    // ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    // want = "+CMD2-RESPONSE\nOK\n";
+    // ASSERT_EQ(want, testStream.writeBuffer);
+    // testStream.reset();
 
-    // testStream.setReadBuffer("AT+CMD3\n");
+    // testStream.readBuffer.assign("AT+CMD3\n");
     // engine.loop();
 
     // ASSERT_STREQ(cmd3.gotInput, NULL);
     // ASSERT_TRUE(cmd3.called) << "cmd3 not called";
-    // want = "CMD3-RESPONSE\nOK\n";
-    // ASSERT_STREQ(want, testStream.lastWrittenBuffer);
-    // ASSERT_EQ(strlen(want), testStream.lastWrittenBufferLength);
+    // want = "+CMD3-RESPONSE\nOK\n";
+    // ASSERT_EQ(want, testStream.writeBuffer);
 }
 
 } // namespace

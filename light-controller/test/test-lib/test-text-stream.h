@@ -2,15 +2,13 @@
 #define MOCKS_TEST_TEXT_STREAM
 
 #include <io.h>
+#include <string>
 
 class TestTextStream : public io::TextStream
 {
 public:
-    const char *lastWrittenBuffer;
-    size_t lastWrittenBufferLength;
-
-    const char *bufferToRead;
-    size_t bufferToReadLength;
+    std::string writeBuffer;
+    std::string readBuffer;
 
     TestTextStream();
     ~TestTextStream();
@@ -20,6 +18,7 @@ public:
     size_t write(const char *buffer, size_t size);
 
     void setReadBuffer(const char *buffer);
+    void reset();
 };
 
 #endif
