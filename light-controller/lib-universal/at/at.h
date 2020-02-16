@@ -12,8 +12,6 @@ namespace at
 #define at_engine_log
 #endif
 
-
-#define COMMAND_HANDLER void (*handler)(const char *input, Responder *resp)
 #define MAX_COMMAND_SIZE 30
 
 #define RESPONSE_OK "OK\n"
@@ -23,9 +21,10 @@ class Responder
 {
 private:
     io::TextStream *_stream;
+
 public:
     Responder(io::TextStream *stream);
-    
+
     void writeLine(const char *line);
     void writeOk();
     void writeError();
@@ -35,17 +34,26 @@ class Handler
 {
 private:
     const char *_name;
+
 public:
-    Handler(const char* name);
-    const char* Name();
+    Handler(const char *name);
+    const char *Name();
     virtual void Handle(const char *input, Responder *resp) = 0;
+};
+
+class DefaultHandler : public Handler
+{
+public:
+    DefaultHandler();
+    void Handle(const char *input, Responder *resp);
 };
 
 class Engine
 {
 private:
     io::TextStream *_stream;
-    Handler * *_handlers = 0;
+    Handler *_defaultHandler;
+    Handler **_handlers = 0;
     size_t _handlersCount = 0;
 
 public:
