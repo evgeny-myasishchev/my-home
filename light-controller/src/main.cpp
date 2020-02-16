@@ -22,6 +22,17 @@ ArrayPtr<Switch *> routes = createRoutes();
 io::SerialTextStream atStream(&Serial);
 at::Engine atEngine(&atStream);
 
+class ATPong : public at::Handler
+{
+public:
+    ATPong() : at::Handler("AT+PING") {}
+    void Handle(const char *input, at::Responder *resp)
+    {
+        resp->writeLine("PONG");
+        resp->writeOk();
+    };
+} atPong;
+
 void setup()
 {
     Serial.begin(115200);
@@ -37,6 +48,8 @@ void setup()
     });
 
     bus.setup(0xFF);
+
+    atEngine.addCommandHandler(&atPong);
     atEngine.setup();
 
     logger_log("Controller initialized.");
@@ -48,11 +61,11 @@ void loop()
 
     atEngine.loop();
 
-    #ifndef TEST_MODE
+#ifndef TEST_MODE
 
     router->processRoutes(routes);
 
-    #else
+#else
 
     for (size_t relayIndex = 0; relayIndex < RELAY_BOARDS; relayIndex++)
     {
@@ -66,7 +79,7 @@ void loop()
     }
 
     const byte switchAllState = bus.getPin((RELAY_BOARDS + INPUT_BOARDS - 1) * 8);
-    if(switchAllState == LOW)
+    if (switchAllState == LOW)
     {
         for (size_t i = 0; i < RELAY_BOARDS * 8; i++)
         {
@@ -74,7 +87,7 @@ void loop()
         }
     }
 
-    #endif
+#endif
 
     bus.writeState();
 }
