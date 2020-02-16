@@ -149,4 +149,23 @@ TEST(atEngine, handleChunkedWrites)
     testStream.reset();
 }
 
+TEST(atEngine, errorIfLargeCommand)
+{
+    TestTextStream testStream;
+    at::Engine engine(&testStream);
+
+    TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
+
+    engine.addCommandHandler(&cmd1);
+
+    testStream.readBuffer.assign("012345678901234567890123456789");
+    engine.loop();
+    testStream.readBuffer.assign("0123456789");
+    engine.loop();
+
+    char *want = "ERROR\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
+}
+
 } // namespace

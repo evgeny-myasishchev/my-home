@@ -58,6 +58,8 @@ private:
     char _cmdBuffer[MAX_COMMAND_SIZE] = {};
     size_t _cmdBufferConsumed = 0;
 
+    void resetBuffer();
+
 public:
     Engine(io::TextStream *stream);
     ~Engine();

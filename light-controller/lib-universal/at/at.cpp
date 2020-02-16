@@ -66,6 +66,12 @@ Engine::~Engine()
     delete _defaultHandler;
 }
 
+void Engine::resetBuffer()
+{
+    memset(_cmdBuffer, 0, MAX_COMMAND_SIZE);
+    _cmdBufferConsumed = 0;
+}
+
 void Engine::addCommandHandler(Handler *handler)
 {
     at_engine_log("Registering AT handler: [%d]: %s", _handlersCount, handler->Name());
@@ -85,7 +91,13 @@ void Engine::loop()
     const size_t available = _stream->available();
     if (available > 0)
     {
-        // TODO: Write error if \n not found and buffer is full
+        if(available + _cmdBufferConsumed > MAX_COMMAND_SIZE)
+        {
+            this->resetBuffer();
+            Responder(_stream).writeError();
+            return;
+        }
+
         auto cmdSize = _stream->read(&_cmdBuffer[_cmdBufferConsumed], available);
         size_t cmdEnd = 0;
         bool cmdEndFound = false;
@@ -126,8 +138,7 @@ void Engine::loop()
             responder.writeError();
         }
 
-        memset(_cmdBuffer, 0, MAX_COMMAND_SIZE);
-        _cmdBufferConsumed = 0;
+        this->resetBuffer();
     }
 }
 
