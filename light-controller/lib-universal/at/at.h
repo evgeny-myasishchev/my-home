@@ -55,6 +55,8 @@ private:
     Handler *_defaultHandler;
     Handler **_handlers = 0;
     size_t _handlersCount = 0;
+    char _cmdBuffer[MAX_COMMAND_SIZE] = {};
+    size_t _cmdBufferConsumed = 0;
 
 public:
     Engine(io::TextStream *stream);

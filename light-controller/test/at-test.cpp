@@ -115,4 +115,38 @@ TEST(atEngine, handleCommandNoInput)
     ASSERT_EQ(want, testStream.writeBuffer);
 }
 
+TEST(atEngine, handleChunkedWrites)
+{
+    TestTextStream testStream;
+    at::Engine engine(&testStream);
+
+    TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
+
+    engine.addCommandHandler(&cmd1);
+
+    testStream.readBuffer.assign("A");
+    engine.loop();
+    testStream.readBuffer.assign("T");
+    engine.loop();
+    testStream.readBuffer.assign("\n");
+    engine.loop();
+
+    char *want = "OK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
+
+    testStream.readBuffer.assign("AT");
+    engine.loop();
+    testStream.readBuffer.assign("+CMD1");
+    engine.loop();
+    testStream.readBuffer.assign("\n");
+    engine.loop();
+
+    ASSERT_STREQ(cmd1.gotInput, NULL);
+    ASSERT_TRUE(cmd1.called) << "cmd1 not called";
+    want = "+CMD1-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
+}
+
 } // namespace

@@ -16,7 +16,7 @@ void Responder::writeLine(const char *line)
     auto lineLen = strlen(line);
     // We need space for leading '+' and trailing '\n'
     auto outputSize = lineLen + 2;
-    char * output = (char*)malloc(outputSize);
+    char *output = (char *)malloc(outputSize);
     output[0] = '+';
     memcpy(&output[1], line, lineLen);
     output[lineLen + 1] = '\n';
@@ -39,7 +39,7 @@ Handler::Handler(const char *name)
     _name = name;
 }
 
-const char* Handler::Name()
+const char *Handler::Name()
 {
     return _name;
 }
@@ -70,10 +70,10 @@ void Engine::addCommandHandler(Handler *handler)
 {
     at_engine_log("Registering AT handler: [%d]: %s", _handlersCount, handler->Name());
 
-    auto nextHandlers = (Handler**) malloc(sizeof(Handler*) * (_handlersCount + 1));
-    if(_handlersCount != 0)
+    auto nextHandlers = (Handler **)malloc(sizeof(Handler *) * (_handlersCount + 1));
+    if (_handlersCount != 0)
     {
-        memcpy(nextHandlers, _handlers, sizeof(Handler*) * _handlersCount);
+        memcpy(nextHandlers, _handlers, sizeof(Handler *) * _handlersCount);
     }
     nextHandlers[_handlersCount++] = handler;
     free(_handlers);
@@ -83,19 +83,25 @@ void Engine::addCommandHandler(Handler *handler)
 void Engine::loop()
 {
     const size_t available = _stream->available();
-    if(available > 0)
+    if (available > 0)
     {
-        char cmdBuffer[MAX_COMMAND_SIZE] = {};
-        auto commandSize = _stream->read(cmdBuffer, MAX_COMMAND_SIZE);
-
+        // TODO: Write error if \n not found and buffer is full
+        auto cmdSize = _stream->read(&_cmdBuffer[_cmdBufferConsumed], available);
         size_t cmdEnd = 0;
-        for (size_t i = 0; i < commandSize; i++)
+        bool cmdEndFound = false;
+        for (size_t i = _cmdBufferConsumed; i < _cmdBufferConsumed + cmdSize; i++)
         {
             cmdEnd = i;
-            if(cmdBuffer[i] == '\n')
+            if (_cmdBuffer[i] == '\n')
             {
+                cmdEndFound = true;
                 break;
             }
+        }
+        _cmdBufferConsumed = _cmdBufferConsumed + cmdSize;
+        if (!cmdEndFound)
+        {
+            return;
         }
 
         Responder responder(_stream);
@@ -106,14 +112,7 @@ void Engine::loop()
             auto handler = _handlers[i];
             auto name = handler->Name();
 
-            // std::cout << "Checking command:'" << name << "' got:'";
-            // for (size_t j = 0; j < cmdEnd; j++)
-            // {
-            //     std::cout << cmdBuffer[j];
-            // }
-            // std::cout << "'" << std::endl;
-
-            if(strlen(name) == cmdEnd && strncmp(name, cmdBuffer, cmdEnd) == 0)
+            if (strlen(name) == cmdEnd && strncmp(name, _cmdBuffer, cmdEnd) == 0)
             {
                 handled = true;
                 handler->Handle(0, &responder);
@@ -121,11 +120,14 @@ void Engine::loop()
             }
         }
 
-        if(!handled)
+        if (!handled)
         {
-            at_engine_log("Unexpected command: '%s'", cmdBuffer);
+            at_engine_log("Unexpected command: '%s'", _cmdBuffer);
             responder.writeError();
         }
+
+        memset(_cmdBuffer, 0, MAX_COMMAND_SIZE);
+        _cmdBufferConsumed = 0;
     }
 }
 
