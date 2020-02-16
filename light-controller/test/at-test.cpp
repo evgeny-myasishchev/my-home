@@ -120,19 +120,19 @@ TEST(atEngine, handleCommandNoInput)
     testStream.readBuffer.assign("AT+CMD2\n");
     engine.loop();
 
-    // ASSERT_STREQ(cmd2.gotInput, NULL);
-    // ASSERT_TRUE(cmd2.called) << "cmd2 not called";
-    // want = "+CMD2-RESPONSE\nOK\n";
-    // ASSERT_EQ(want, testStream.writeBuffer);
-    // testStream.reset();
+    ASSERT_STREQ(cmd2.gotInput, NULL);
+    ASSERT_TRUE(cmd2.called) << "cmd2 not called";
+    want = "+CMD2-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
 
-    // testStream.readBuffer.assign("AT+CMD3\n");
-    // engine.loop();
+    testStream.readBuffer.assign("AT+CMD3\n");
+    engine.loop();
 
-    // ASSERT_STREQ(cmd3.gotInput, NULL);
-    // ASSERT_TRUE(cmd3.called) << "cmd3 not called";
-    // want = "+CMD3-RESPONSE\nOK\n";
-    // ASSERT_EQ(want, testStream.writeBuffer);
+    ASSERT_STREQ(cmd3.gotInput, NULL);
+    ASSERT_TRUE(cmd3.called) << "cmd3 not called";
+    want = "+CMD3-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
 }
 
 } // namespace

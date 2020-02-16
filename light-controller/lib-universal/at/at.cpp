@@ -3,8 +3,6 @@
 #include <string.h>
 #include <logger.h>
 
-#include <iostream>
-
 namespace at
 {
 
@@ -15,12 +13,14 @@ Responder::Responder(io::TextStream *stream)
 
 void Responder::writeLine(const char *line)
 {
+    auto lineLen = strlen(line);
     // We need space for leading '+' and trailing '\n'
-    char * output = (char*)malloc((strlen(line) + 2) *sizeof(char));
-    strcat(output, "+");
-    strcat(output, line);
-    strcat(output, "\n");
-    this->_stream->write(output, strlen(output));
+    auto outputSize = lineLen + 2;
+    char * output = (char*)malloc(outputSize);
+    output[0] = '+';
+    memcpy(&output[1], line, lineLen);
+    output[lineLen + 1] = '\n';
+    this->_stream->write(output, outputSize);
     free(output);
 }
 
@@ -112,7 +112,7 @@ void Engine::loop()
             //     std::cout << cmdBuffer[j];
             // }
             // std::cout << "'" << std::endl;
-            
+
             if(strlen(name) == cmdEnd && strncmp(name, cmdBuffer, cmdEnd) == 0)
             {
                 handled = true;
@@ -120,7 +120,7 @@ void Engine::loop()
                 break;
             }
         }
-        
+
         if(!handled)
         {
             at_engine_log("Unexpected command: '%s'", cmdBuffer);
