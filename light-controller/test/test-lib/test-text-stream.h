@@ -18,6 +18,8 @@ public:
     int available();
     size_t read(char *buffer, size_t length);
     size_t write(const char *buffer, size_t size);
+
+    void setReadBuffer(const char *buffer);
 };
 
 #endif

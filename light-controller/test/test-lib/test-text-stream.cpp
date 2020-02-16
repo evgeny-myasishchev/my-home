@@ -38,3 +38,9 @@ size_t TestTextStream::write(const char *buffer, size_t size)
     this->lastWrittenBuffer = buffer;
     this->lastWrittenBufferLength = size;
 }
+
+void TestTextStream::setReadBuffer(const char *buffer)
+{
+    this->bufferToRead = buffer;
+    this->bufferToReadLength = strlen(buffer);
+}
