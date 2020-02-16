@@ -1,6 +1,7 @@
 #include <at.h>
 #include <stdlib.h>
 #include <string.h>
+#include <logger.h>
 
 namespace at
 {
@@ -50,9 +51,9 @@ void Engine::loop()
         }
         else
         {
+            at_engine_log("Unexpected command: '%s'", cmdBuffer);
             responder.writeError();
         }
-        
     }
 }
 

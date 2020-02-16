@@ -6,6 +6,13 @@
 namespace at
 {
 
+#ifdef AT_ENGINE_VERBOSE
+#define at_engine_log logger_log
+#else
+#define at_engine_log
+#endif
+
+
 #define COMMAND_HANDLER void (*handler)(const char *input, Responder *resp)
 #define MAX_COMMAND_SIZE 30
 
