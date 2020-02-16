@@ -31,15 +31,28 @@ public:
     void writeError();
 };
 
+class Handler
+{
+private:
+    const char *_name;
+public:
+    Handler(const char* name);
+    const char* Name();
+    virtual void Handle(const char *input, Responder *resp) = 0;
+};
+
 class Engine
 {
 private:
     io::TextStream *_stream;
+    Handler * *_handlers = 0;
+    size_t _handlersCount = 0;
 
 public:
     Engine(io::TextStream *stream);
+    ~Engine();
 
-    void addCommandHandler(const char *cmd, COMMAND_HANDLER);
+    void addCommandHandler(Handler *handler);
 
     void loop();
 };
