@@ -39,6 +39,20 @@ TEST(atResponder, writeLine)
     ASSERT_EQ(want, testStream.writeBuffer);
 }
 
+TEST(atResponder, writeLineWithLength)
+{
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+    const char line[] = "SOME DATA LINE HELLO";
+    responder.writeLine(line, strlen("SOME DATA LINE"));
+
+    char want[20] = "+";
+    strcat(want, "SOME DATA LINE");
+    strcat(want, "\n");
+
+    ASSERT_EQ(want, testStream.writeBuffer);
+}
+
 TEST(atEngine, handleAT)
 {
     TestTextStream testStream;

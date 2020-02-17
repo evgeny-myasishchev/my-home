@@ -18,13 +18,17 @@ Responder::Responder(io::TextStream *stream)
 
 void Responder::writeLine(const char *line)
 {
-    auto lineLen = strlen(line);
+    this->writeLine(line, strlen(line));
+}
+
+void Responder::writeLine(const char *line, const size_t length)
+{
     // We need space for leading '+' and trailing '\n'
-    auto outputSize = lineLen + 2;
+    auto outputSize = length + 2;
     char *output = (char *)malloc(outputSize);
     output[0] = '+';
-    memcpy(&output[1], line, lineLen);
-    output[lineLen + 1] = '\n';
+    memcpy(&output[1], line, length);
+    output[length + 1] = '\n';
     this->_stream->write(output, outputSize);
     free(output);
 }

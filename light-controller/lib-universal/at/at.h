@@ -34,6 +34,7 @@ public:
     Responder(io::TextStream *stream);
 
     void writeLine(const char *line);
+    void writeLine(const char *line, const size_t length);
     void writeOk();
     void writeError();
 };
