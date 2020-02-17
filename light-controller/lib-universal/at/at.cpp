@@ -114,10 +114,15 @@ void Engine::loop()
 
         auto cmdSize = _stream->read(&_cmdBuffer[_cmdBufferConsumed], available);
         size_t cmdEnd = 0;
+        size_t cmdInputStart = 0;
         bool cmdEndFound = false;
         for (size_t i = _cmdBufferConsumed; i < _cmdBufferConsumed + cmdSize; i++)
         {
             cmdEnd = i;
+            if(_cmdBuffer[i] == '=')
+            {
+                cmdInputStart = i + 1;
+            }
             if (_cmdBuffer[i] == '\n')
             {
                 cmdEndFound = true;
@@ -143,10 +148,17 @@ void Engine::loop()
             auto handler = _handlers[i];
             auto name = handler->Name();
 
-            if (strlen(name) == cmdEnd && strncmp(name, _cmdBuffer, cmdEnd) == 0)
+            auto cmdLength = cmdInputStart > 0 ? cmdInputStart - 1 : cmdEnd;
+            if (strlen(name) == cmdLength && strncmp(name, _cmdBuffer, cmdLength) == 0)
             {
                 handled = true;
-                handler->Handle(at::Input(), &responder);
+                at::Input input;
+                if(cmdInputStart > 0)
+                {
+                    input.body = &_cmdBuffer[cmdInputStart];
+                    input.length = cmdEnd - cmdInputStart;
+                }
+                handler->Handle(input, &responder);
                 break;
             }
         }

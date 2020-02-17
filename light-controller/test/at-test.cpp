@@ -120,10 +120,9 @@ TEST(atEngine, handleCommandNoInput)
 
 TEST(atEngine, handleCommandWithInput)
 {
-    GTEST_SKIP();
     TestTextStream testStream;
     at::Engine engine(&testStream);
-    
+
     TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
     TestATHandler cmd2("AT+CMD2", "CMD2-RESPONSE");
 
@@ -134,8 +133,8 @@ TEST(atEngine, handleCommandWithInput)
     testStream.readBuffer.assign("AT+CMD1=CMD1-INPUT\n");
     engine.loop();
 
-    ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
+    ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
     char *want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
