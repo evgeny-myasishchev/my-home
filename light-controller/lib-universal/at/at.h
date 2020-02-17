@@ -67,6 +67,7 @@ private:
     size_t _handlersCount = 0;
     char _cmdBuffer[MAX_COMMAND_SIZE] = {};
     size_t _cmdBufferConsumed = 0;
+    size_t _cmdInputStart = 0;
 
     void resetBuffer();
 

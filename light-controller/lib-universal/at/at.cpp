@@ -82,6 +82,7 @@ void Engine::resetBuffer()
 {
     memset(_cmdBuffer, 0, MAX_COMMAND_SIZE);
     _cmdBufferConsumed = 0;
+    _cmdInputStart = 0;
 }
 
 void Engine::addCommandHandler(Handler *handler)
@@ -118,14 +119,13 @@ void Engine::loop()
 
         auto cmdSize = _stream->read(&_cmdBuffer[_cmdBufferConsumed], available);
         size_t cmdEnd = 0;
-        size_t cmdInputStart = 0;
         bool cmdEndFound = false;
         for (size_t i = _cmdBufferConsumed; i < _cmdBufferConsumed + cmdSize; i++)
         {
             cmdEnd = i;
             if(_cmdBuffer[i] == '=')
             {
-                cmdInputStart = i + 1;
+                _cmdInputStart = i + 1;
             }
             if (_cmdBuffer[i] == '\n')
             {
@@ -152,15 +152,15 @@ void Engine::loop()
             auto handler = _handlers[i];
             auto name = handler->Name();
 
-            auto cmdLength = cmdInputStart > 0 ? cmdInputStart - 1 : cmdEnd;
+            auto cmdLength = _cmdInputStart > 0 ? _cmdInputStart - 1 : cmdEnd;
             if (strlen(name) == cmdLength && strncmp(name, _cmdBuffer, cmdLength) == 0)
             {
                 handled = true;
                 at::Input input;
-                if(cmdInputStart > 0)
+                if(_cmdInputStart > 0)
                 {
-                    input.body = &_cmdBuffer[cmdInputStart];
-                    input.length = cmdEnd - cmdInputStart;
+                    input.body = &_cmdBuffer[_cmdInputStart];
+                    input.length = cmdEnd - _cmdInputStart;
                 }
                 handler->Handle(input, &responder);
                 break;
