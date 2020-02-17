@@ -2,6 +2,8 @@
 #define TEST_AT_HANDLER_H
 
 #include <at.h>
+#include <string>
+#include <logger.h>
 
 class TestATHandler : public at::Handler
 {
@@ -9,16 +11,19 @@ private:
     const char *_response;
 public:
     bool called = false;
-    const char *gotInput = 0;
+    std::string gotInput;
     TestATHandler(const char *name, const char *response) : at::Handler(name)
     {
         _response = response;
     }
 
-    void Handle(const char *input, at::Responder *resp)
+    void Handle(const at::Input input, at::Responder *resp)
     {
         called = true;
-        gotInput = input;
+        if(input.length != 0)
+        {
+            gotInput.assign(input.body, input.length);
+        }
         resp->writeLine(_response);
         resp->writeOk();
     }

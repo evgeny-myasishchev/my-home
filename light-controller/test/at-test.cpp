@@ -94,7 +94,7 @@ TEST(atEngine, handleCommandNoInput)
     testStream.readBuffer.assign("AT+CMD1\n");
     engine.loop();
 
-    ASSERT_STREQ(cmd1.gotInput, NULL);
+    ASSERT_EQ("", cmd1.gotInput);
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     char *want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
@@ -103,7 +103,7 @@ TEST(atEngine, handleCommandNoInput)
     testStream.readBuffer.assign("AT+CMD2\n");
     engine.loop();
 
-    ASSERT_STREQ(cmd2.gotInput, NULL);
+    ASSERT_EQ("", cmd2.gotInput);
     ASSERT_TRUE(cmd2.called) << "cmd2 not called";
     want = "+CMD2-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
@@ -112,10 +112,42 @@ TEST(atEngine, handleCommandNoInput)
     testStream.readBuffer.assign("AT+CMD3\n");
     engine.loop();
 
-    ASSERT_STREQ(cmd3.gotInput, NULL);
+    ASSERT_EQ("", cmd3.gotInput);
     ASSERT_TRUE(cmd3.called) << "cmd3 not called";
     want = "+CMD3-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
+}
+
+TEST(atEngine, handleCommandWithInput)
+{
+    GTEST_SKIP();
+    TestTextStream testStream;
+    at::Engine engine(&testStream);
+    
+    TestATHandler cmd1("AT+CMD1", "CMD1-RESPONSE");
+    TestATHandler cmd2("AT+CMD2", "CMD2-RESPONSE");
+
+    engine.addCommandHandler(&cmd1);
+    engine.addCommandHandler(&cmd2);
+    engine.setup();
+
+    testStream.readBuffer.assign("AT+CMD1=CMD1-INPUT\n");
+    engine.loop();
+
+    ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
+    ASSERT_TRUE(cmd1.called) << "cmd1 not called";
+    char *want = "+CMD1-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
+
+    testStream.readBuffer.assign("AT+CMD2=CMD2-INPUT\r\n");
+    engine.loop();
+
+    ASSERT_EQ("CMD2-INPUT", cmd2.gotInput);
+    ASSERT_TRUE(cmd2.called) << "cmd2 not called";
+    want = "+CMD2-RESPONSE\nOK\n";
+    ASSERT_EQ(want, testStream.writeBuffer);
+    testStream.reset();
 }
 
 TEST(atEngine, handleChunkedWrites)
@@ -146,7 +178,7 @@ TEST(atEngine, handleChunkedWrites)
     testStream.readBuffer.assign("\n");
     engine.loop();
 
-    ASSERT_STREQ(cmd1.gotInput, NULL);
+    ASSERT_EQ(cmd1.gotInput, "");
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
@@ -173,7 +205,7 @@ TEST(atEngine, ignoreCR)
     testStream.readBuffer.assign("AT+CMD1\r\n");
     engine.loop();
 
-    ASSERT_STREQ(cmd1.gotInput, NULL);
+    ASSERT_EQ(cmd1.gotInput, "");
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);

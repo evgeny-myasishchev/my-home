@@ -17,6 +17,14 @@ namespace at
 #define RESPONSE_OK "OK\n"
 #define RESPONSE_ERROR "ERROR\n"
 
+class Input
+{
+public:
+    char *body = 0;
+    size_t length = 0;
+    Input();
+};
+
 class Responder
 {
 private:
@@ -39,14 +47,14 @@ public:
     Handler(const char *name);
     virtual ~Handler();
     const char *Name();
-    virtual void Handle(const char *input, Responder *resp) = 0;
+    virtual void Handle(const Input input, Responder *resp) = 0;
 };
 
 class DefaultHandler : public Handler
 {
 public:
     DefaultHandler();
-    void Handle(const char *input, Responder *resp);
+    void Handle(const Input input, Responder *resp);
 };
 
 class Engine

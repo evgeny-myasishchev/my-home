@@ -26,7 +26,7 @@ class ATPong : public at::Handler
 {
 public:
     ATPong() : at::Handler("AT+PING") {}
-    void Handle(const char *input, at::Responder *resp)
+    void Handle(at::Input input, at::Responder *resp)
     {
         resp->writeLine("PONG");
         resp->writeOk();

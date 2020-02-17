@@ -6,6 +6,11 @@
 namespace at
 {
 
+Input::Input()
+{
+
+}
+
 Responder::Responder(io::TextStream *stream)
 {
     this->_stream = stream;
@@ -52,7 +57,7 @@ DefaultHandler::DefaultHandler() : Handler("AT")
 {
 }
 
-void DefaultHandler::Handle(const char *input, Responder *resp)
+void DefaultHandler::Handle(const Input input, Responder *resp)
 {
     resp->writeOk();
 }
@@ -141,7 +146,7 @@ void Engine::loop()
             if (strlen(name) == cmdEnd && strncmp(name, _cmdBuffer, cmdEnd) == 0)
             {
                 handled = true;
-                handler->Handle(0, &responder);
+                handler->Handle(at::Input(), &responder);
                 break;
             }
         }
