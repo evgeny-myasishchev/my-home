@@ -33,6 +33,17 @@ public:
     };
 } atPong;
 
+class ATEcho : public at::Handler
+{
+public:
+    ATEcho() : at::Handler("AT+ECHO") {}
+    void Handle(at::Input input, at::Responder *resp)
+    {
+        resp->writeLine(input.body, input.length);
+        resp->writeOk();
+    };
+} atEcho;
+
 void setup()
 {
     Serial.begin(115200);
@@ -50,6 +61,7 @@ void setup()
     bus.setup(0xFF);
 
     atEngine.addCommandHandler(&atPong);
+    atEngine.addCommandHandler(&atEcho);
     atEngine.setup();
 
     logger_log("Controller initialized.");
