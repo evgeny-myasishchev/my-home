@@ -7,7 +7,15 @@ ATPing::ATPing() : at::Handler("AT+PING") {}
 
 void ATPing::Handle(at::Input input, at::Responder *resp)
 {
-    resp->writeLine("PONG");
+    if (input.length == 0)
+    {
+        resp->writeLine("PONG");
+    }
+    else
+    {
+        resp->writeLine(input.body, input.length);
+    }
+    
     resp->writeOk();
 };
 

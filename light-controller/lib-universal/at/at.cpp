@@ -11,6 +11,12 @@ Input::Input()
 
 }
 
+Input::Input(char *body, size_t length)
+{
+    this->body = body;
+    this->length = length;
+}
+
 Responder::Responder(io::TextStream *stream)
 {
     this->_stream = stream;

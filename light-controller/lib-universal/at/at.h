@@ -23,6 +23,7 @@ public:
     char *body = 0;
     size_t length = 0;
     Input();
+    Input(char *body, size_t length);
 };
 
 class Responder
