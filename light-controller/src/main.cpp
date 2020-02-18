@@ -4,6 +4,7 @@
 #include <switch-service-v2.h>
 #include <switches-router-v2.h>
 #include <at.h>
+#include <at-commands.h>
 
 // Test mode will only use pin bus, see below
 // #define TEST_MODE
@@ -22,55 +23,7 @@ ArrayPtr<Switch *> routes = createRoutes();
 io::SerialTextStream atStream(&Serial);
 at::Engine atEngine(&atStream);
 
-class ATPong : public at::Handler
-{
-public:
-    ATPong() : at::Handler("AT+PING") {}
-    void Handle(at::Input input, at::Responder *resp)
-    {
-        resp->writeLine("PONG");
-        resp->writeOk();
-    };
-} atPong;
-
-class ATLed : public at::Handler
-{
-public:
-    ATLed() : at::Handler("AT+LED") {}
-    void Handle(at::Input input, at::Responder *resp)
-    {
-        bool ok = false;
-        if (input.length == 2 && strncasecmp("ON", input.body, input.length) == 0)
-        {
-            digitalWrite(LED_BUILTIN, HIGH);
-            ok = true;
-        }
-        else if (input.length == 3 && strncasecmp("OFF", input.body, input.length) == 0)
-        {
-            digitalWrite(LED_BUILTIN, LOW);
-            ok = true;
-        }
-        if (ok)
-        {
-            resp->writeOk();
-        }
-        else
-        {
-            resp->writeError();
-        }
-    };
-} atLed;
-
-class ATEcho : public at::Handler
-{
-public:
-    ATEcho() : at::Handler("AT+ECHO") {}
-    void Handle(at::Input input, at::Responder *resp)
-    {
-        resp->writeLine(input.body, input.length);
-        resp->writeOk();
-    };
-} atEcho;
+ATPing atPing;
 
 void setup()
 {
@@ -89,9 +42,7 @@ void setup()
 
     bus.setup(0xFF);
 
-    atEngine.addCommandHandler(&atPong);
-    atEngine.addCommandHandler(&atEcho);
-    atEngine.addCommandHandler(&atLed);
+    atEngine.addCommandHandler(&atPing);
     atEngine.setup();
 
     logger_log("Controller initialized.");
