@@ -1,5 +1,5 @@
 #include <at-commands.h>
-#include <string>
+#include <string.h>
 
 namespace v2
 {
