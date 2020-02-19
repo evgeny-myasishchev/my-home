@@ -1,15 +1,16 @@
 #ifndef arduino_compat_h
 #define arduino_compat_h
 
+#include <stdint.h>
+
 class DigitalWrite
 {
 public:
-    virtual void fn(int pin, int value) = 0;
+    virtual void fn(uint8_t pin, uint8_t val) = 0;
 };
 
 #ifndef ARDUINO
 
-#include <stdint.h>
 #include <stddef.h>
 
 #define HIGH 0x1
@@ -25,17 +26,33 @@ typedef uint8_t byte;
 class TestDigitalWrite : public DigitalWrite
 {
 public:
-    int lastPin = 0;
-    int lastValue = 0;
-    void fn(int pin, int value)
+    uint8_t lastPin = 0;
+    uint8_t lastValue = 0;
+    void fn(uint8_t pin, uint8_t val)
     {
         lastPin = pin;
-        lastValue = value;
+        lastValue = val;
     };
 };
 
 #else
 #include <Arduino.h>
+
+class ArduinoDigitalWrite : public DigitalWrite
+{
+private:
+    void (*_digitalWrite)(uint8_t pin, uint8_t val);
+public:
+    ArduinoDigitalWrite(void (*digitalWrite)(uint8_t pin, uint8_t val))
+    {
+        _digitalWrite = digitalWrite;
+    };
+
+    void fn(uint8_t pin, uint8_t val)
+    {
+        _digitalWrite(pin, val);
+    };
+};
 #endif
 
 #endif

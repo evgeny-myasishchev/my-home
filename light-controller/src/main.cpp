@@ -23,7 +23,9 @@ ArrayPtr<Switch *> routes = createRoutes();
 io::SerialTextStream atStream(&Serial);
 at::Engine atEngine(&atStream);
 
+ArduinoDigitalWrite arduinoDigitalWrite(digitalWrite);
 ATPing atPing;
+ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
 
 void setup()
 {
@@ -43,6 +45,7 @@ void setup()
     bus.setup(0xFF);
 
     atEngine.addCommandHandler(&atPing);
+    atEngine.addCommandHandler(&atLed);
     atEngine.setup();
 
     logger_log("Controller initialized.");
