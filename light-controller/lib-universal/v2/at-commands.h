@@ -21,27 +21,6 @@ private:
 public:
     ATLed(const int pin, DigitalWrite *digitalWrite);
     void Handle(at::Input input, at::Responder *resp);
-    // {
-    //     bool ok = false;
-    //     if (input.length == 2 && strncasecmp("ON", input.body, input.length) == 0)
-    //     {
-    //         digitalWrite(LED_BUILTIN, HIGH);
-    //         ok = true;
-    //     }
-    //     else if (input.length == 3 && strncasecmp("OFF", input.body, input.length) == 0)
-    //     {
-    //         digitalWrite(LED_BUILTIN, LOW);
-    //         ok = true;
-    //     }
-    //     if (ok)
-    //     {
-    //         resp->writeOk();
-    //     }
-    //     else
-    //     {
-    //         resp->writeError();
-    //     }
-    // };
 };
 
 } // namespace v2
