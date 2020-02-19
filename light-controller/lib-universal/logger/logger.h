@@ -31,6 +31,8 @@ namespace logger
     void printf(Output * out, const char *format, ...);
 
 #ifdef ARDUINO
+    #define println(msg)
+
     class PrintOutput : public Output
     {
     private:
