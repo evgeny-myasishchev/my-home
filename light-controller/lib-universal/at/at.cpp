@@ -140,7 +140,7 @@ void Engine::loop()
         int nextConsumedSize = _cmdBufferConsumed + cmdSize;
         for (size_t i = _cmdBufferConsumed; i < nextConsumedSize; i++)
         {
-            // Strip out backspaces
+            // Handle backspaces (e.g remove corresponding chars)
             if(_cmdBuffer[i] == '\b')
             {
                 for(int j = i - 1; j < nextConsumedSize-2; j++)
@@ -203,6 +203,8 @@ void Engine::loop()
         if (!handled)
         {
             at_engine_log("Unexpected command: '%s'", _cmdBuffer);
+
+            // Use for debugging
             // for(int i = 0; i < _cmdBufferConsumed; i++)
             // {
             //     at_engine_log("Char code: %d:%d", i, _cmdBuffer[i]);
