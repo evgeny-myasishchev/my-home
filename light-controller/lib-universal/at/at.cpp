@@ -111,6 +111,15 @@ void Engine::setup()
     at_engine_log("AT engine initialized. Total handlers: %d", _handlersCount);
 }
 
+void dumpBuffer(char * buffer, size_t length)
+{
+    println("Buffer dump. Size:" << length);
+    for(int i = 0; i < length; i++)
+    {
+        println("char " << i << ":" << int(buffer[i]) << ":" << buffer[i]);
+    }
+}
+
 void Engine::loop()
 {
     const size_t available = _stream->available();
@@ -144,6 +153,29 @@ void Engine::loop()
         {
             return;
         }
+
+        // Strip out backspaces
+        println("Initial buffer");
+        dumpBuffer(_cmdBuffer, _cmdBufferConsumed);
+
+        for(int i = 0; i < _cmdBufferConsumed; i++)
+        {
+            if(_cmdBuffer[i] == '\b')
+            {
+                println("Seen backspace at index:" << i);
+                for(int j = i - 1; j < _cmdBufferConsumed-2; j++)
+                {
+                    _cmdBuffer[j] = _cmdBuffer[j+2];
+                }
+                _cmdBuffer[_cmdBufferConsumed-1] = 0;
+                _cmdBuffer[_cmdBufferConsumed-2] = 0;
+                _cmdBufferConsumed -= 2;
+                cmdEnd -= 2;
+                i -= 2;
+                dumpBuffer(_cmdBuffer, _cmdBufferConsumed);
+            }
+        }
+
         // Ignore CR
         if (_cmdBuffer[cmdEnd - 1] == '\r')
         {
@@ -176,6 +208,11 @@ void Engine::loop()
         if (!handled)
         {
             at_engine_log("Unexpected command: '%s'", _cmdBuffer);
+            for(int i = 0; i < _cmdBufferConsumed; i++)
+            {
+                at_engine_log("Char code: %d:%d", i, _cmdBuffer[i]);
+            }
+            
             responder.writeError();
         }
 
