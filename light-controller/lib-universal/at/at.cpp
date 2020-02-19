@@ -135,8 +135,29 @@ void Engine::loop()
         auto cmdSize = _stream->read(&_cmdBuffer[_cmdBufferConsumed], available);
         size_t cmdEnd = 0;
         bool cmdEndFound = false;
-        for (size_t i = _cmdBufferConsumed; i < _cmdBufferConsumed + cmdSize; i++)
+
+        // Strip out backspaces
+        println("Initial buffer: _cmdBufferConsumed=" << _cmdBufferConsumed << ";cmdSize=" << cmdSize);
+        dumpBuffer(_cmdBuffer, _cmdBufferConsumed + cmdSize);
+
+        int nextConsumedSize = _cmdBufferConsumed + cmdSize;
+        for (size_t i = _cmdBufferConsumed; i < nextConsumedSize; i++)
         {
+            if(_cmdBuffer[i] == '\b')
+            {
+                println("Seen backspace at index:" << i);
+                dumpBuffer(_cmdBuffer, nextConsumedSize);
+                for(int j = i - 1; j < nextConsumedSize-2; j++)
+                {
+                    _cmdBuffer[j] = _cmdBuffer[j+2];
+                }
+                _cmdBuffer[nextConsumedSize-1] = 0;
+                _cmdBuffer[nextConsumedSize-2] = 0;
+                nextConsumedSize -= 2;
+                i -= 2;
+                continue;
+            }
+
             cmdEnd = i;
             if(_cmdBuffer[i] == '=')
             {
@@ -148,32 +169,10 @@ void Engine::loop()
                 break;
             }
         }
-        _cmdBufferConsumed = _cmdBufferConsumed + cmdSize;
+        _cmdBufferConsumed = nextConsumedSize;
         if (!cmdEndFound)
         {
             return;
-        }
-
-        // Strip out backspaces
-        println("Initial buffer");
-        dumpBuffer(_cmdBuffer, _cmdBufferConsumed);
-
-        for(int i = 0; i < _cmdBufferConsumed; i++)
-        {
-            if(_cmdBuffer[i] == '\b')
-            {
-                println("Seen backspace at index:" << i);
-                for(int j = i - 1; j < _cmdBufferConsumed-2; j++)
-                {
-                    _cmdBuffer[j] = _cmdBuffer[j+2];
-                }
-                _cmdBuffer[_cmdBufferConsumed-1] = 0;
-                _cmdBuffer[_cmdBufferConsumed-2] = 0;
-                _cmdBufferConsumed -= 2;
-                cmdEnd -= 2;
-                i -= 2;
-                dumpBuffer(_cmdBuffer, _cmdBufferConsumed);
-            }
         }
 
         // Ignore CR
