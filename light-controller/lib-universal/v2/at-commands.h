@@ -2,6 +2,7 @@
 #define V2_AT_COMMANDS
 
 #include <at.h>
+#include "pin-bus.h"
 
 namespace v2
 {
@@ -20,6 +21,16 @@ private:
     DigitalWrite *_digitalWrite;
 public:
     ATLed(const int pin, DigitalWrite *digitalWrite);
+    void Handle(at::Input input, at::Responder *resp);
+};
+
+// AT+PIN?=<pinNumber>
+class ATGetPin : public at::Handler
+{
+private:
+    PinBus *_bus;
+public:
+    ATGetPin(PinBus *bus);
     void Handle(at::Input input, at::Responder *resp);
 };
 

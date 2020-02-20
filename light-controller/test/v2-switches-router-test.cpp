@@ -33,7 +33,6 @@ protected:
     void SetUp() override
     {
         bus = new TestPinBus(2);
-        bus->pendingTestState = new byte[2]();
         pushBtnSwitchSvc = new testing::NiceMock<MockSwitchService>();
         toggleBtnSwitchSvc = new testing::NiceMock<MockSwitchService>();
         SwitchRouterServices services{
@@ -45,7 +44,6 @@ protected:
     }
     void TearDown() override
     {
-        delete bus->pendingTestState;
         delete bus;
         delete router;
         delete toggleBtnSwitchSvc;

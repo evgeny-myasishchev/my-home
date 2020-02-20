@@ -50,4 +50,21 @@ void ATLed::Handle(at::Input input, at::Responder *resp)
     }
 };
 
+ATGetPin::ATGetPin(PinBus *bus) : at::Handler("AT+PIN?")
+{
+    _bus = bus;
+};
+
+void ATGetPin::Handle(at::Input input, at::Responder *resp)
+{
+    if(input.length > 0)
+    {
+        resp->writeOk();
+    }
+    else
+    {
+        resp->writeError();
+    }
+};
+
 } // namespace v2

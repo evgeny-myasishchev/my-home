@@ -2,10 +2,12 @@
 
 TestPinBus::TestPinBus(const byte busSize) : PinBus(busSize)
 {
+    pendingTestState = new byte[2]();
 }
 
 TestPinBus::~TestPinBus()
 {
+    delete pendingTestState;
 }
 
 void TestPinBus::readState()

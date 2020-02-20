@@ -3,6 +3,7 @@
 #include <arduino-compat.h>
 #include "test-lib/random.h"
 #include "test-lib/test-text-stream.h"
+#include "test-lib/test-pin-bus.h"
 #include "at-commands.h"
 
 namespace
@@ -71,6 +72,39 @@ TEST(v2ATLed, HandleUNKNOWN)
     cmd.Handle(at::Input("UNKNOWN-CMD", 11), &responder);
     ASSERT_EQ("ERROR\n", testStream.writeBuffer);
     ASSERT_EQ(0, digitalWrite.lastPin);
+    testStream.reset();
+}
+
+TEST(v2ATGetPin, HandleNoInput)
+{
+    TestPinBus pinBus(2);
+    v2::ATGetPin cmd(&pinBus);
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+
+    cmd.Handle(at::Input(), &responder);
+    ASSERT_EQ("ERROR\n", testStream.writeBuffer);
+    testStream.reset();
+}
+
+TEST(v2ATGetPin, ReturnsPinValue)
+{
+    GTEST_SKIP();
+    TestPinBus bus(2);
+    const byte state = test::randomNumber(0, 255);
+    const byte pin = test::randomNumber(0, 8);
+    bus.pendingTestState[0] = state;
+    bus.readState();
+    v2::ATGetPin cmd(&bus);
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+
+    const byte wantState = bus.getPin(pin);
+    println("state:" << int(state));
+    std::string want = "+PIN:" + std::to_string(wantState) + "\nOK\n";
+
+    cmd.Handle(at::Input((char *)std::to_string(pin).c_str(), 1), &responder);
+    ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
 
