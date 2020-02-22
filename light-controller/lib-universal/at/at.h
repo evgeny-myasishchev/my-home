@@ -20,10 +20,9 @@ namespace at
 class Input
 {
 public:
-    char *body = 0;
-    size_t length = 0;
-    Input();
-    Input(char *body, size_t length);
+    const char *body = 0;
+    const size_t length = 0;
+    Input(const char *body, const size_t length);
 };
 
 class Responder

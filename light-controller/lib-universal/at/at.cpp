@@ -6,15 +6,8 @@
 namespace at
 {
 
-Input::Input()
+Input::Input(const char *body, const size_t length) : body(body), length(length)
 {
-
-}
-
-Input::Input(char *body, size_t length)
-{
-    this->body = body;
-    this->length = length;
 }
 
 Responder::Responder(io::TextStream *stream)
@@ -204,13 +197,14 @@ void Engine::loop()
             if (strlen(name) == cmdLength && strncmp(name, _cmdBuffer, cmdLength) == 0)
             {
                 handled = true;
-                at::Input input;
+                char *body = NULL;
+                size_t length = 0;
                 if(_cmdInputStart > 0)
                 {
-                    input.body = &_cmdBuffer[_cmdInputStart];
-                    input.length = cmdEnd - _cmdInputStart;
+                    body = &_cmdBuffer[_cmdInputStart];
+                    length = cmdEnd - _cmdInputStart;
                 }
-                handler->Handle(input, &responder);
+                handler->Handle(at::Input(body, length), &responder);
                 break;
             }
         }

@@ -16,7 +16,7 @@ TEST(v2ATPing, HandleNoInput)
     at::Responder responder(&testStream);
 
     ASSERT_EQ("AT+PING", cmd.Name());
-    cmd.Handle(at::Input(), &responder);
+    cmd.Handle(at::Input(NULL, 0), &responder);
     ASSERT_EQ("+PONG\nOK\n", testStream.writeBuffer);
 }
 
@@ -82,7 +82,7 @@ TEST(v2ATGetPin, HandleNoInput)
     TestTextStream testStream;
     at::Responder responder(&testStream);
 
-    cmd.Handle(at::Input(), &responder);
+    cmd.Handle(at::Input(NULL, 0), &responder);
     ASSERT_EQ("ERROR\n", testStream.writeBuffer);
     testStream.reset();
 }
