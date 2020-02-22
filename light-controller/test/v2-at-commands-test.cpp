@@ -15,7 +15,7 @@ TEST(v2ATPing, HandleNoInput)
     TestTextStream testStream;
     at::Responder responder(&testStream);
 
-    ASSERT_EQ("AT+PING", cmd.Name());
+    ASSERT_STREQ("AT+PING", cmd.Name());
     cmd.Handle(at::Input(NULL, 0), &responder);
     ASSERT_EQ("+PONG\nOK\n", testStream.writeBuffer);
 }
@@ -27,7 +27,6 @@ TEST(v2ATPing, EchoInput)
     at::Responder responder(&testStream);
 
     const char input[] = "PING-INPUT";
-    ASSERT_EQ("AT+PING", cmd.Name());
     cmd.Handle(at::Input((char *)&input, std::size(input) - 1), &responder); // -1 to skip null terminator
     ASSERT_EQ("+PING-INPUT\nOK\n", testStream.writeBuffer);
 }
@@ -40,7 +39,7 @@ TEST(v2ATLed, HandleON)
     TestTextStream testStream;
     at::Responder responder(&testStream);
 
-    ASSERT_EQ("AT+LED", cmd.Name());
+    ASSERT_STREQ("AT+LED", cmd.Name());
     cmd.Handle(at::Input("ON", 2), &responder);
     ASSERT_EQ("OK\n", testStream.writeBuffer);
     ASSERT_EQ(32, digitalWrite.lastPin);
@@ -82,6 +81,7 @@ TEST(v2ATGetPin, HandleNoInput)
     TestTextStream testStream;
     at::Responder responder(&testStream);
 
+    ASSERT_STREQ("AT+PIN?", cmd.Name());
     cmd.Handle(at::Input(NULL, 0), &responder);
     ASSERT_EQ("ERROR\n", testStream.writeBuffer);
     testStream.reset();
@@ -118,6 +118,8 @@ TEST(v2ATSetPin, SetPinValue)
     v2::ATSetPin cmd(&bus);
     TestTextStream testStream;
     at::Responder responder(&testStream);
+
+    ASSERT_STREQ("AT+PIN", cmd.Name());
 
     std::string input = std::to_string(pin) + "," + std::to_string(newState);
     cmd.Handle(at::Input((char *)input.c_str(), input.length()), &responder);

@@ -75,7 +75,7 @@ void ATGetPin::Handle(at::Input input, at::Responder *resp)
     }
 };
 
-ATSetPin::ATSetPin(PinBus *bus) : at::Handler("AT+PIN?")
+ATSetPin::ATSetPin(PinBus *bus) : at::Handler("AT+PIN")
 {
     _bus = bus;
 };
