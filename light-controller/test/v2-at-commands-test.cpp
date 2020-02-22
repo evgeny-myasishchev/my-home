@@ -89,7 +89,6 @@ TEST(v2ATGetPin, HandleNoInput)
 
 TEST(v2ATGetPin, ReturnsPinValue)
 {
-    GTEST_SKIP();
     TestPinBus bus(2);
     const byte state = test::randomNumber(0, 255);
     const byte pin = test::randomNumber(0, 8);
@@ -100,7 +99,6 @@ TEST(v2ATGetPin, ReturnsPinValue)
     at::Responder responder(&testStream);
 
     const byte wantState = bus.getPin(pin);
-    println("state:" << int(state));
     std::string want = "+PIN:" + std::to_string(wantState) + "\nOK\n";
 
     cmd.Handle(at::Input((char *)std::to_string(pin).c_str(), 1), &responder);

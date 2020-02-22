@@ -1,5 +1,6 @@
 #include <at-commands.h>
 #include <string.h>
+#include <numerics.h>
 
 namespace v2
 {
@@ -59,6 +60,11 @@ void ATGetPin::Handle(at::Input input, at::Responder *resp)
 {
     if(input.length > 0)
     {
+        auto pinIndex = parseNumber(input.body, input.length);
+        auto pinState = _bus->getPin((byte)pinIndex.value);
+        resp->write("+PIN:");
+        resp->write(pinState);
+        resp->write('\n');
         resp->writeOk();
     }
     else
