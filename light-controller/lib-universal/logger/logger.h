@@ -11,8 +11,6 @@
 #ifndef ARDUINO
 #include <iostream>
 #define println(msg)  std::cout << msg << std::endl;
-#else
-#define println
 #endif
 
 namespace logger

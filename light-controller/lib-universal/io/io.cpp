@@ -25,6 +25,15 @@ size_t SerialTextStream::write(const char *buffer, size_t size)
     return this->_serial->write(buffer, size);
 }
 
+size_t SerialTextStream::write(const int number)
+{
+    return this->_serial->print(number);
+}
+size_t SerialTextStream::write(const char value)
+{
+    return this->_serial->write(value);
+}
+
 #endif
 
 }

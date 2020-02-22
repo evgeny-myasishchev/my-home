@@ -30,7 +30,8 @@ public:
     int available();
     size_t read(char *buffer, size_t length);
     size_t write(const char *buffer, size_t size);
-    size_t write(int number);
+    size_t write(const int number);
+    size_t write(const char value);
 };
 
 #endif

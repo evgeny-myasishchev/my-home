@@ -26,6 +26,7 @@ at::Engine atEngine(&atStream);
 ArduinoDigitalWrite arduinoDigitalWrite(digitalWrite);
 ATPing atPing;
 ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
+ATGetPin atGetPin(&bus);
 
 void setup()
 {
@@ -46,6 +47,7 @@ void setup()
 
     atEngine.addCommandHandler(&atPing);
     atEngine.addCommandHandler(&atLed);
+    atEngine.addCommandHandler(&atGetPin);
     atEngine.setup();
 
     logger_log("Controller initialized.");
