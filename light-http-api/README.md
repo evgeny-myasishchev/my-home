@@ -188,7 +188,7 @@ OK
 
 Set state of a corresponding pin. The state can be 0 or 1.
 
-`curl -XPOST http://<ip>/pins/20 -d state=1`
+`curl -XPOST http://<ip>/pins/20 -d { "state": 1 }`
 
 AT command: 
 
