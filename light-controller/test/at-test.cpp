@@ -2,6 +2,7 @@
 #include <array-ptr.h>
 #include "test-lib/test-text-stream.h"
 #include "test-lib/test-at-handler.h"
+#include "test-lib/random.h"
 #include "at.h"
 
 namespace
@@ -39,6 +40,35 @@ TEST(atResponder, writeLine)
     ASSERT_EQ(want, testStream.writeBuffer);
 }
 
+TEST(atResponder, write_int)
+{
+    const int value = test::randomNumber(0, 20000);
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+    responder.write(value);
+
+    ASSERT_EQ(std::to_string(value).c_str(), testStream.writeBuffer);
+}
+
+TEST(atResponder, write_single_char)
+{
+    const char value = test::randomNumber(0, 255);
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+    responder.write(value);
+    const char want[] = { value, 0 };
+    ASSERT_EQ(want, testStream.writeBuffer);
+}
+
+TEST(atResponder, write_c_str)
+{
+    std::string want = "some response string";
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+    responder.write(want.c_str());
+    ASSERT_EQ(want, testStream.writeBuffer);
+}
+
 TEST(atResponder, writeLineWithLength)
 {
     TestTextStream testStream;
@@ -46,10 +76,7 @@ TEST(atResponder, writeLineWithLength)
     const char line[] = "SOME DATA LINE HELLO";
     responder.writeLine(line, strlen("SOME DATA LINE"));
 
-    char want[20] = "+";
-    strcat(want, "SOME DATA LINE");
-    strcat(want, "\n");
-
+    std::string want = "+SOME DATA LINE\n";
     ASSERT_EQ(want, testStream.writeBuffer);
 }
 
@@ -63,7 +90,7 @@ TEST(atEngine, handleAT)
 
     engine.loop();
 
-    char want[] = "OK\n";
+    std::string want = "OK\n";
 
     ASSERT_EQ(want, testStream.writeBuffer);
 }
@@ -73,7 +100,7 @@ TEST(atEngine, handleUnknownCommand)
     TestTextStream testStream;
     at::Engine engine(&testStream);
     engine.setup();
-    const char want[] = "ERROR\n";
+    std::string want = "ERROR\n";
 
     testStream.readBuffer.assign("UNKNOWN\n");
     engine.loop();
@@ -110,7 +137,7 @@ TEST(atEngine, handleCommandNoInput)
 
     ASSERT_EQ("", cmd1.gotInput);
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    char *want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -149,7 +176,7 @@ TEST(atEngine, handleCommandWithInput)
 
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
-    char *want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -180,7 +207,7 @@ TEST(atEngine, handleChunkedWrites)
     testStream.readBuffer.assign("\n");
     engine.loop();
 
-    char *want = "OK\n";
+    std::string want = "OK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -225,7 +252,7 @@ TEST(atEngine, handleBackspace)
 
     ASSERT_EQ(cmd1.gotInput, "");
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    char *want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -251,7 +278,7 @@ TEST(atEngine, handleBackspaceWithInput)
 
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     ASSERT_EQ("hello", cmd1.gotInput);
-    char *want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -273,7 +300,7 @@ TEST(atEngine, handleChunkedWritesWithInput)
 
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
-    char *want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "+CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -291,7 +318,7 @@ TEST(atEngine, ignoreCR)
     testStream.readBuffer.assign("AT\r\n");
     engine.loop();
 
-    char *want = "OK\n";
+    std::string want = "OK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -320,7 +347,7 @@ TEST(atEngine, errorIfLargeCommand)
     testStream.readBuffer.assign("0123456789");
     engine.loop();
 
-    char *want = "ERROR\n";
+    std::string want = "ERROR\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }

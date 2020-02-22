@@ -13,6 +13,8 @@ public:
     virtual int available() = 0;
     virtual size_t read(char *buffer, size_t length) = 0;
     virtual size_t write(const char *buffer, size_t size) = 0;
+    virtual size_t write(const int number) = 0;
+    virtual size_t write(const char value) = 0;
 };
 
 #ifdef ARDUINO
@@ -28,6 +30,7 @@ public:
     int available();
     size_t read(char *buffer, size_t length);
     size_t write(const char *buffer, size_t size);
+    size_t write(int number);
 };
 
 #endif

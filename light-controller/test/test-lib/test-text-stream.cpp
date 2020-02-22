@@ -30,6 +30,16 @@ size_t TestTextStream::write(const char *buffer, size_t size)
     this->writeBuffer.append(buffer, size);
 }
 
+size_t TestTextStream::write(const int number)
+{
+    this->writeBuffer.append(std::to_string(number));
+}
+
+size_t TestTextStream::write(const char number)
+{
+    this->writeBuffer.push_back(number);
+}
+
 void TestTextStream::setReadBuffer(const char *buffer)
 {
     this->readBuffer.assign(buffer);

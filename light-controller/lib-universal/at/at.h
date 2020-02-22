@@ -34,6 +34,9 @@ private:
 public:
     Responder(io::TextStream *stream);
 
+    void write(const char ch);
+    void write(const char *data);
+    void write(const int number);
     void writeLine(const char *line);
     void writeLine(const char *line, const size_t length);
     void writeOk();

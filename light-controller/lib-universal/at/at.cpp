@@ -39,6 +39,21 @@ void Responder::writeLine(const char *line, const size_t length)
     free(output);
 }
 
+void Responder::write(const int value)
+{
+    this->_stream->write(value);
+}
+
+void Responder::write(const char value)
+{
+    this->_stream->write(value);
+}
+
+void Responder::write(const char *value)
+{
+    this->_stream->write(value, strlen(value));
+}
+
 void Responder::writeOk()
 {
     this->_stream->write(RESPONSE_OK, strlen(RESPONSE_OK));
