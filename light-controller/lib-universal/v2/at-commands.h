@@ -34,6 +34,16 @@ public:
     void Handle(at::Input input, at::Responder *resp);
 };
 
+// AT+PIN=<pinNumber>,<state>
+class ATSetPin : public at::Handler
+{
+private:
+    PinBus *_bus;
+public:
+    ATSetPin(PinBus *bus);
+    void Handle(at::Input input, at::Responder *resp);
+};
+
 } // namespace v2
 
 #endif

@@ -58,6 +58,8 @@ ATGetPin::ATGetPin(PinBus *bus) : at::Handler("AT+PIN?")
 
 void ATGetPin::Handle(at::Input input, at::Responder *resp)
 {
+    // TODO: Error if bad input
+    // TODO: Error if index too large
     if(input.length > 0)
     {
         auto pinIndex = parseNumber(input.body, input.length);
@@ -65,6 +67,39 @@ void ATGetPin::Handle(at::Input input, at::Responder *resp)
         resp->write("+PIN:");
         resp->write(pinState);
         resp->write('\n');
+        resp->writeOk();
+    }
+    else
+    {
+        resp->writeError();
+    }
+};
+
+ATSetPin::ATSetPin(PinBus *bus) : at::Handler("AT+PIN?")
+{
+    _bus = bus;
+};
+
+void ATSetPin::Handle(at::Input input, at::Responder *resp)
+{
+    // TODO: Error if bad input
+    // TODO: Error if pin index too large
+    // TODO: Error if state is not 0 or 1
+    if(input.length > 0)
+    {
+        int comaIndex = 0;
+        for (size_t i = 0; i < input.length; i++)
+        {
+            if(input.body[i] == ',')
+            {
+                comaIndex = i;
+                break;
+            }
+        }
+
+        auto pinIndex = parseNumber(input.body, comaIndex);
+        auto pinState = parseNumber(&input.body[comaIndex+1], input.length);
+        _bus->setPin(pinIndex.value, pinState.value);
         resp->writeOk();
     }
     else

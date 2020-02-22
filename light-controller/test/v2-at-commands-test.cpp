@@ -106,4 +106,25 @@ TEST(v2ATGetPin, ReturnsPinValue)
     testStream.reset();
 }
 
+TEST(v2ATSetPin, SetPinValue)
+{
+    TestPinBus bus(2);
+    const byte state = test::randomNumber(0, 255);
+    const byte pin = test::randomNumber(0, 8);
+    bus.pendingTestState[0] = state;
+    bus.readState();
+    const byte newState = !bus.getPin(pin);
+
+    v2::ATSetPin cmd(&bus);
+    TestTextStream testStream;
+    at::Responder responder(&testStream);
+
+    std::string input = std::to_string(pin) + "," + std::to_string(newState);
+    cmd.Handle(at::Input((char *)input.c_str(), input.length()), &responder);
+    ASSERT_EQ("OK\n", testStream.writeBuffer);
+    testStream.reset();
+
+    ASSERT_EQ(newState, bus.getPin(pin));
+}
+
 } // namespace
