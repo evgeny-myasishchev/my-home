@@ -14,8 +14,7 @@ urandom.seed(utime.ticks_ms())
 
 class TestRequest(unittest.TestCase):
     def test_parse_req_line(self):
-        methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
-        expectedMethod = methods[random.randint(0, len(methods)-1)]
+        expectedMethod = uhttp.HTTP_METHODS[random.randint(0, len(uhttp.HTTP_METHODS)-1)]
         expectedURI = '/some/%s/path?q=%s' % (random.randint(0, 1000), random.randint(0, 1000))
         expectedVersion = ['HTTP/1.0', 'HTTP/1.1', 'HTTP/1.2'][random.randint(0, 2)]
 
@@ -57,6 +56,23 @@ class TestRequest(unittest.TestCase):
             'x-header-1': 'value1',
             'x-header-2': 'value2'
         })
+
+    def test_bad_method(self):
+        input = uio.BytesIO((
+            'SOMETHING /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            '\n'
+        ))
+        thrown = False
+        err = None
+        try:
+            uhttp.Request(input)
+        except uhttp.HTTPException as e:
+            thrown = True
+            err = e
+        self.assertTrue(thrown, 'No error thrown')
+        self.assertEqual(uhttp.HTTP_STATUS_NOT_IMPLEMENTED, err.status)
+        self.assertEqual('Unrecognized method', err.body)
 
 class TestResponseWriter(unittest.TestCase):
     def test_write_header_known_status(self):

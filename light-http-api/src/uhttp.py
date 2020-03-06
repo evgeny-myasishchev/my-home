@@ -41,6 +41,24 @@ HTTP_REASON_PHRASE = {
     HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED: 'HTTP Version Not Supported'
 }
 
+HTTP_METHODS = [
+    'CONNECT',
+    'DELETE',
+    'GET',
+    'HEAD',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'TRACE'
+]
+
+class HTTPException(Exception):
+    def __init__(self, status, body):
+        self.status = status
+        self.body = body
+        pass
+
 class HTTPServer:
     def __init__(self, 
         *,
@@ -96,7 +114,11 @@ class Request():
     ]
     def __init__(self, input):
         reqLine = _parse_req_line(input.readline())
+
         self.method = reqLine[0]
+        if self.method not in HTTP_METHODS:
+            raise HTTPException(HTTP_STATUS_NOT_IMPLEMENTED, 'Unrecognized method')
+
         self.uri = reqLine[1]
         self.httpVersion = reqLine[2]
         self.headers = _parse_headers(input)
