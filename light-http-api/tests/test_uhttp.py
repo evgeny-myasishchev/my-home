@@ -215,11 +215,11 @@ class TestResponseWriter(unittest.TestCase):
         self.assertEqual(got_data, data)
 
 class TestHTTPServer(unittest.TestCase):
-    def do_req(self, port):
+    def do_req(self, port, method='GET'):
         addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
         socket = usocket.socket()
         socket.connect(addr)
-        socket.send('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
+        socket.send('%s / HTTP/1.1\r\nHost: localhost\r\n\r\n' % method)
         status_line = socket.readline()
         headers = uhttp._parse_headers(socket)
         body = socket.readline()
@@ -291,4 +291,57 @@ class TestHTTPServer(unittest.TestCase):
         self.assertEqual(status_line.decode().strip(), 'HTTP/1.1 200 OK')
         self.assertEqual(3, len(headers), 'Expected 3 headers but got: %s' % str(headers))
         self.assertEqual(b'PONG', body)
+        server.stop()
+
+    def test_process_client_handle_parsing_errors(self):
+        server = uhttp.HTTPServer(
+            handler=lambda w, req: w.write('PONG'),
+            port=8080,
+            logger=logger.TestLogger(),
+        )
+        client = uio.BytesIO((
+            'SOMETHING /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            '\n'
+        ))
+        output = uio.BytesIO()
+        writer = uhttp.ResponseWriter(output)
+        server._process_client(writer, client)
+
+        output.seek(0)
+        self.assertEqual(
+            output.readline().decode().strip(), 
+            'HTTP/1.1 %s %s' % (uhttp.HTTP_STATUS_NOT_IMPLEMENTED, uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_NOT_IMPLEMENTED])
+        )
+        # Scroll to body
+        while output.readline() != b'\r\n':
+            pass
+        self.assertEqual(
+            output.readline().decode().strip(), 
+            'Unrecognized method'
+        )
+        server.stop()
+
+    def test_process_client_handle_unhandled_handler_errors(self):
+        def handler(w, req):
+            raise Exception('Something happened')
+        server = uhttp.HTTPServer(
+            handler=handler,
+            port=8080,
+            logger=logger.TestLogger(),
+        )
+        client = uio.BytesIO((
+            'GET /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            '\n'
+        ))
+        output = uio.BytesIO()
+        writer = uhttp.ResponseWriter(output)
+        server._process_client(writer, client)
+
+        output.seek(0)
+        self.assertEqual(
+            output.readline().decode().strip(), 
+            'HTTP/1.1 %s %s' % (uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR, uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR])
+        )
         server.stop()

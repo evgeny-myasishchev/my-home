@@ -89,11 +89,9 @@ class HTTPServer:
                 if err.args[0] == errno.ECONNABORTED:
                     return
                 raise err
-            req = Request(client)
+
             writer = ResponseWriter(client)
-            self._handler(writer, req)
-            if not writer._header_sent:
-                writer.write_header(writer.status)
+            self._process_client(writer, client)
             client.close()
 
     def start_async(self):
@@ -103,6 +101,23 @@ class HTTPServer:
     def stop(self):
         self._socket.close()
         self._logger.info('Server stopped')
+
+    def _write_error(self, writer, err, status, body):
+        if not writer._header_sent:
+            writer.write_header(status)
+            writer.write(body)
+        logger.error("Failed to process request", err=err)
+
+    def _process_client(self, writer, client):
+        try:
+            req = Request(client)
+            self._handler(writer, req)
+            if not writer._header_sent:
+                writer.write_header(writer.status)
+        except HTTPException as err:
+            self._write_error(writer, err, err.status, err.body)
+        except BaseException as err:
+            self._write_error(writer, err, HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_REASON_PHRASE[HTTP_STATUS_INTERNAL_SERVER_ERROR])
 
 class Request():
     __slots__ = [
