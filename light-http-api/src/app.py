@@ -22,10 +22,10 @@ def get_pin(w, req, match):
 
 def create_server(*, port=8080):
     router = middleware.create_router([
-        ("/ping", pong),
+        ('GET', '/ping', pong),
         # ("/led/on", led_on),
         # ("/led/off", led_off),
-        (ure.compile(r"^/pins/(\d+)$"), get_pin)
+        ('GET', ure.compile(r"^/pins/(\d+)$"), get_pin)
     ])
 
     default_handler = middleware.not_found(None)

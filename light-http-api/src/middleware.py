@@ -59,16 +59,18 @@ def create_router(routes):
     def router(next):
         def middleware(w, req):
             for route in routes:
-                pattern = route[0]
-                handler = route[1]
-                if hasattr(pattern, "match"):
-                    match = pattern.match(req.uri)
-                    if match != None:
-                        handler(w, req, match)
+                method = route[0]
+                pattern = route[1]
+                handler = route[2]
+                if req.method == method:
+                    if hasattr(pattern, "match"):
+                        match = pattern.match(req.uri)
+                        if match != None:
+                            handler(w, req, match)
+                            return
+                    elif req.uri.startswith(pattern):
+                        handler(w, req)
                         return
-                elif req.uri.startswith(pattern):
-                    handler(w, req)
-                    return
             next(w, req)
         return middleware
     return router

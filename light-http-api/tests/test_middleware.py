@@ -220,10 +220,10 @@ class TestRouter(unittest.TestCase):
             calls.append('time')
 
         router = middleware.create_router([
-            ("/ping", ping_handler),
-            ("/time", time_handler)
+            ('GET', '/ping', ping_handler),
+            ('GET', '/time', time_handler)
         ])(next_mw)
-        
+
         req.uri = "/ping"
         router(None, req)
         self.assertEqual(calls, ["ping"])
@@ -248,6 +248,36 @@ class TestRouter(unittest.TestCase):
         calls = []
         next_called = False
 
+    def test_route_methods(self):
+        req = MockReq()
+
+        def next_mw(w, r):
+            pass
+
+        calls = []
+        def get_ping_handler(w, req):
+            nonlocal calls
+            calls.append('get-ping')
+
+        def post_ping_handler(w, req):
+            nonlocal calls
+            calls.append('post-ping')
+
+        router = middleware.create_router([
+            ('GET', '/ping', get_ping_handler),
+            ('POST', '/ping', post_ping_handler)
+        ])(next_mw)
+        
+        req.uri = "/ping"
+        router(None, req)
+        self.assertEqual(calls, ["get-ping"])
+        calls = []
+
+        req.method = 'POST'
+        router(None, req)
+        self.assertEqual(calls, ["post-ping"])
+        calls = []
+
     def test_re_routes(self):
         req = MockReq()
 
@@ -266,8 +296,8 @@ class TestRouter(unittest.TestCase):
             calls.append(('user_transactions_handler', match.group(1), match.group(2)))
 
         router = middleware.create_router([
-            (ure.compile(r"/v1/users/([A-Za-z0-9\-]+)/create"), users_create_handler),
-            (ure.compile(r"/v1/users/([A-Za-z0-9\-]+)/transactions/([A-Za-z0-9\-]+)"), user_transactions_handler),
+            ('GET', ure.compile(r"/v1/users/([A-Za-z0-9\-]+)/create"), users_create_handler),
+            ('GET', ure.compile(r"/v1/users/([A-Za-z0-9\-]+)/transactions/([A-Za-z0-9\-]+)"), user_transactions_handler),
         ])(next_mw)
 
         user1 = str(uuid4())
