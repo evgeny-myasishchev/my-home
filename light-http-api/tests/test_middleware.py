@@ -4,6 +4,7 @@ import uhttp
 import uio
 import logger
 import ure
+import uerrno
 from uuid import uuid4
 
 class MockReq(uhttp.Request):
@@ -84,6 +85,16 @@ class TestRecover(unittest.TestCase):
         middleware.recover(next_mw)(writer, req)
         self.assertEqual(writer.written_status, uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR)
         self.assertEqual(writer.written_body, uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR])
+
+    def test_respond_with_408_if_timeout(self):
+        err = OSError(uerrno.ETIMEDOUT)
+        req = MockReq()
+        writer = MockWriter()
+        def next_mw(w, r):
+            raise err
+        middleware.recover(next_mw)(writer, req)
+        self.assertEqual(writer.written_status, uhttp.HTTP_STATUS_REQUEST_TIMEOUT)
+        self.assertEqual(writer.written_body, uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_REQUEST_TIMEOUT])
 
     def test_respond_with_error_details_if_debug(self):
         err = Exception("Failed to handle request")

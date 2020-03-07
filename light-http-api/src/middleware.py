@@ -3,6 +3,7 @@ import logger
 import sys
 from uuid import uuid4
 import gc
+import uerrno
 
 def use(handler, *middleware):
     next = handler
@@ -15,12 +16,20 @@ def not_found(next):
 
 def recover(next, *, debug=False, logger=logger):
     def middleware(writer, req):
+        err = None
+        status = uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR
         try:
             next(writer, req)
-        except BaseException as err:
-            # TODO: Also log and print stack trace
-            message = uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR] if debug == False else str(err)
-            writer.write_header(uhttp.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+        except OSError as e:
+            if e.args[0] == uerrno.ETIMEDOUT:
+                status = uhttp.HTTP_STATUS_REQUEST_TIMEOUT
+                pass
+            err = e
+        except BaseException as e:
+            err = e
+        if err != None:
+            message = uhttp.HTTP_REASON_PHRASE[status] if debug == False else str(err)
+            writer.write_header(status)
             writer.write(message)
             logger.error("Failed to handle request", context=req.context, err=err)
     return middleware
