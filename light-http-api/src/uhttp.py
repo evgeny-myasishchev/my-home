@@ -1,4 +1,5 @@
 import usocket
+import uio
 import sys
 import logger
 import errno
@@ -138,6 +139,7 @@ class Request():
         self.httpVersion = reqLine[2]
         self.headers = _parse_headers(input)
         self.context = {}
+        self.body = input
 
 def _parse_req_line(req_line):
     # TODO: Validate and throw appropriate error
