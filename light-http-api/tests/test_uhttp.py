@@ -75,26 +75,89 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(uhttp.HTTP_STATUS_NOT_IMPLEMENTED, err.status)
         self.assertEqual('Unrecognized method', err.body)
 
-    def test_req_body(self):
+    def test_req_body_no_content_length(self):
         input = uio.BytesIO((
-            'GET /some-resource?qs=value HTTP/1.1\n'
+            'POST /some-resource?qs=value HTTP/1.1\n'
             'Host: domain.com\n'
             '\n'
-            'body line 1\n'
-            'body line 2\n'
+            'body line 1\nbody line 2\n'
         ))
         req = uhttp.Request(input)
-        body = req.body.read(1024)
-        self.assertEqual(b'body line 1\nbody line 2\n', body)
+        err = None
+        try:
+            req.body()
+        except uhttp.HTTPException as e:
+            err = e
+        self.assertIsNotNone(err, 'err has not been raised')
+        self.assertEqual(uhttp.HTTP_STATUS_LENGTH_REQUIRED, err.status)
+        self.assertEqual(uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_LENGTH_REQUIRED], err.body)
+
+    def test_req_body_bad_content_length(self):
+        input = uio.BytesIO((
+            'POST /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            'Content-Length: something\n'
+            '\n'
+            'body line 1\nbody line 2\n'
+        ))
+        req = uhttp.Request(input)
+        err = None
+        try:
+            req.body()
+        except uhttp.HTTPException as e:
+            err = e
+        self.assertIsNotNone(err, 'err has not been raised')
+        self.assertEqual(uhttp.HTTP_STATUS_LENGTH_REQUIRED, err.status)
+        self.assertEqual(uhttp.HTTP_REASON_PHRASE[uhttp.HTTP_STATUS_LENGTH_REQUIRED], err.body)
+
+    def test_req_body(self):
+        body = 'body line 1\nbody line 2\n'
+        input = uio.BytesIO((
+            'POST /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            + 'Content-Length: %d\n\n' % len(body)
+            + body
+        ))
+        req = uhttp.Request(input)
+        got_body = req.body().read(1024)
+        self.assertEqual(body, got_body.decode())
+
+    def test_req_body_limit_to_len(self):
+        body = 'body line 1\nbody line 2\n'
+        input = uio.BytesIO((
+            'POST /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            + 'Content-Length: %d\n\n' % len(body)
+            + body
+            + 'something else'
+        ))
+        req = uhttp.Request(input)
+        got_body = req.body().read(1024)
+        self.assertEqual(body, got_body.decode())
+
+    def test_req_body_json(self):
+        json_payload = ('{\n'
+            '"key":"value"'
+            '}\n')
+        input = uio.BytesIO((
+            'POST /some-resource?qs=value HTTP/1.1\n'
+            'Host: domain.com\n'
+            + 'Content-Length: %d\n\n' % len(json_payload)
+            + json_payload
+        ))
+        req = uhttp.Request(input)
+        body = ujson.load(req.body())
+        self.assertEqual({'key': 'value'}, body)
 
     def test_req_body_empty(self):
         input = uio.BytesIO((
-            'GET /some-resource?qs=value HTTP/1.1\n'
+            'POST /some-resource?qs=value HTTP/1.1\n'
             'Host: domain.com\n'
+            'Content-Length: 0\n'
             '\n'
         ))
         req = uhttp.Request(input)
-        body = req.body.read(1024)
+        body = req.body().read(1024)
         self.assertEqual(b'', body)
 
 @unittest.skip("skipping temporary")

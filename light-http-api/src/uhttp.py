@@ -91,6 +91,7 @@ class HTTPServer:
                     return
                 raise err
 
+            client.settimeout(1)
             writer = ResponseWriter(client)
             self._process_client(writer, client)
             client.close()
@@ -121,13 +122,6 @@ class HTTPServer:
             self._write_error(writer, err, HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_REASON_PHRASE[HTTP_STATUS_INTERNAL_SERVER_ERROR])
 
 class Request():
-    __slots__ = [
-        'method', 
-        'uri', 
-        'httpVersion',
-        'headers',
-        'context',
-    ]
     def __init__(self, input):
         reqLine = _parse_req_line(input.readline())
 
@@ -139,7 +133,31 @@ class Request():
         self.httpVersion = reqLine[2]
         self.headers = _parse_headers(input)
         self.context = {}
-        self.body = input
+        self._input = input
+        self._body = None
+
+    def body(self):
+        if self._body != None:
+            return self._body
+
+        if not 'content-length' in self.headers:
+            raise HTTPException(HTTP_STATUS_LENGTH_REQUIRED, HTTP_REASON_PHRASE[HTTP_STATUS_LENGTH_REQUIRED])
+        content_length = self.headers['content-length']
+        if not content_length.isdigit():
+            raise HTTPException(HTTP_STATUS_LENGTH_REQUIRED, HTTP_REASON_PHRASE[HTTP_STATUS_LENGTH_REQUIRED])
+        content_length = int(content_length)
+
+        body = uio.BytesIO(content_length)
+
+        bytes_received = 0
+        while bytes_received < content_length:
+            fetched = self._input.read(content_length - bytes_received)
+            bytes_received += len(fetched)
+            body.write(fetched)
+
+        body.seek(0)
+        self._body = body
+        return body
 
 def _parse_req_line(req_line):
     # TODO: Validate and throw appropriate error
