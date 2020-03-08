@@ -1,19 +1,9 @@
 
-class ATCommand:
-    def __init__(self, name):
-        self.name = name
-        pass
-    pass
-
-    def process_response(self, response):
-        pass
-
-class ATResponse:
-    __slots__ = ['status', 'status_message', 'data']
-    def __init__(self, status, message, data):
-        self.status = status
-        self.status_message = message
+class ATException(Exception):
+    def __init__(self, message='AT command failed', data=None):
+        super().__init__(message)
         self.data = data
+        pass
 
 class ATEngine:
     def __init__(self, input, output):
@@ -24,7 +14,7 @@ class ATEngine:
 
     def dispatch_command(self, cmd, data=None):
         self._output.write('AT+')
-        self._output.write(cmd.name)
+        self._output.write(cmd)
         if data != None:
             self._output.write('=')
             self._output.write(data)
@@ -44,4 +34,6 @@ class ATEngine:
                 status = resp_line
                 break
             data.append(resp_line)
-        return ATResponse(status, status_message, data)
+        if status != 'OK':
+            raise ATException(status_message, data=data)
+        return data
