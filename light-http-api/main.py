@@ -4,9 +4,7 @@ import logger
 config = app.config.load()
 logger.setup(transport=app.setup.logger_transport(config['log']))
 
-server = app.create_server(
-    port=config["server"]["port"]
-)
+server = app.create_server(config)
 
 def startServer():
     try:

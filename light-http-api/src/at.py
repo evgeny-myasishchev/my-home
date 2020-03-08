@@ -1,3 +1,4 @@
+import logger
 
 class ATException(Exception):
     def __init__(self, message='AT command failed', data=None):
@@ -12,7 +13,8 @@ class ATEngine:
         self._output = output
         pass
 
-    def dispatch_command(self, cmd, data=None):
+    def dispatch_command(self, cmd, data=None, *, context=None):
+        logger.debug('Dispatching AT command: AT+%s' % cmd, context=context, data=data)
         self._output.write('AT+')
         self._output.write(cmd)
         if data != None:
@@ -34,6 +36,10 @@ class ATEngine:
                 status = resp_line
                 break
             data.append(resp_line)
+        logger.debug('AT command dispatched, got status: %s' % status, data={
+            'status_message': status_message,
+            'response': data,
+        }, context=context)
         if status != 'OK':
             raise ATException(status_message, data=data)
         return data

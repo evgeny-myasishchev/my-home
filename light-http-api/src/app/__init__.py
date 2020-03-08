@@ -4,6 +4,9 @@ import logger
 import ure
 import ujson
 # from machine import UART
+
+from . import controller
+
 from . import config
 from . import setup
 from . import routes
@@ -28,9 +31,11 @@ from . import routes
 #     body = ujson.load(req.body())
 #     print(body)
 
-def create_server(*, port=8080):
+def create_server(config):
+    light_controller = controller.create_light_controller(config['light-controller'])
+
     router = middleware.create_router([
-        ('GET', '/v1/ping', routes.create_ping_handler()),
+        ('GET', '/v1/ping', routes.create_ping_handler(light_controller)),
         # ('POST', '/test-post', test_post),
         # ("/led/on", led_on),
         # ("/led/off", led_off),
@@ -44,6 +49,6 @@ def create_server(*, port=8080):
             middleware.recover,
             router,
         ),
-        port=port,
+        port=config['server']['port'],
     )
     return server

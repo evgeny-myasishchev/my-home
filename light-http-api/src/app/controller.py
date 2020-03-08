@@ -1,11 +1,13 @@
 import at
 
 class LightController:
-    def __init__(self, at_engine):
+    def __init__(self, at_engine: at.ATEngine):
         self._at_engine = at_engine
 
-    def ping(self, payload='PONG'):
-        pass
+    def ping(self, payload='PONG', *, context=None):
+        resp = self._at_engine.dispatch_command("PING", payload, context=context)
+        return ','.join(resp)
+
 
 def create_uart_interface(cfg):
     from machine import UART
@@ -45,6 +47,6 @@ def create_interface(cfg):
     raise Exception("Unexpected interface type: %s" % type)
 
 def create_light_controller(cfg):
-    interface = create_interface(cfg['light-controller']['interface'])
+    interface = create_interface(cfg['interface'])
     at_engine = at.ATEngine(interface[0], interface[1])
     return LightController(at_engine)
