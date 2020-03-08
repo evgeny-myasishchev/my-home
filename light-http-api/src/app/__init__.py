@@ -2,7 +2,10 @@ import uhttp
 import middleware
 import logger
 import ure
+import ujson
 # from machine import UART
+from . import config
+from . import setup
 
 # uart = UART(0)
 
@@ -20,9 +23,14 @@ def pong(w, req):
 def get_pin(w, req, match):
     w.write("PIN: %s" % match.group(1))
 
+def test_post(w, req):
+    body = ujson.load(req.body())
+    print(body)
+
 def create_server(*, port=8080):
     router = middleware.create_router([
         ('GET', '/ping', pong),
+        ('POST', '/test-post', test_post),
         # ("/led/on", led_on),
         # ("/led/off", led_off),
         ('GET', ure.compile(r"^/pins/(\d+)$"), get_pin)
