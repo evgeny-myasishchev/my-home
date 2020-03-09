@@ -36,6 +36,7 @@ def create_server(config):
 
     router = middleware.create_router([
         ('GET', '/v1/ping', routes.create_ping_handler(light_controller)),
+        ('POST', '/v1/led', routes.create_led_handler(light_controller)),
         # ('POST', '/test-post', test_post),
         # ("/led/on", led_on),
         # ("/led/off", led_off),

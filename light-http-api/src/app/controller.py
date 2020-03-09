@@ -1,4 +1,5 @@
 import at
+import sys
 
 class LightController:
     def __init__(self, at_engine: at.ATEngine):
@@ -8,12 +9,15 @@ class LightController:
         resp = self._at_engine.dispatch_command("PING", payload, context=context)
         return ','.join(resp)
 
+    def led(self, state='ON', *, context=None):
+        resp = self._at_engine.dispatch_command("LED", state, context=context)
+        return ','.join(resp)
 
 def create_uart_interface(cfg):
-    from machine import UART
+    # Using default UART which is bound to stdin/stdout
     return (
-        UART(cfg['input_index']), 
-        UART(cfg['output_index'])
+        sys.stdin, 
+        sys.stdout
     )
 
 def create_mock_interface(cfg):

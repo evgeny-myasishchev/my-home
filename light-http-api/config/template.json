@@ -6,10 +6,7 @@
     "light-controller": {
         "interface": {
             "type": "uart",
-            "uart": {
-                "input_index": 0,
-                "output_index": 0
-            },
+            "uart": {},
             "mock": {
                 "input": [
                     "OK"
