@@ -8,7 +8,7 @@ class ATException(Exception):
 
 class ATEngine:
     def __init__(self, input, output):
-        self._resp_loop_limit = 100
+        self._resp_loop_limit = 10
         self._input = input
         self._output = output
         pass
@@ -31,7 +31,10 @@ class ATEngine:
                 status = 'ERROR'
                 status_message = 'Response loop limit reached'
                 break
-            resp_line = self._input.readline().decode().strip()
+            raw_resp_line = self._input.readline()
+            if raw_resp_line == None:
+                continue
+            resp_line = str(raw_resp_line, 'utf-8').strip()
             if (resp_line == 'OK') or (resp_line == 'ERROR'):
                 status = resp_line
                 break

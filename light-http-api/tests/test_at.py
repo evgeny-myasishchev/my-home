@@ -36,6 +36,20 @@ class TestATEngine(unittest.TestCase):
         cmd_line = output.readline()
         self.assertEqual(cmd_line, b'AT+CMD1\n')
 
+    def test_dispatch_command_with_string_response(self):
+        input = uio.StringIO()
+        output = uio.BytesIO()
+        engine = at.ATEngine(input, output)
+
+        cmd = "CMD1"
+        input.write('OK\n')
+        input.seek(0)
+        resp = engine.dispatch_command(cmd)
+        output.seek(0)
+        cmd_line = output.readline()
+        self.assertEqual(cmd_line, b'AT+CMD1\n')
+        self.assertEqual(resp, [])
+
     def test_dispatch_command_without_any_response(self):
         input = uio.BytesIO()
         output = uio.BytesIO()
@@ -43,6 +57,23 @@ class TestATEngine(unittest.TestCase):
 
         cmd = "CMD1"
         input.seek(0)
+        err = None
+        try:
+            engine.dispatch_command(cmd)
+        except at.ATException as e:
+            err = e
+        self.assertIsNotNone(err, 'Error had not been raised')
+        self.assertEqual(err.args[0], 'Response loop limit reached')
+
+    def test_dispatch_with_none_response(self):
+        class none_input:
+            def readline(self):
+                return None
+        input = none_input()
+        output = uio.BytesIO()
+        engine = at.ATEngine(input, output)
+
+        cmd = "CMD1"
         err = None
         try:
             engine.dispatch_command(cmd)
