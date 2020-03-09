@@ -14,6 +14,7 @@ public:
     void Handle(at::Input input, at::Responder *resp);
 };
 
+// AT+LED=ON|OFF
 class ATLed : public at::Handler
 {
 private:
