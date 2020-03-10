@@ -6,31 +6,7 @@ import logger
 import ure
 import uerrno
 from uuid import uuid4
-
-class MockReq(uhttp.Request):
-    def __init__(self, *, 
-        method="GET", 
-        host="example.com", 
-        uri="/v1/something",
-        userAgent="test-middleware/v0"
-    ):
-        uhttp.Request.__init__(self, uio.BytesIO((
-            b"%s %s HTTP/1.1\n"
-            b"Host: %s\n"
-            b"User-Agent: %s\n\n" % (method, uri, host, userAgent)
-        )))
-
-class MockWriter(uhttp.ResponseWriter):
-    def __init__(self):
-        uhttp.ResponseWriter.__init__(self, None)
-        self.written_status = None
-        self.written_body = None
-
-    def write_header(self, status):
-        self.written_status = status
-
-    def write(self, body):
-        self.written_body = body
+from .mocks import MockReq, MockWriter
 
 class TestUse(unittest.TestCase):
     def test_use_wrap_handler(self):

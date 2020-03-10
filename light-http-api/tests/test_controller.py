@@ -4,27 +4,13 @@ import random
 import unittest
 import urandom
 import utime
+from tests import mocks
 
 urandom.seed(utime.ticks_ms())
 
 class TestLightController(unittest.TestCase):
-    class MockATEngine:
-        def __init__(self):
-            self.results = []
-            self.calls = []
-            pass
-
-        def dispatch_command(self, cmd, data=None, *, context=None):
-            self.calls.append({
-                "cmd": cmd,
-                "data": data,
-            })
-            if len(self.results) > 0:
-                return self.results.pop(0)
-            return []
-
     def test_ping(self):
-        engine = self.MockATEngine()
+        engine = mocks.MockATEngine()
         controller = app.controller.LightController(engine)
 
         want = ['PING RESPONSE1', 'PING RESPONSE2']
@@ -36,7 +22,7 @@ class TestLightController(unittest.TestCase):
         self.assertEqual(engine.calls[0]['data'], 'PING REQUEST')
 
     def test_led(self):
-        engine = self.MockATEngine()
+        engine = mocks.MockATEngine()
         controller = app.controller.LightController(engine)
 
         controller.led('STATE 123')
@@ -45,7 +31,7 @@ class TestLightController(unittest.TestCase):
         self.assertEqual(engine.calls[0]['data'], 'STATE 123')
 
     def test_get_pin(self):
-        engine = self.MockATEngine()
+        engine = mocks.MockATEngine()
         controller = app.controller.LightController(engine)
 
         want_pin = random.randint(10, 50)
@@ -59,7 +45,7 @@ class TestLightController(unittest.TestCase):
         self.assertEqual(got_state, want_state)
 
     def test_get_pin_bad_state(self):
-        engine = self.MockATEngine()
+        engine = mocks.MockATEngine()
         controller = app.controller.LightController(engine)
 
         engine.results.append(['bad1', 'bad2'])
@@ -73,7 +59,7 @@ class TestLightController(unittest.TestCase):
         self.assertEqual(err.args[0], 'Unexpected response')
 
     def test_set_pin(self):
-        engine = self.MockATEngine()
+        engine = mocks.MockATEngine()
         controller = app.controller.LightController(engine)
 
         want_pin = random.randint(10, 50)

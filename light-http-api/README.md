@@ -151,7 +151,7 @@ The API will be communicating with Arduino via UART. A subset of AT commands wil
 
 Responds with 
 ```json
-{"service": "PONG", "controller": "OK" }
+{"service": "PONG", "controller": "PONG" }
 ````
 
 AT command:
