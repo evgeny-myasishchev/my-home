@@ -160,7 +160,6 @@ class TestRequest(unittest.TestCase):
         body = req.body().read(1024)
         self.assertEqual(b'', body)
 
-@unittest.skip("skipping temporary")
 class TestResponseWriter(unittest.TestCase):
     def test_write_header_known_status(self):
         output = uio.BytesIO()
@@ -301,7 +300,6 @@ class TestResponseWriter(unittest.TestCase):
         got_data = output.read(want_len)
         self.assertEqual(got_data, data)
 
-@unittest.skip("skipping temporary")
 class TestHTTPServer(unittest.TestCase):
     def do_req(self, port, method='GET'):
         addr = usocket.getaddrinfo("0.0.0.0", port)[0][-1]
