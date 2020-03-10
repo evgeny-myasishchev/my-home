@@ -3,40 +3,18 @@ import middleware
 import logger
 import ure
 import ujson
-# from machine import UART
-
-from . import controller
 
 from . import config
-from . import setup
+from . import controller
 from . import routes
-
-# uart = UART(0)
-
-# def pong(w, req):
-#     w.write("PONG")
-
-# def led_on(w, req):
-#     uart.write("AT+LED=ON\n")
-#     w.write("LED_ON")
-
-# def led_off(w, req):
-#     uart.write("AT+LED=OFF\n")
-#     w.write("LED_OFF")
-
-# def get_pin(w, req, match):
-#     w.write("PIN: %s" % match.group(1))
-
-# def test_post(w, req):
-#     body = ujson.load(req.body())
-#     print(body)
+from . import setup
 
 def create_server(config):
     light_controller = controller.create_light_controller(config['light-controller'])
 
     router = middleware.create_router([
-        ('GET', '/v1/ping', routes.create_ping_handler(light_controller)),
-        ('POST', '/v1/led', routes.create_led_handler(light_controller)),
+        ('GET', '/v1/light/ping', routes.create_ping_handler(light_controller)),
+        ('POST', '/v1/light/led', routes.create_led_handler(light_controller)),
         # ('POST', '/test-post', test_post),
         # ("/led/on", led_on),
         # ("/led/off", led_off),
