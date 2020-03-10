@@ -6,13 +6,21 @@ class MockReq(uhttp.Request):
         method="GET", 
         host="example.com", 
         uri="/v1/something",
-        userAgent="test-middleware/v0"
+        userAgent="test-middleware/v0",
+        payload=None
     ):
-        uhttp.Request.__init__(self, uio.BytesIO((
-            b"%s %s HTTP/1.1\n"
-            b"Host: %s\n"
-            b"User-Agent: %s\n\n" % (method, uri, host, userAgent)
-        )))
+        reqData = (
+            "%s %s HTTP/1.1\n"
+            "Host: %s\n"
+            "User-Agent: %s\n" % (method, uri, host, userAgent)
+        )
+        if payload != None:
+            reqData += 'Content-Length: %d\n\n' % len(payload)
+            reqData += payload
+        reqData += '\n'
+
+        input = uio.BytesIO(reqData.encode())
+        uhttp.Request.__init__(self, input)
 
 class MockWriter(uhttp.ResponseWriter):
     def __init__(self):

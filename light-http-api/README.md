@@ -145,9 +145,23 @@ nc -kluw 0 0.0.0.0 50001 | npx pino-pretty
 
 The API will be communicating with Arduino via UART. A subset of AT commands will be used to send or request some data.
 
+## POST /v1/light/led
+
+Used to test controller communication
+
+`curl -X POST http://<ip>/v1/light/led -d { "state": "ON" }`
+
+AT command:
+
+```AT+LED=ON|OFF```
+
+AT response:
+
+```OK```
+
 ## GET /v1/light/ping
 
-`curl http://<ip>/ping`
+`curl http://<ip>/light/ping`
 
 Responds with 
 ```json
@@ -166,7 +180,7 @@ AT response:
 
 Get state of a corresponding pin.
 
-`curl http://<ip>/pins/20`
+`curl http://<ip>/light/pins/20`
 
 The response is:
 ```json
