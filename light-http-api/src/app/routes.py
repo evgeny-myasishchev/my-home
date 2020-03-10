@@ -16,3 +16,12 @@ def create_led_handler(light_controller):
         response = light_controller.led(payload['state'], context=req.context)
         w.write(response)
     return handler
+
+def create_get_pin_handler(light_controller):
+    def handler(w, req, match):
+        pinNumber = match.group(1)
+        response = light_controller.get_pin(pinNumber, context=req.context)
+        w.write(ujson.dumps({
+            'state': response
+        }))
+    return handler
