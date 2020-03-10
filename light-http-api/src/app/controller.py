@@ -32,8 +32,8 @@ class LightController:
 def create_uart_interface(cfg):
     # Using default UART which is bound to stdin/stdout
     return (
-        sys.stdin, 
-        sys.stdout
+        sys.stdin.buffer, 
+        sys.stdout.buffer
     )
 
 def create_mock_interface(cfg):
