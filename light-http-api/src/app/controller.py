@@ -1,17 +1,33 @@
 import at
 import sys
+import logger
 
 class LightController:
     def __init__(self, at_engine: at.ATEngine):
         self._at_engine = at_engine
 
+    # AT+PING=<payload>
     def ping(self, payload='PONG', *, context=None):
         resp = self._at_engine.dispatch_command("PING", payload, context=context)
         return ','.join(resp)
 
+    # AT+LED=ON|OFF
     def led(self, state='ON', *, context=None):
         resp = self._at_engine.dispatch_command("LED", state, context=context)
         return ','.join(resp)
+
+    # AT+PIN?=<pinNumber>
+    def get_pin(self, pinNumber, *, context=None):
+        resp = self._at_engine.dispatch_command("PIN?", str(pinNumber), context=context)
+        if len(resp) != 1:
+            logger.warn('Got unexpected AT+PIN? response', data=resp, context=context)
+            raise at.ATException('Unexpected response')
+        state = int(resp[0])
+        return state
+
+    # AT+PIN=<pinNumber>,<state>
+    def set_pin(self, pinNumber, state, *, context=None):
+        self._at_engine.dispatch_command("PIN", "%d,%d" % (pinNumber, state), context=context)
 
 def create_uart_interface(cfg):
     # Using default UART which is bound to stdin/stdout
