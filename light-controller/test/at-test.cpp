@@ -33,7 +33,7 @@ TEST(atResponder, writeLine)
     const char line[] = "SOME DATA LINE";
     responder.writeLine(line);
 
-    char want[20] = "+";
+    char want[20] = "";
     strcat(want, line);
     strcat(want, "\n");
 
@@ -76,7 +76,7 @@ TEST(atResponder, writeLineWithLength)
     const char line[] = "SOME DATA LINE HELLO";
     responder.writeLine(line, strlen("SOME DATA LINE"));
 
-    std::string want = "+SOME DATA LINE\n";
+    std::string want = "SOME DATA LINE\n";
     ASSERT_EQ(want, testStream.writeBuffer);
 }
 
@@ -137,7 +137,7 @@ TEST(atEngine, handleCommandNoInput)
 
     ASSERT_EQ("", cmd1.gotInput);
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    std::string want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -146,7 +146,7 @@ TEST(atEngine, handleCommandNoInput)
 
     ASSERT_EQ("", cmd2.gotInput);
     ASSERT_TRUE(cmd2.called) << "cmd2 not called";
-    want = "+CMD2-RESPONSE\nOK\n";
+    want = "CMD2-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -155,7 +155,7 @@ TEST(atEngine, handleCommandNoInput)
 
     ASSERT_EQ("", cmd3.gotInput);
     ASSERT_TRUE(cmd3.called) << "cmd3 not called";
-    want = "+CMD3-RESPONSE\nOK\n";
+    want = "CMD3-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
 }
 
@@ -176,7 +176,7 @@ TEST(atEngine, handleCommandWithInput)
 
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
-    std::string want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 
@@ -185,7 +185,7 @@ TEST(atEngine, handleCommandWithInput)
 
     ASSERT_EQ("CMD2-INPUT", cmd2.gotInput);
     ASSERT_TRUE(cmd2.called) << "cmd2 not called";
-    want = "+CMD2-RESPONSE\nOK\n";
+    want = "CMD2-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -220,7 +220,7 @@ TEST(atEngine, handleChunkedWrites)
 
     ASSERT_EQ(cmd1.gotInput, "");
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    want = "+CMD1-RESPONSE\nOK\n";
+    want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -252,7 +252,7 @@ TEST(atEngine, handleBackspace)
 
     ASSERT_EQ(cmd1.gotInput, "");
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    std::string want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -278,7 +278,7 @@ TEST(atEngine, handleBackspaceWithInput)
 
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     ASSERT_EQ("hello", cmd1.gotInput);
-    std::string want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -300,7 +300,7 @@ TEST(atEngine, handleChunkedWritesWithInput)
 
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
     ASSERT_EQ("CMD1-INPUT", cmd1.gotInput);
-    std::string want = "+CMD1-RESPONSE\nOK\n";
+    std::string want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }
@@ -327,7 +327,7 @@ TEST(atEngine, ignoreCR)
 
     ASSERT_EQ(cmd1.gotInput, "");
     ASSERT_TRUE(cmd1.called) << "cmd1 not called";
-    want = "+CMD1-RESPONSE\nOK\n";
+    want = "CMD1-RESPONSE\nOK\n";
     ASSERT_EQ(want, testStream.writeBuffer);
     testStream.reset();
 }

@@ -64,7 +64,6 @@ void ATGetPin::Handle(at::Input input, at::Responder *resp)
     {
         auto pinIndex = parseNumber(input.body, input.length);
         auto pinState = _bus->getPin((byte)pinIndex.value);
-        resp->write("+PIN:");
         resp->write(pinState);
         resp->write('\n');
         resp->writeOk();

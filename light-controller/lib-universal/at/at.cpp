@@ -22,12 +22,11 @@ void Responder::writeLine(const char *line)
 
 void Responder::writeLine(const char *line, const size_t length)
 {
-    // We need space for leading '+' and trailing '\n'
-    auto outputSize = length + 2;
+    // We need space trailing '\n'
+    auto outputSize = length + 1;
     char *output = (char *)malloc(outputSize);
-    output[0] = '+';
-    memcpy(&output[1], line, length);
-    output[length + 1] = '\n';
+    memcpy(&output[0], line, length);
+    output[length] = '\n';
     this->_stream->write(output, outputSize);
     free(output);
 }

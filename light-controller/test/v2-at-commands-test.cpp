@@ -17,7 +17,7 @@ TEST(v2ATPing, HandleNoInput)
 
     ASSERT_STREQ("AT+PING", cmd.Name());
     cmd.Handle(at::Input(NULL, 0), &responder);
-    ASSERT_EQ("+PONG\nOK\n", testStream.writeBuffer);
+    ASSERT_EQ("PONG\nOK\n", testStream.writeBuffer);
 }
 
 TEST(v2ATPing, EchoInput)
@@ -28,7 +28,7 @@ TEST(v2ATPing, EchoInput)
 
     const char input[] = "PING-INPUT";
     cmd.Handle(at::Input((char *)&input, std::size(input) - 1), &responder); // -1 to skip null terminator
-    ASSERT_EQ("+PING-INPUT\nOK\n", testStream.writeBuffer);
+    ASSERT_EQ("PING-INPUT\nOK\n", testStream.writeBuffer);
 }
 
 
@@ -99,7 +99,7 @@ TEST(v2ATGetPin, ReturnsPinValue)
     at::Responder responder(&testStream);
 
     const byte wantState = bus.getPin(pin);
-    std::string want = "+PIN:" + std::to_string(wantState) + "\nOK\n";
+    std::string want = std::to_string(wantState) + "\nOK\n";
 
     cmd.Handle(at::Input((char *)std::to_string(pin).c_str(), 1), &responder);
     ASSERT_EQ(want, testStream.writeBuffer);
