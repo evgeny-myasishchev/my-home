@@ -30,6 +30,11 @@ reflex $(cat .reflex) -- sh -c "make build-test && ./build/apps/program"
 
 # Filter logger specific tests
 reflex $(cat .reflex) -- sh -c "make build-test && ./build/apps/program --gtest_filter=logger*"
+
+# Or with a helper script
+tests-watch
+
+tests-watch --gtest_filter=logger*
 ```
 
 ### Running platform tests
