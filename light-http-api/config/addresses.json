@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Flour 1",
+        "addresses": [
+            {"name": "Entry 1", "pinNumber": 0},
+            {"name": "Entry 2", "pinNumber": 1},
+            {"name": "Office", "pinNumber": 2},
+            {"name": "Hall (general)", "pinNumber": 3},
+            {"name": "Hall (night)", "pinNumber": 4},
+            {"name": "Hall (entry)", "pinNumber": 5},
+            {"name": "Stairs (general)", "pinNumber": 6},
+            {"name": "Stairs (under)", "pinNumber": 7},
+            {"name": "Bath", "pinNumber": 8},
+            {"name": "Boiler room", "pinNumber": 9},
+            {"name": "Kitchen (general)", "pinNumber": 10},
+            {"name": "Kitchen (led)", "pinNumber": 11},
+            {"name": "Kitchen (store)", "pinNumber": 12},
+            {"name": "Living (general)", "pinNumber": 13},
+            {"name": "Living (table)", "pinNumber": 14},
+            {"name": "Living (side)", "pinNumber": 15}
+        ]
+    }
+]
