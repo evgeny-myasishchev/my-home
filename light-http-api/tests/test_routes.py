@@ -6,6 +6,7 @@ import random
 import urandom
 import utime
 import ure
+import uio
 
 from tests import mocks
 
@@ -82,3 +83,19 @@ class TestSetPinHandler(unittest.TestCase):
         self.assertEqual(engine.calls[0]['cmd'], 'PIN')
         self.assertEqual(engine.calls[0]['data'], "%d,%d" % (pinNumber, wantState))
         self.assertEqual(w.written_status, uhttp.HTTP_STATUS_NO_CONTENT)
+
+class TestGetAddressesHandler(unittest.TestCase):
+    def test_handle(self):
+        file_path = "tests/mock-data/addresses.json"
+        addresses_file = uio.open(file_path)
+        want_payload = ujson.load(addresses_file)
+        addresses_file.close()
+
+        handler = app.routes.create_get_addresses_handler(file_path)
+        req = mocks.MockReq()
+        w = mocks.MockWriter()
+
+        handler(w, req)
+        self.assertEqual(w.written_status, uhttp.HTTP_STATUS_OK)
+        self.assertEqual(ujson.loads(w.written_body), want_payload)
+        self.assertEqual(w.headers['content-type'], 'application/json')

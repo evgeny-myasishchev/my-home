@@ -17,7 +17,9 @@ def create_server(config):
         ('POST', '/v1/light/led', routes.create_led_handler(light_controller)),
 
         ('GET', ure.compile(r'^/v1/light/pins/(\d+)$'), routes.create_get_pin_handler(light_controller)),
-        ('POST', ure.compile(r'^/v1/light/pins/(\d+)$'), routes.create_set_pin_handler(light_controller))
+        ('POST', ure.compile(r'^/v1/light/pins/(\d+)$'), routes.create_set_pin_handler(light_controller)),
+
+        ('GET', '/v1/light/addresses', routes.create_get_addresses_handler(config['addresses']['file-path'])),
     ])
 
     default_handler = middleware.not_found(None)

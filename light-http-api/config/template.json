@@ -14,6 +14,9 @@
             }
         }
     },
+    "addresses": {
+        "file-path": "config/addresses.json"
+    },
     "log": {
         "transports": {
             "print": {

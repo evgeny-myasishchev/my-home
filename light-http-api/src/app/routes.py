@@ -1,6 +1,7 @@
 import ujson
 import uhttp
 import logger
+import uio
 
 def create_ping_handler(light_controller):
     ping_payload = 'PONG'
@@ -38,4 +39,13 @@ def create_set_pin_handler(light_controller):
         logger.debug('Set pin %d state to: %s' % (pinNumber, state), context=req.context)
         light_controller.set_pin(pinNumber, state, context=req.context)
         w.write_header(uhttp.HTTP_STATUS_NO_CONTENT)
+    return handler
+
+def create_get_addresses_handler(file_path):
+    file = uio.open(file_path)
+    payload = file.read()
+    file.close()
+    def handler(w, req):
+        w.headers['content-type'] = 'application/json'
+        w.write(payload)
     return handler

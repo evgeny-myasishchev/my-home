@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Flour 1",
+        "addresses": [
+            {"name": "Entry 1", "pinNumber": 0},
+            {"name": "Entry 2", "pinNumber": 1}
+        ]
+    },
+    {
+        "name": "Flour 2",
+        "addresses": [
+            {"name": "Entry 1", "pinNumber": 0},
+            {"name": "Entry 2", "pinNumber": 1}
+        ]
+    }
+]
