@@ -61,6 +61,9 @@ make fetch_config
 
 # To write new config
 make push_config
+
+# To write new addresses
+make push_addresses
 ```
 
 ## Sync code

@@ -1,5 +1,5 @@
 .PHONY: build-env erase_flash write_flash repl sync_code setup_wifi_sta wifi_status shell test
-.PHONY: fetch_config push_config
+.PHONY: fetch_config push_config push_addresses
 
 include .build-env
 include .vendor-versions
@@ -44,6 +44,9 @@ fetch_config:
 push_config:
 	@rshell -p $(ESP_PORT) mkdir -p /pyboard/config
 	@rshell -p $(ESP_PORT) cp config/platform-$(PLATFORM).json /pyboard/config/platform-$(PLATFORM).json
+
+push_addresses:
+	@rshell -p $(ESP_PORT) cp config/addresses.json /pyboard/config/addresses.json
 
 shell:
 	@rshell -p $(ESP_PORT) shell
