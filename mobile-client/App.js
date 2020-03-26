@@ -1,18 +1,12 @@
-import {Button, Header, Icon} from 'react-native-elements';
-import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import * as React from 'react';
 
-function App() {
+import DrawerNavigator from './src/navigation/DrawerNavigator';
+
+export default function App() {
   return (
-    <>
-      <Header
-        leftComponent={{icon: 'menu', color: '#fff'}}
-        centerComponent={{text: 'MY TITLE', style: {color: '#fff'}}}
-        rightComponent={{icon: 'home', color: '#fff'}}
-      />
-      <Button title="Hey!" />
-      <Icon name="rowing" />
-    </>
+    <NavigationContainer>
+      <DrawerNavigator />
+    </NavigationContainer>
   );
 }
-
-export default App;
