@@ -19,7 +19,10 @@ npm i
 npm run start
 ```
 
-Use Android Studio to startup android emulator. Then start android app:
+Prepare emulator with Android Studio. Write it's name to `.avd-name` file (one time only)
+
+Then emulator and then android app:
 ```
+npm run android-emu&
 npm run android
 ```
