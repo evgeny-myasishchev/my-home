@@ -64,6 +64,20 @@ export default function DrawerNavigator() {
         <Drawer.Screen
           name="Notifications"
           component={NotificationsScreenComponent}
+          options={{
+            drawerIcon: ({tintColor}) => (
+              <Icon
+                name="cog"
+                size={30}
+                iconStyle={{
+                  width: 30,
+                  height: 30,
+                }}
+                type="entypo"
+                color={tintColor}
+              />
+            ),
+          }}
         />
       </Drawer.Navigator>
     </>
