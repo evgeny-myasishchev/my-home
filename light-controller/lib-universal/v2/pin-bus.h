@@ -67,7 +67,7 @@ public:
     );
     ~PCF8574Bus();
 
-    void setup(const byte initialState);
+    void setup(const byte outputState, const byte inputState);
 
     void readState();
     void writeState();

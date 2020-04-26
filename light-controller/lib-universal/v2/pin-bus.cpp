@@ -88,24 +88,29 @@ PCF8574Bus::~PCF8574Bus()
     delete boards;
 }
 
-void PCF8574Bus::setup(const byte initialState)
+void PCF8574Bus::setup(const byte outputState, const byte inputState)
 {
+    pin_bus_log("Initializing %d bus boards. Initial state: output: %d, input: %d", this->getBusSize(), outputState, inputState);
     for (size_t i = 0; i < this->getBusSize(); i++)
     {
-        boards[i]->begin();
+        const byte rawBoardState = i < outputBoardsNum ? outputState : inputState;
+        prevBusState[i] = rawBoardState;
+        const byte boardState = invert ? ~rawBoardState : rawBoardState;
+        boards[i]->begin(boardState);
+        pin_bus_log("Board %d: actual state (after invertion)=%d, prev state=%d", i, boards[i]->read8(), prevBusState[i]);
     }
-    pin_bus_log("Initializing %d bus boards. Initial state: %d", this->getBusSize(), initialState);
 }
 
 void PCF8574Bus::readState()
 {
     for (size_t i = 0; i < this->getBusSize(); i++)
     {
-        const byte byteValue = invert ? ~boards[i]->read8() : boards[i]->read8();
+        const byte rawByte = boards[i]->read8();
+        const byte byteValue = invert ? ~rawByte : rawByte;
         this->setStateByte(i, byteValue);
         if (this->prevBusState[i] != byteValue)
         {
-            pin_bus_log("Loaded board byte: %d, value: %b", i, byteValue);
+            pin_bus_log("Loaded board byte: %d, value(b): %b, value(d): %d, raw val(b): %b", i, byteValue, byteValue, rawByte);
         }
         this->prevBusState[i] = byteValue;
     }

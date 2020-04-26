@@ -7,7 +7,7 @@
 #include <at-commands.h>
 
 // Test mode will only use pin bus, see below
-// #define TEST_MODE
+#define TEST_MODE
 
 #include "routes/test-routes.h"
 // #include "routes/fl-2-routes.h"
@@ -44,7 +44,7 @@ void setup()
         .toggleBtnSwitchSvc = new ToggleButtonSwitchService(SwitchServiceConfig()),
     });
 
-    bus.setup(0xFF);
+    bus.setup(0x00, 0x00);
 
     atEngine.addCommandHandler(&atPing);
     atEngine.addCommandHandler(&atLed);
@@ -74,16 +74,16 @@ void loop()
             const byte relayAddress = relayIndex * 8 + bit;
             const byte relaySwitchAddress = RELAY_BOARDS * 8 + relayAddress;
             const auto relaySwitchState = bus.getPin(relaySwitchAddress);
-            bus.setPin(relayIndex * 8 + bit, relaySwitchState);
+            bus.setPin(relayAddress, relaySwitchState);
         }
     }
 
     const byte switchAllState = bus.getPin((RELAY_BOARDS + INPUT_BOARDS - 1) * 8);
-    if (switchAllState == LOW)
+    if (switchAllState == HIGH)
     {
         for (size_t i = 0; i < RELAY_BOARDS * 8; i++)
         {
-            bus.setPin(i, LOW);
+            bus.setPin(i, HIGH);
         }
     }
 
