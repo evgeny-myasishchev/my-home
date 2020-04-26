@@ -97,7 +97,7 @@ void PCF8574Bus::setup(const byte outputState, const byte inputState)
         prevBusState[i] = rawBoardState;
         const byte boardState = invert ? ~rawBoardState : rawBoardState;
         boards[i]->begin(boardState);
-        pin_bus_log("Board %d: actual state (after invertion)=%d, prev state=%d", i, boards[i]->read8(), prevBusState[i]);
+        pin_bus_log("Board %d: state=%d", i, rawBoardState);
     }
 }
 

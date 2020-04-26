@@ -7,10 +7,11 @@
 #include <at-commands.h>
 
 // Test mode will only use pin bus, see below
-#define TEST_MODE
+// #define TEST_MODE
 
-#include "routes/test-routes.h"
+// #include "routes/test-routes.h"
 // #include "routes/fl-2-routes.h"
+#include "routes/fl-1-routes.h"
 
 using namespace v2;
 
