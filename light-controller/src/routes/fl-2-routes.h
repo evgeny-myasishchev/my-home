@@ -27,15 +27,29 @@ ArrayPtr<Switch *> createRoutes()
     byte routeNumber = 0;
     Switch* route;
 
-    // Kids bedroom (green) - room light
+    // =================== Kids bedroom (green) ===================
+    // room light
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 0)
         ->withTargetAddresses(1, new byte[1]{5});
     routesArray[routeNumber++] = route;
 
-    // Kids bedroom (green) - hall
+    // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
+        ->withTargetAddresses(1, new byte[1]{0});
+    routesArray[routeNumber++] = route;
+
+    // =================== Kids bedroom (blue) ===================
+    // room light
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 2)
+        ->withTargetAddresses(1, new byte[1]{4});
+    routesArray[routeNumber++] = route;
+
+    // hall
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 3)
         ->withTargetAddresses(1, new byte[1]{0});
     routesArray[routeNumber++] = route;
 
