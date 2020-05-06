@@ -53,6 +53,44 @@ ArrayPtr<Switch *> createRoutes()
         ->withTargetAddresses(1, new byte[1]{0});
     routesArray[routeNumber++] = route;
 
+    // =================== Parents bedroom ===================
+    // entry: room light
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 4)
+        ->withTargetAddresses(1, new byte[1]{6});
+    routesArray[routeNumber++] = route;
+
+    // entry: hall
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 5)
+        ->withTargetAddresses(1, new byte[1]{0});
+    routesArray[routeNumber++] = route;
+
+    // bed left
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 6)
+        ->withTargetAddresses(1, new byte[1]{8});
+    routesArray[routeNumber++] = route;
+
+    // bed right
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 7)
+        ->withTargetAddresses(1, new byte[1]{7});
+    routesArray[routeNumber++] = route;
+
+    // beds: room light
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 8)
+        ->withTargetAddresses(1, new byte[1]{6});
+    routesArray[routeNumber++] = route;
+
+    // beds: hall
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 9)
+        ->withTargetAddresses(1, new byte[1]{0});
+    routesArray[routeNumber++] = route;
+
+
     byte* allRelays = new byte[relaysCount];
     for (byte relayNum = 0; relayNum < relaysCount; relayNum++)
     {
