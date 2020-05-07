@@ -90,6 +90,24 @@ ArrayPtr<Switch *> createRoutes()
         ->withTargetAddresses(1, new byte[1]{0});
     routesArray[routeNumber++] = route;
 
+    // =================== Bath ===================
+    // room light
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 10)
+        ->withTargetAddresses(1, new byte[1]{10});
+    routesArray[routeNumber++] = route;
+
+    // mirror
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 11)
+        ->withTargetAddresses(1, new byte[1]{11});
+    routesArray[routeNumber++] = route;
+
+    // laundry
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 12)
+        ->withTargetAddresses(1, new byte[1]{12});
+    routesArray[routeNumber++] = route;
 
     byte* allRelays = new byte[relaysCount];
     for (byte relayNum = 0; relayNum < relaysCount; relayNum++)
