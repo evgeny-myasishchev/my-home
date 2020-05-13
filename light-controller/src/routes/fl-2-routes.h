@@ -37,7 +37,7 @@ ArrayPtr<Switch *> createRoutes()
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
-        ->withTargetAddresses(1, new byte[1]{0});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // =================== Kids bedroom (blue) ===================
@@ -50,7 +50,7 @@ ArrayPtr<Switch *> createRoutes()
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 3)
-        ->withTargetAddresses(1, new byte[1]{0});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // =================== Parents bedroom ===================
@@ -63,7 +63,7 @@ ArrayPtr<Switch *> createRoutes()
     // entry: hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 5)
-        ->withTargetAddresses(1, new byte[1]{0});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // bed left
@@ -87,7 +87,7 @@ ArrayPtr<Switch *> createRoutes()
     // beds: hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 9)
-        ->withTargetAddresses(1, new byte[1]{0});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // =================== Bath ===================
@@ -109,15 +109,28 @@ ArrayPtr<Switch *> createRoutes()
         ->withTargetAddresses(1, new byte[1]{12});
     routesArray[routeNumber++] = route;
 
-    byte* allRelays = new byte[relaysCount];
-    for (byte relayNum = 0; relayNum < relaysCount; relayNum++)
-    {
-        allRelays[relayNum] = relayNum;
-    }
-    routesArray[routeNumber++] = (new Switch())
-        ->withSwitchType(SwitchType::Toggle)
-        ->withSwitchAddress(relaysCount + 16)
-        ->withTargetAddresses(relaysCount, allRelays);
+    // =================== Hall ===================
+    // hall
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 14)
+        ->withTargetAddresses(2, new byte[2]{0, 13});
+    routesArray[routeNumber++] = route;
+
+    // balcony
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 15)
+        ->withTargetAddresses(1, new byte[1]{2});
+    routesArray[routeNumber++] = route;
+
+    // byte* allRelays = new byte[relaysCount];
+    // for (byte relayNum = 0; relayNum < relaysCount; relayNum++)
+    // {
+    //     allRelays[relayNum] = relayNum;
+    // }
+    // routesArray[routeNumber++] = (new Switch())
+    //     ->withSwitchType(SwitchType::Toggle)
+    //     ->withSwitchAddress(relaysCount + 16)
+    //     ->withTargetAddresses(relaysCount, allRelays);
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
 }
