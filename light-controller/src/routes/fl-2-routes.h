@@ -31,26 +31,26 @@ ArrayPtr<Switch *> createRoutes()
     // room light
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 0)
-        ->withTargetAddresses(1, new byte[1]{5});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(1, new byte[1]{5});
     routesArray[routeNumber++] = route;
 
     // =================== Kids bedroom (blue) ===================
     // room light
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 2)
-        ->withTargetAddresses(1, new byte[1]{4});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 3)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(1, new byte[1]{4});
     routesArray[routeNumber++] = route;
 
     // =================== Parents bedroom ===================
