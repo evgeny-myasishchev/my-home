@@ -86,7 +86,27 @@ ArrayPtr<Switch *> createRoutes()
         ->withTargetAddresses(1, new byte[1]{16});
     routesArray[routeNumber++] = route;
 
+    // =================== hall ===================
+    // common
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 10)
+        ->withTargetAddresses(1, new byte[1]{6});
+    routesArray[routeNumber++] = route;
+
+    // store
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 11)
+        ->withTargetAddresses(2, new byte[2]{5, 11});
+    routesArray[routeNumber++] = route;
+
     // =================== Entry ===================
+    route = (new Switch())
+            ->withSwitchAddress(relaysCount + 22)
+            ->withTargetAddresses(3, new byte[3]{
+                0, 1, 6
+            });
+    routesArray[routeNumber++] = route;
+
     route = (new Switch())
             ->withSwitchAddress(relaysCount + 23)
             // ->withSwitchType(SwitchType::Push)
