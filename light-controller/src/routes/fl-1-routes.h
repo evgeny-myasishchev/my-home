@@ -99,6 +99,12 @@ ArrayPtr<Switch *> createRoutes()
         ->withTargetAddresses(2, new byte[2]{5, 11});
     routesArray[routeNumber++] = route;
 
+    // =================== bath ===================
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 12)
+        ->withTargetAddresses(1, new byte[1]{10});
+    routesArray[routeNumber++] = route;
+
     // =================== Entry ===================
     route = (new Switch())
             ->withSwitchAddress(relaysCount + 22)
