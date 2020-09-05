@@ -113,15 +113,17 @@ ArrayPtr<Switch *> createRoutes()
             });
     routesArray[routeNumber++] = route;
 
+    // entry all
     route = (new Switch())
             ->withSwitchAddress(relaysCount + 23)
             // ->withSwitchType(SwitchType::Push)
             ->withSwitchType(SwitchType::Toggle)
-            ->withTargetAddresses(24, new byte[24]{
-                0, 1, 2, 3, 4, 5, 6, 7,
-                8, 9, 10, 11, 12, 13, 14, 15,
-                16, 17, 18, 19, 20, 21, 22, 23,
-            });
+            ->withTargetAddresses(1, new byte[1]{19});
+            // ->withTargetAddresses(24, new byte[24]{
+            //     0, 1, 2, 3, 4, 5, 6, 7,
+            //     8, 9, 10, 11, 12, 13, 14, 15,
+            //     16, 17, 18, 19, 20, 21, 22, 23,
+            // });
     routesArray[routeNumber++] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
