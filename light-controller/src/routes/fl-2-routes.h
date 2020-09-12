@@ -28,26 +28,26 @@ ArrayPtr<Switch *> createRoutes()
     Switch* route;
 
     // =================== Kids bedroom (green) ===================
-    // room light
+    // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 0)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
     routesArray[routeNumber++] = route;
 
-    // hall
+    // room light
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
         ->withTargetAddresses(1, new byte[1]{5});
     routesArray[routeNumber++] = route;
 
     // =================== Kids bedroom (blue) ===================
-    // room light
+    // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 2)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
     routesArray[routeNumber++] = route;
 
-    // hall
+    // room light
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 3)
         ->withTargetAddresses(1, new byte[1]{4});
@@ -63,7 +63,7 @@ ArrayPtr<Switch *> createRoutes()
     // entry: hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 5)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
     routesArray[routeNumber++] = route;
 
     // bed left
@@ -87,7 +87,7 @@ ArrayPtr<Switch *> createRoutes()
     // beds: hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 9)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
     routesArray[routeNumber++] = route;
 
     // =================== Bath ===================
@@ -113,7 +113,7 @@ ArrayPtr<Switch *> createRoutes()
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 14)
-        ->withTargetAddresses(2, new byte[2]{0, 13});
+        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
     routesArray[routeNumber++] = route;
 
     // balcony
