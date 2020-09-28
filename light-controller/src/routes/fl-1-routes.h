@@ -64,7 +64,9 @@ ArrayPtr<Switch *> createRoutes()
     // hall entry
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 6)
-        ->withTargetAddresses(1, new byte[1]{0});
+        ->withTargetAddresses(3, new byte[3]{
+            0, 1, 6
+        });
     routesArray[routeNumber++] = route;
 
     // =================== kitchen ===================
@@ -74,23 +76,23 @@ ArrayPtr<Switch *> createRoutes()
         ->withTargetAddresses(1, new byte[1]{16});
     routesArray[routeNumber++] = route;
 
-    // kitchen led
+    // kitchen led (store for now)
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 8)
-        ->withTargetAddresses(1, new byte[1]{14});
+        ->withTargetAddresses(1, new byte[1]{13});
     routesArray[routeNumber++] = route;
 
     // kitchen common
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 9)
-        ->withTargetAddresses(3, new byte[3]{12, 13, 14});
+        ->withTargetAddresses(2, new byte[2]{12, 14});
     routesArray[routeNumber++] = route;
 
     // =================== hall ===================
     // common
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 10)
-        ->withTargetAddresses(1, new byte[1]{6});
+        ->withTargetAddresses(3, new byte[3]{0, 1, 6});
     routesArray[routeNumber++] = route;
 
     // store
