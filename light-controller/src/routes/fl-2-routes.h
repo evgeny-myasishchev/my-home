@@ -113,24 +113,15 @@ ArrayPtr<Switch *> createRoutes()
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 14)
-        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
-    // balcony
+    // balcony (for now used for store)
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 15)
-        ->withTargetAddresses(1, new byte[1]{2});
+        // ->withTargetAddresses(1, new byte[1]{2});
+        ->withTargetAddresses(1, new byte[1]{9});
     routesArray[routeNumber++] = route;
-
-    // byte* allRelays = new byte[relaysCount];
-    // for (byte relayNum = 0; relayNum < relaysCount; relayNum++)
-    // {
-    //     allRelays[relayNum] = relayNum;
-    // }
-    // routesArray[routeNumber++] = (new Switch())
-    //     ->withSwitchType(SwitchType::Toggle)
-    //     ->withSwitchAddress(relaysCount + 16)
-    //     ->withTargetAddresses(relaysCount, allRelays);
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
 }
