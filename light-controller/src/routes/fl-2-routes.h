@@ -31,7 +31,7 @@ ArrayPtr<Switch *> createRoutes()
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 0)
-        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // room light
@@ -44,7 +44,7 @@ ArrayPtr<Switch *> createRoutes()
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 2)
-        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // room light
@@ -63,7 +63,7 @@ ArrayPtr<Switch *> createRoutes()
     // entry: hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 5)
-        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // bed left
@@ -87,7 +87,7 @@ ArrayPtr<Switch *> createRoutes()
     // beds: hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 9)
-        ->withTargetAddresses(3, new byte[3]{0, 9, 13});
+        ->withTargetAddresses(2, new byte[2]{0, 13});
     routesArray[routeNumber++] = route;
 
     // =================== Bath ===================
