@@ -15,18 +15,18 @@ ArrayPtr<Switch *> createRoutes()
     Switch* route;
 
     // =================== Barn ===================
-    // barn + shed
+    // barn
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 0)
-        ->withSwitchType(SwitchType::Toggle)
-        ->withTargetAddresses(2, new byte[2]{2, 5});
+        ->withSwitchType(SwitchType::Push)
+        ->withTargetAddresses(1, new byte[1]{8});
     routesArray[routeNumber++] = route;
 
-    // land night
+    // land night + shed
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
         ->withSwitchType(SwitchType::Toggle)
-        ->withTargetAddresses(1, new byte[1]{0});
+        ->withTargetAddresses(2, new byte[2]{0, 2});
     routesArray[routeNumber++] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
