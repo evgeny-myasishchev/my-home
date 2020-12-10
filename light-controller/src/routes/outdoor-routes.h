@@ -21,12 +21,19 @@ ArrayPtr<Switch *> createRoutes()
         ->withSwitchType(SwitchType::Push)
         ->withTargetAddresses(1, new byte[1]{8});
     routesArray[routeNumber++] = route;
+    
+    // shed normal
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 2)
+        ->withSwitchType(SwitchType::Push)
+        ->withTargetAddresses(1, new byte[1]{9});
+    routesArray[routeNumber++] = route;
 
-    // land night + shed
+    // night land + shed
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
         ->withSwitchType(SwitchType::Toggle)
-        ->withTargetAddresses(2, new byte[2]{0, 2});
+        ->withTargetAddresses(3, new byte[2]{0, 3});
     routesArray[routeNumber++] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
