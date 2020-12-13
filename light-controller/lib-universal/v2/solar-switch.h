@@ -1,5 +1,5 @@
-#ifndef V2_RTC_HANDLERS
-#define V2_RTC_HANDLERS
+#ifndef V2_SOLAR_SWITCH
+#define V2_SOLAR_SWITCH
 
 #include <rtc.h>
 #include "pin-bus.h"
