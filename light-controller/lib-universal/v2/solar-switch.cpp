@@ -16,9 +16,14 @@ namespace v2
 
         auto state = _nightState;
 
+        uint8_t sunriseHour = sunrise.hour() + _sunrizeOffsetMinutes / 60;
+        uint8_t sunriseMinute = sunrise.minute() + _sunrizeOffsetMinutes % 60;
+        auto sunsetHour = sunset.hour() + _sunsetOffsetMinutes / 60;
+        auto sunsetMinute = sunset.minute() + _sunsetOffsetMinutes % 60;
+
         if (
-            (now.hour() >= sunrise.hour() && now.hour() <= sunset.hour()) &&
-            (now.minute()) >= sunrise.minute() && now.hour() <= sunset.minute())
+            (now.hour() >= sunriseHour && now.hour() <= sunsetHour) &&
+            (now.minute()) >= sunriseMinute && now.minute() <= sunsetMinute)
         {
             state = _dayState;
         }
@@ -27,10 +32,12 @@ namespace v2
 
     void SolarSwitch::setSunriseOffsetMinutes(const uint8_t offset)
     {
+        _sunrizeOffsetMinutes = offset;
     }
 
     void SolarSwitch::setSunsetOffsetMinutes(const uint8_t offset)
     {
+        _sunsetOffsetMinutes = offset;
     }
 
     void SolarSwitch::setPin(const byte pinIndex, const byte dayState, const byte nightState)

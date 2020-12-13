@@ -1,7 +1,9 @@
 #include "test-rtc.h"
 
-TestSolar::TestSolar(DateTime sunrise, DateTime sunset) : _sunrise(sunrise), _sunset(sunset)
+TestSolar::TestSolar(DateTime sunrise, DateTime sunset)
 {
+    _sunrise = sunrise;
+    _sunset = sunset;
 };
 
 TestSolar::~TestSolar()

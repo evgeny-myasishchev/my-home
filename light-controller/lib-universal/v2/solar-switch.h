@@ -25,6 +25,9 @@ namespace v2
         byte _pinIndex;
         byte _dayState;
         byte _nightState;
+
+        uint8_t _sunrizeOffsetMinutes = 0;
+        uint8_t _sunsetOffsetMinutes = 0;
     };
 
 } // namespace v2

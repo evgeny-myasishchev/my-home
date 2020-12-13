@@ -21,33 +21,76 @@ namespace
             sunset(2020, 12, 13, 15, 33, 0),
             solar(sunrise, sunset)
         {
-
-        }
-
-        void SetUp() override
-        {
         }
     };
 
     TEST_F(SolarSwitchLoop, SetDayState)
     {
-        DateTime now(2020, 12, 13, 10, 30, 55);
-        
         v2::SolarSwitch sw(&solar, &bus);
         sw.setPin(9, 1, 0);
-        sw.loop(now);
+        sw.loop(DateTime(2020, 12, 13, 10, 30, 55));
 
+        ASSERT_EQ(1, bus.getPin(9));
+    }
+
+    TEST_F(SolarSwitchLoop, SetDayStateWithOffsetsLessThanHour)
+    {
+        v2::SolarSwitch sw(&solar, &bus);
+        sw.setSunriseOffsetMinutes(4);
+        sw.setPin(9, 1, 0);
+
+        sw.loop(DateTime(2020, 12, 13, 07, 29, 55));
+        ASSERT_EQ(0, bus.getPin(9));
+
+        sw.loop(DateTime(2020, 12, 13, 07, 30, 55));
+        ASSERT_EQ(1, bus.getPin(9));
+    }
+
+    TEST_F(SolarSwitchLoop, SetDayStateWithOffsetsMoreThanHour)
+    {
+        v2::SolarSwitch sw(&solar, &bus);
+        sw.setSunriseOffsetMinutes(124);
+        sw.setPin(9, 1, 0);
+
+        sw.loop(DateTime(2020, 12, 13, 9, 29, 55));
+        ASSERT_EQ(0, bus.getPin(9));
+
+        sw.loop(DateTime(2020, 12, 13, 9, 30, 55));
         ASSERT_EQ(1, bus.getPin(9));
     }
 
     TEST_F(SolarSwitchLoop, SetNightState)
     {
-        DateTime now(2020, 12, 13, 16, 30, 55);
-        
         v2::SolarSwitch sw(&solar, &bus);
         sw.setPin(9, 0, 1);
-        sw.loop(now);
+        sw.loop(DateTime(2020, 12, 13, 16, 30, 55));
 
+        ASSERT_EQ(1, bus.getPin(9));
+    }
+
+    TEST_F(SolarSwitchLoop, SetNightStateWithOffsetsLessThanHour)
+    {
+        v2::SolarSwitch sw(&solar, &bus);
+        sw.setPin(9, 0, 1);
+        sw.setSunsetOffsetMinutes(4);
+
+        sw.loop(DateTime(2020, 12, 13, 15, 37, 55));
+        ASSERT_EQ(0, bus.getPin(9));
+
+        sw.loop(DateTime(2020, 12, 13, 15, 38, 55));
+        ASSERT_EQ(1, bus.getPin(9));
+    }
+
+    TEST_F(SolarSwitchLoop, SetNightStateWithOffsetsMoreThanHour)
+    {
+        v2::SolarSwitch sw(&solar, &bus);
+        sw.setPin(9, 0, 1);
+        sw.setSunsetOffsetMinutes(124);
+
+        sw.loop(DateTime(2020, 12, 13, 17, 37, 55));
+        ASSERT_EQ(0, bus.getPin(9));
+
+        sw.loop(DateTime(2020, 12, 13, 17, 38, 55));
         ASSERT_EQ(1, bus.getPin(9));
     }
 

@@ -13,7 +13,10 @@
 class DateTime
 {
 public:
-    DateTime(uint16_t year, uint8_t month, uint8_t day,
+    DateTime(const DateTime &dt) : DateTime(dt.year(), dt.month(), dt.day(), dt.hour(), dt.minute(), dt.second())
+    {
+    };
+    DateTime(uint16_t year = 0, uint8_t month = 0, uint8_t day = 0,
              uint8_t hour = 0, uint8_t min = 0, uint8_t sec = 0)
     {
         y = year;
