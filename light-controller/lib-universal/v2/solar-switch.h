@@ -10,7 +10,6 @@ namespace v2
     {
     public:
         SolarSwitch(rtc::Solar *solar, PinBus *bus);
-
         void loop(DateTime now);
         // Positive - after, negative - before
         SolarSwitch *setSunriseOffsetMinutes(const uint8_t offset);
@@ -18,6 +17,14 @@ namespace v2
         SolarSwitch *setSunsetOffsetMinutes(const uint8_t offset);
         // Index of a pin to toggle
         SolarSwitch *setPin(const byte pinIndex, const byte dayState, const byte nightState);
+
+    private:
+        SolarSwitch();
+        rtc::Solar *_solar;
+        PinBus *_bus;
+        byte _pinIndex;
+        byte _dayState;
+        byte _nightState;
     };
 
 } // namespace v2

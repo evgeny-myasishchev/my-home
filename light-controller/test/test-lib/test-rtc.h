@@ -6,14 +6,21 @@
 class TestSolar : public rtc::Solar
 {
 public:
-    DateTime sunrise(DateTime now);
-    DateTime sunset(DateTime now);
+    TestSolar(DateTime sunrise, DateTime sunset);
+    ~TestSolar();
+    DateTime sunrise();
+    DateTime sunset();
+
+private:
+    DateTime _sunrise;
+    DateTime _sunset;
 };
 
-class TestClock : rtc::Clock
+class TestClock : public rtc::Clock
 {
 public:
     TestClock(DateTime *now);
+    ~TestClock();
     DateTime now();
 
 private:

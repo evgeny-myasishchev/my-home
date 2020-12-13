@@ -9,8 +9,8 @@ namespace rtc
     class Solar
     {
     public:
-        virtual DateTime sunrise(DateTime now) = 0;
-        virtual DateTime sunset(DateTime now) = 0;
+        virtual DateTime sunrise() = 0;
+        virtual DateTime sunset() = 0;
     };
 
     class Clock
