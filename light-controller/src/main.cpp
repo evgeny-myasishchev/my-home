@@ -3,6 +3,7 @@
 #include <pin-bus.h>
 #include <switch-service-v2.h>
 #include <switches-router-v2.h>
+#include <solar-switch.h>
 #include <at.h>
 #include <at-commands.h>
 

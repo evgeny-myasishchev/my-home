@@ -2,7 +2,7 @@
 #define V2_SWITCH
 
 #include <arduino-compat.h>
-#include <array-ptr.h>
+#include "array-ptr.h"
 
 namespace v2
 {
