@@ -1,7 +1,7 @@
 #ifndef rtc_compat_h
 #define rtc_compat_h
 
-#ifdef ARDUINO1
+#ifdef ARDUINO
 
 #include <DS3231.h>
 

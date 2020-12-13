@@ -13,11 +13,11 @@ namespace v2
         ~SolarSwitch();
         void loop(DateTime now);
         // Positive - after, negative - before
-        SolarSwitch* setSunriseOffsetMinutes(const uint8_t offset);
+        SolarSwitch *setSunriseOffsetMinutes(const uint8_t offset);
         // Positive - after, negative - before
-        SolarSwitch* setSunsetOffsetMinutes(const uint8_t offset);
+        SolarSwitch *setSunsetOffsetMinutes(const uint8_t offset);
         // Index of a pin to toggle
-        SolarSwitch* setPin(const byte pinIndex, const byte dayState, const byte nightState);
+        SolarSwitch *setPin(const byte pinIndex, const byte dayState, const byte nightState);
     };
 
 } // namespace v2
