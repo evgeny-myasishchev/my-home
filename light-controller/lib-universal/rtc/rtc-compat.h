@@ -14,7 +14,15 @@ class DateTime
 {
 public:
     DateTime(uint16_t year, uint8_t month, uint8_t day,
-             uint8_t hour = 0, uint8_t min = 0, uint8_t sec = 0);
+             uint8_t hour = 0, uint8_t min = 0, uint8_t sec = 0)
+    {
+        y = year;
+        m = month;
+        d = day;
+        hh = hour;
+        mm = min;
+        ss = sec;
+    };
     uint16_t year() const { return y; }
     uint8_t month() const { return m; }
     uint8_t day() const { return d; }
