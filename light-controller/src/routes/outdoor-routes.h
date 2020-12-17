@@ -1,3 +1,4 @@
+#include <solar-switch.h>
 #include <switch.h>
 
 using namespace v2;
@@ -5,8 +6,9 @@ using namespace v2;
 #define RELAY_BOARDS 2
 #define INPUT_BOARDS 2
 
-ArrayPtr<Switch *> createRoutes()
+ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
 {
+
     const byte relaysCount = RELAY_BOARDS * 8;
     const byte switchesCount = INPUT_BOARDS * 8;
 
@@ -35,6 +37,10 @@ ArrayPtr<Switch *> createRoutes()
         ->withSwitchType(SwitchType::Toggle)
         ->withTargetAddresses(3, new byte[2]{0, 3});
     routesArray[routeNumber++] = route;
+
+    solarSwitch->setPin(relaysCount + 1, 0, 1);
+    solarSwitch->setSunriseOffsetMinutes(0);
+    solarSwitch->setSunriseOffsetMinutes(0);
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
 }

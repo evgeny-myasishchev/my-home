@@ -1,11 +1,14 @@
+#include <Dusk2Dawn.h>
 #include <arduino-compat.h>
 #include <logger.h>
 #include <pin-bus.h>
+#include <rtc.h>
 #include <switch-service-v2.h>
 #include <switches-router-v2.h>
 #include <solar-switch.h>
 #include <at.h>
 #include <at-commands.h>
+
 
 // Test mode will only use pin bus, see below
 // #define TEST_MODE 
@@ -21,7 +24,6 @@ PCF8574Bus bus(RELAY_BOARDS, INPUT_BOARDS, true);
 
 SwitchesRouter *router;
 
-ArrayPtr<Switch *> routes = createRoutes();
 
 io::SerialTextStream atStream(&Serial);
 at::Engine atEngine(&atStream);
@@ -31,6 +33,14 @@ ATPing atPing;
 ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
 ATGetPin atGetPin(&bus);
 ATSetPin atSetPin(&bus);
+
+rtc::RTCClock clock;
+// Dusk2Dawn location(50, 36, +2);
+Dusk2Dawn location(34, 118, -10);
+rtc::ArduinoSolar solar(&clock, &location);
+SolarSwitch solarSwitch(&solar, &bus);
+
+ArrayPtr<Switch *> routes = createRoutes(&solarSwitch);
 
 void setup()
 {
@@ -64,11 +74,13 @@ void loop()
 
     atEngine.loop();
 
-#ifndef TEST_MODE
+#ifdef TEST_MODE
 
     router->processRoutes(routes);
 
 #else
+    auto now = clock.now();
+    solarSwitch.loop(now);
 
     for (size_t relayIndex = 0; relayIndex < RELAY_BOARDS; relayIndex++)
     {
