@@ -13,6 +13,13 @@ namespace v2
 
 class PinBus
 {
+public:
+    const virtual byte getPin(const byte pinIndex) const = 0;
+    const virtual void setPin(const byte pinIndex, byte state) = 0;
+};
+
+class PersistablePinBus : public PinBus
+{
 
 private:
     byte *busState;
@@ -24,8 +31,8 @@ protected:
     const byte getStateByte(const byte byteIndex);
 
 public:
-    PinBus(const byte busSize);
-    virtual ~PinBus();
+    PersistablePinBus(const byte busSize);
+    virtual ~PersistablePinBus();
     const byte getPin(const byte pinIndex) const;
     const void setPin(const byte pinIndex, byte state);
 
@@ -44,7 +51,7 @@ public:
 // Bus implementation based on PCF8574 boards
 // Address space starts from output boards (e.g relays)
 // followed by input boards (e.g switches)
-class PCF8574Bus : public PinBus
+class PCF8574Bus : public PersistablePinBus
 {
 private:
     byte outputBoardsNum;

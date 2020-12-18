@@ -9,23 +9,23 @@ namespace v2
 #define pin_bus_log
 #endif
 
-PinBus::PinBus(const byte busSize)
+PersistablePinBus::PersistablePinBus(const byte busSize)
 {
     this->busSize = busSize;
     this->busState = new byte[busSize]();
 }
 
-PinBus::~PinBus()
+PersistablePinBus::~PersistablePinBus()
 {
     delete this->busState;
 }
 
-const byte PinBus::getBusSize()
+const byte PersistablePinBus::getBusSize()
 {
     return busSize;
 }
 
-void PinBus::setStateByte(const byte byteIndex, const byte state)
+void PersistablePinBus::setStateByte(const byte byteIndex, const byte state)
 {
     if (byteIndex >= this->busSize)
     {
@@ -34,12 +34,12 @@ void PinBus::setStateByte(const byte byteIndex, const byte state)
     this->busState[byteIndex] = state;
 }
 
-const byte PinBus::getStateByte(const byte byteIndex)
+const byte PersistablePinBus::getStateByte(const byte byteIndex)
 {
     return this->busState[byteIndex];
 }
 
-const byte PinBus::getPin(const byte pinIndex) const
+const byte PersistablePinBus::getPin(const byte pinIndex) const
 {
     const byte byteIndex = pinIndex / 8;
     const byte bit = pinIndex % 8;
@@ -51,7 +51,7 @@ const byte PinBus::getPin(const byte pinIndex) const
     return bitRead(byte, bit);
 }
 
-const void PinBus::setPin(const byte pinIndex, byte state)
+const void PersistablePinBus::setPin(const byte pinIndex, byte state)
 {
     const byte byteIndex = pinIndex / 8;
     const byte bit = pinIndex % 8;
@@ -65,7 +65,7 @@ const void PinBus::setPin(const byte pinIndex, byte state)
 #ifdef ARDUINO
 
 PCF8574Bus::PCF8574Bus(const byte outputBoardsNum, const byte inputBoardsNum, bool invert)
-    : outputBoardsNum(outputBoardsNum), inputBoardsNum(inputBoardsNum), PinBus(outputBoardsNum + inputBoardsNum)
+    : outputBoardsNum(outputBoardsNum), inputBoardsNum(inputBoardsNum), PersistablePinBus(outputBoardsNum + inputBoardsNum)
 {
     const auto busSize = this->getBusSize();
     byte initialAddress = PCF8574_BASE_ADDR;
