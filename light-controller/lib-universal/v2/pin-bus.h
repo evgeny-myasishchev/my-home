@@ -30,7 +30,7 @@ namespace v2
         byte busSize;
 
     protected:
-        const byte getBusSize();
+        const byte getBusSizeBytes();
         void setStateByte(const byte byteIndex, const byte state);
         const byte getStateByte(const byte byteIndex);
 

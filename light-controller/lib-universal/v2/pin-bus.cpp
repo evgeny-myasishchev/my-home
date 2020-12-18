@@ -20,7 +20,7 @@ PersistablePinBus::~PersistablePinBus()
     delete this->busState;
 }
 
-const byte PersistablePinBus::getBusSize()
+const byte PersistablePinBus::getBusSizeBytes()
 {
     return busSize;
 }
@@ -67,7 +67,7 @@ const void PersistablePinBus::setPin(const byte pinIndex, byte state)
 PCF8574Bus::PCF8574Bus(const byte outputBoardsNum, const byte inputBoardsNum, bool invert)
     : outputBoardsNum(outputBoardsNum), inputBoardsNum(inputBoardsNum), PersistablePinBus(outputBoardsNum + inputBoardsNum)
 {
-    const auto busSize = this->getBusSize();
+    const auto busSize = this->getBusSizeBytes();
     byte initialAddress = PCF8574_BASE_ADDR;
     boards = new PCF8574 *[busSize];
     for (size_t i = 0; i < busSize; i++)
@@ -90,8 +90,8 @@ PCF8574Bus::~PCF8574Bus()
 
 void PCF8574Bus::setup(const byte outputState, const byte inputState)
 {
-    pin_bus_log("Initializing %d bus boards. Initial state: output: %d, input: %d", this->getBusSize(), outputState, inputState);
-    for (size_t i = 0; i < this->getBusSize(); i++)
+    pin_bus_log("Initializing %d bus boards. Initial state: output: %d, input: %d", this->getBusSizeBytes(), outputState, inputState);
+    for (size_t i = 0; i < this->getBusSizeBytes(); i++)
     {
         const byte rawBoardState = i < outputBoardsNum ? outputState : inputState;
         prevBusState[i] = rawBoardState;
@@ -103,7 +103,7 @@ void PCF8574Bus::setup(const byte outputState, const byte inputState)
 
 void PCF8574Bus::readState()
 {
-    for (size_t i = 0; i < this->getBusSize(); i++)
+    for (size_t i = 0; i < this->getBusSizeBytes(); i++)
     {
         const byte rawByte = boards[i]->read8();
         const byte byteValue = invert ? ~rawByte : rawByte;
