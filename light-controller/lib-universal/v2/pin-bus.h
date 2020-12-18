@@ -16,6 +16,7 @@ namespace v2
     public:
         const virtual byte getPin(const byte pinIndex) const = 0;
         const virtual void setPin(const byte pinIndex, byte state) = 0;
+        const byte getBusSizeBytes();
     };
 
     class CompositePinBus : public PinBus
@@ -30,13 +31,13 @@ namespace v2
         byte busSize;
 
     protected:
-        const byte getBusSizeBytes();
         void setStateByte(const byte byteIndex, const byte state);
         const byte getStateByte(const byte byteIndex);
 
     public:
         PersistablePinBus(const byte busSize);
         virtual ~PersistablePinBus();
+        const byte getBusSizeBytes();
         const byte getPin(const byte pinIndex) const;
         const void setPin(const byte pinIndex, byte state);
 

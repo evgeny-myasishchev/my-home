@@ -7,7 +7,7 @@
 namespace
 {
 
-    TEST(V2PinBus, initialState)
+    TEST(V2PinBusPersistable, initialState)
     {
         const byte maxBytes = test::randomNumber(5, 10);
         const TestPinBus bus(maxBytes);
@@ -20,7 +20,7 @@ namespace
         }
     }
 
-    TEST(V2PinBus, getPin)
+    TEST(V2PinBusPersistable, getPin)
     {
         const byte maxBytes = test::randomNumber(5, 10);
         byte *state = new byte[maxBytes]();
@@ -46,7 +46,7 @@ namespace
         }
     }
 
-    TEST(V2PinBus, setPin)
+    TEST(V2PinBusPersistable, setPin)
     {
         const byte maxBytes = test::randomNumber(5, 10);
         byte *state = new byte[maxBytes]();
