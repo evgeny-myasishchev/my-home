@@ -9,6 +9,29 @@ namespace v2
 #define pin_bus_log
 #endif
 
+CompositePinBus::CompositePinBus(const byte targetsCount, PinBus **targets)
+{
+    for (size_t i = 0; i < targetsCount; i++)
+    {
+        const auto target = targets[i];
+        totalSize = totalSize + target->getBusSizeBytes();
+    }
+}
+
+const byte CompositePinBus::getPin(const byte pinIndex) const
+{
+    return 0;
+}
+
+const void CompositePinBus::setPin(const byte pinIndex, byte state)
+{
+}
+
+const byte CompositePinBus::getBusSizeBytes() const
+{
+    return totalSize;
+}
+
 PersistablePinBus::PersistablePinBus(const byte busSize)
 {
     this->busSize = busSize;
@@ -20,7 +43,7 @@ PersistablePinBus::~PersistablePinBus()
     delete this->busState;
 }
 
-const byte PersistablePinBus::getBusSizeBytes()
+const byte PersistablePinBus::getBusSizeBytes() const
 {
     return busSize;
 }
