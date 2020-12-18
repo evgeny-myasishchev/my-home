@@ -77,7 +77,7 @@ namespace
     {
         const byte maxBytes = test::randomNumber(5, 10);
         const TestPinBus target1(maxBytes);
-        v2::PinBus* targets[1] = {(v2::PinBus*)&target1};
+        v2::PinBus *targets[1] = {(v2::PinBus *)&target1};
         const v2::CompositePinBus composite(1, targets);
         const byte got = composite.getBusSizeBytes();
         ASSERT_EQ(maxBytes, got);
@@ -89,10 +89,33 @@ namespace
         const TestPinBus target1(target1Bytes);
         const byte target2Bytes = test::randomNumber(5, 10);
         const TestPinBus target2(target2Bytes);
-        v2::PinBus* targets[2] = {(v2::PinBus*)&target1, (v2::PinBus*)&target2};
+        v2::PinBus *targets[2] = {(v2::PinBus *)&target1, (v2::PinBus *)&target2};
         const v2::CompositePinBus composite(2, targets);
         const byte got = composite.getBusSizeBytes();
         ASSERT_EQ(target1Bytes + target2Bytes, got);
+    }
+
+    TEST(V2PinBusComposite, getPinSingleTarget)
+    {
+        const byte target1Bytes = test::randomNumber(5, 10);
+        byte *state = new byte[target1Bytes]();
+        for (size_t byteIndex = 0; byteIndex < target1Bytes; byteIndex++)
+        {
+            state[byteIndex] = test::randomNumber(0, 255);
+        }
+
+        TestPinBus target1(target1Bytes);
+        target1.pendingTestState = state;
+        target1.readState();
+
+        v2::PinBus *targets[1] = {(v2::PinBus *)&target1};
+        const v2::CompositePinBus composite(1, targets);
+
+        const auto totalBits = target1Bytes * 8;
+        for (size_t i = 0; i < totalBits; i++)
+        {
+            ASSERT_EQ(target1.getPin(i), composite.getPin(i));
+        }
     }
 
 } // namespace

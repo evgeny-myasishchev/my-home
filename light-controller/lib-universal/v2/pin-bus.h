@@ -24,9 +24,11 @@ namespace v2
 
     private:
         byte totalSize = 0;
+        PinBus **byteSlots;
 
     public:
         CompositePinBus(const byte targetsCount, PinBus **targets);
+        ~CompositePinBus();
         const byte getPin(const byte pinIndex) const;
         const void setPin(const byte pinIndex, byte state);
         const byte getBusSizeBytes() const;

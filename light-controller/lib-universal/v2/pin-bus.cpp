@@ -16,11 +16,18 @@ CompositePinBus::CompositePinBus(const byte targetsCount, PinBus **targets)
         const auto target = targets[i];
         totalSize = totalSize + target->getBusSizeBytes();
     }
+    byteSlots = new PinBus*[totalSize];
+    byteSlots[0] = targets[0];
+}
+
+CompositePinBus::~CompositePinBus()
+{
+    delete byteSlots;
 }
 
 const byte CompositePinBus::getPin(const byte pinIndex) const
 {
-    return 0;
+    return byteSlots[0]->getPin(pinIndex);
 }
 
 const void CompositePinBus::setPin(const byte pinIndex, byte state)
