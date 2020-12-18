@@ -2,6 +2,7 @@
 #define V2_SOLAR_SWITCH
 
 #include <rtc.h>
+#include <logger.h>
 #include "pin-bus.h"
 
 namespace v2
@@ -10,6 +11,7 @@ namespace v2
     {
     public:
         SolarSwitch(rtc::Solar *solar, PinBus *bus);
+        void setup();
         void loop(DateTime now);
         // Positive - after, negative - before
         void setSunriseOffsetMinutes(const uint8_t offset);

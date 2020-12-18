@@ -59,6 +59,8 @@ void setup()
 
     bus.setup(0x00, 0x00);
 
+    solarSwitch.setup();
+
     atEngine.addCommandHandler(&atPing);
     atEngine.addCommandHandler(&atLed);
     atEngine.addCommandHandler(&atGetPin);
@@ -101,7 +103,6 @@ void loop()
             bus.setPin(i, HIGH);
         }
     }
-
 #endif
 
     bus.writeState();

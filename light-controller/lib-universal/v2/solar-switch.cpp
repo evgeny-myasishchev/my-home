@@ -9,6 +9,11 @@ namespace v2
         _bus = bus;
     }
 
+    void SolarSwitch::setup()
+    {
+        logger_log("Solar switch setup: pin=%d, day state=%d, night state=%d", _pinIndex, _dayState, _nightState);
+    }
+
     void SolarSwitch::loop(DateTime now)
     {
         auto sunrise = _solar->sunrise();
@@ -27,7 +32,14 @@ namespace v2
         {
             state = _dayState;
         }
-        _bus->setPin(_pinIndex, state);
+        const auto currentState = _bus->getPin(_pinIndex);
+        if (currentState != state)
+        {
+            logger_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, old=%d, new=%d",
+                       now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second(),
+                       currentState, state);
+            _bus->setPin(_pinIndex, state);
+        }
     }
 
     void SolarSwitch::setSunriseOffsetMinutes(const uint8_t offset)
