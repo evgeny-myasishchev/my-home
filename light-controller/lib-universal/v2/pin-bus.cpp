@@ -41,6 +41,7 @@ namespace v2
 
     const void CompositePinBus::setPin(const byte pinIndex, byte state)
     {
+        byteSlots[0].bus->setPin(pinIndex, state);
     }
 
     const byte CompositePinBus::getBusSizeBytes() const

@@ -177,4 +177,34 @@ namespace
         }
     }
 
+    TEST(V2PinBusComposite, setPinSingleTarget)
+    {
+        const byte maxBytes = test::randomNumber(5, 10);
+        byte *target1State = new byte[maxBytes]();
+        TestPinBus target1(maxBytes);
+        target1.pendingTestState = target1State;
+        target1.readState();
+
+        v2::PinBus *targets[1] = {(v2::PinBus *)&target1};
+        v2::CompositePinBus composite(1, targets);
+
+        byte *randomState1 = new byte[maxBytes]();
+        for (size_t byteIndex = 0; byteIndex < maxBytes; byteIndex++)
+        {
+            const auto byteVal = test::randomNumber(0, 255);
+            randomState1[byteIndex] = byteVal;
+            for (size_t bit = 0; bit < 8; bit++)
+            {
+                composite.setPin((byteIndex * 8) + bit, bitRead(byteVal, bit));
+            }
+        }
+
+        target1.writeState();
+
+        for (size_t byteIndex = 0; byteIndex < maxBytes; byteIndex++)
+        {
+            EXPECT_EQ(target1State[byteIndex], randomState1[byteIndex]);
+        }
+    }
+
 } // namespace
