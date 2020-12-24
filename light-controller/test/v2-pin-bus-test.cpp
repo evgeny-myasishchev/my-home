@@ -118,4 +118,63 @@ namespace
         }
     }
 
+    TEST(V2PinBusComposite, getPinMultiTargets)
+    {
+        // bus1
+        const byte target1Bytes = test::randomNumber(5, 10);
+        byte *state1 = new byte[target1Bytes]();
+        for (size_t byteIndex = 0; byteIndex < target1Bytes; byteIndex++)
+        {
+            state1[byteIndex] = test::randomNumber(0, 255);
+        }
+        TestPinBus target1(target1Bytes);
+        target1.pendingTestState = state1;
+        target1.readState();
+
+        // bus2
+        const byte target2Bytes = test::randomNumber(5, 10);
+        byte *state2 = new byte[target2Bytes]();
+        for (size_t byteIndex = 0; byteIndex < target2Bytes; byteIndex++)
+        {
+            state2[byteIndex] = test::randomNumber(0, 255);
+        }
+        TestPinBus target2(target2Bytes);
+        target2.pendingTestState = state2;
+        target2.readState();
+
+        // bus3
+        const byte target3Bytes = test::randomNumber(5, 10);
+        byte *state3 = new byte[target3Bytes]();
+        for (size_t byteIndex = 0; byteIndex < target3Bytes; byteIndex++)
+        {
+            state3[byteIndex] = test::randomNumber(0, 255);
+        }
+        TestPinBus target3(target3Bytes);
+        target3.pendingTestState = state3;
+        target3.readState();
+
+        // composite bus
+        v2::PinBus *targets[3] = {(v2::PinBus *)&target1, (v2::PinBus *)&target2, (v2::PinBus *)&target3};
+        const v2::CompositePinBus composite(3, targets);
+
+        // assert
+        const auto bits1 = target1Bytes * 8;
+        for (size_t i = 0; i < bits1; i++)
+        {
+            ASSERT_EQ(target1.getPin(i), composite.getPin(i)) << "Failed to validate first target";
+        }
+
+        const auto bits2 = target2Bytes * 8;
+        for (size_t i = 0; i < bits2; i++)
+        {
+            ASSERT_EQ(target2.getPin(i), composite.getPin(bits1 + i)) << "Failed to validate second target. Target pin: " << i << ", composite pin: " << bits1 + i;
+        }
+
+        const auto bits3 = target3Bytes * 8;
+        for (size_t i = 0; i < bits3; i++)
+        {
+            ASSERT_EQ(target3.getPin(i), composite.getPin(bits1 + bits2 + i)) << "Failed to validate third target. Target pin: " << i << ", composite pin: " << bits1 + bits2 + i;
+        }
+    }
+
 } // namespace

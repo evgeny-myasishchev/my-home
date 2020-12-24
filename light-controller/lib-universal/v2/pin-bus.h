@@ -8,9 +8,14 @@
 #include <PCF8574.h>
 #endif
 
+#ifdef PIN_BUS_DEBUG
+#define printf printf
+#else
+#define printf
+#endif
+
 namespace v2
 {
-
     class PinBus
     {
     public:
@@ -19,12 +24,21 @@ namespace v2
         const virtual byte getBusSizeBytes() const = 0;
     };
 
+    namespace
+    {
+        struct CompositeBusSlot
+        {
+            PinBus *bus;
+            int firstSlot;
+        };
+    } // namespace
+
     class CompositePinBus : public PinBus
     {
 
     private:
         byte totalSize = 0;
-        PinBus **byteSlots;
+        CompositeBusSlot *byteSlots;
 
     public:
         CompositePinBus(const byte targetsCount, PinBus **targets);
