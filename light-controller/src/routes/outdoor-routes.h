@@ -38,7 +38,9 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
         ->withTargetAddresses(3, new byte[2]{0, 3});
     routesArray[routeNumber++] = route;
 
-    solarSwitch->setPin(relaysCount + 1, 0, 1);
+    // virtual bus
+    const auto virtualAddressStart = relaysCount + switchesCount;
+    solarSwitch->setPin(virtualAddressStart, 0, 1);
     solarSwitch->setSunriseOffsetMinutes(0);
     solarSwitch->setSunriseOffsetMinutes(0);
 

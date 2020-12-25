@@ -22,6 +22,13 @@ using namespace v2;
 
 PCF8574Bus pcf8574bus(RELAY_BOARDS, INPUT_BOARDS, true);
 
+// Virtual bus is used by software switches (like solar)
+InMemoryPinBus virtualBus(1);
+
+const auto busses = new PinBus*[2]{&pcf8574bus, &virtualBus};
+
+CompositePinBus bus(2, busses);
+
 SwitchesRouter *router;
 
 
@@ -31,14 +38,13 @@ at::Engine atEngine(&atStream);
 ArduinoDigitalWrite arduinoDigitalWrite(digitalWrite);
 ATPing atPing;
 ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
-ATGetPin atGetPin(&pcf8574bus);
-ATSetPin atSetPin(&pcf8574bus);
+ATGetPin atGetPin(&bus);
+ATSetPin atSetPin(&bus);
 
 rtc::RTCClock clock;
-// Dusk2Dawn location(50, 36, +2);
-Dusk2Dawn location(34, 118, -10);
+Dusk2Dawn location(50.04, 36.30, +2);
 rtc::ArduinoSolar solar(&clock, &location);
-SolarSwitch solarSwitch(&solar, &pcf8574bus);
+SolarSwitch solarSwitch(&solar, &bus);
 
 ArrayPtr<Switch *> routes = createRoutes(&solarSwitch);
 
@@ -81,8 +87,8 @@ void loop()
     router->processRoutes(routes);
 
 #else
-    // auto now = clock.now();
-    // solarSwitch.loop(now);
+    auto now = clock.now();
+    solarSwitch.loop(now);
 
     for (size_t relayIndex = 0; relayIndex < RELAY_BOARDS; relayIndex++)
     {
@@ -90,17 +96,17 @@ void loop()
         {
             const byte relayAddress = relayIndex * 8 + bit;
             const byte relaySwitchAddress = RELAY_BOARDS * 8 + relayAddress;
-            const auto relaySwitchState = pcf8574bus.getPin(relaySwitchAddress);
-            pcf8574bus.setPin(relayAddress, relaySwitchState);
+            const auto relaySwitchState = bus.getPin(relaySwitchAddress);
+            bus.setPin(relayAddress, relaySwitchState);
         }
     }
 
-    const byte switchAllState = pcf8574bus.getPin((RELAY_BOARDS + INPUT_BOARDS - 1) * 8);
+    const byte switchAllState = bus.getPin((RELAY_BOARDS + INPUT_BOARDS - 1) * 8);
     if (switchAllState == HIGH)
     {
         for (size_t i = 0; i < RELAY_BOARDS * 8; i++)
         {
-            pcf8574bus.setPin(i, HIGH);
+            bus.setPin(i, HIGH);
         }
     }
 #endif
