@@ -8,12 +8,6 @@
 #include <PCF8574.h>
 #endif
 
-#ifdef PIN_BUS_DEBUG
-#define printf printf
-#else
-#define printf
-#endif
-
 namespace v2
 {
     class PinBus

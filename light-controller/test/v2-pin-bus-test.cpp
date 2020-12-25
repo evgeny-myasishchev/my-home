@@ -95,30 +95,7 @@ namespace
         ASSERT_EQ(target1Bytes + target2Bytes, got);
     }
 
-    TEST(V2PinBusComposite, getPinSingleTarget)
-    {
-        const byte target1Bytes = test::randomNumber(5, 10);
-        byte *state = new byte[target1Bytes]();
-        for (size_t byteIndex = 0; byteIndex < target1Bytes; byteIndex++)
-        {
-            state[byteIndex] = test::randomNumber(0, 255);
-        }
-
-        TestPinBus target1(target1Bytes);
-        target1.pendingTestState = state;
-        target1.readState();
-
-        v2::PinBus *targets[1] = {(v2::PinBus *)&target1};
-        const v2::CompositePinBus composite(1, targets);
-
-        const auto totalBits = target1Bytes * 8;
-        for (size_t i = 0; i < totalBits; i++)
-        {
-            ASSERT_EQ(target1.getPin(i), composite.getPin(i));
-        }
-    }
-
-    TEST(V2PinBusComposite, getPinMultiTargets)
+    TEST(V2PinBusComposite, getPin)
     {
         // bus1
         const byte target1Bytes = test::randomNumber(5, 10);
@@ -177,19 +154,29 @@ namespace
         }
     }
 
-    TEST(V2PinBusComposite, setPinSingleTarget)
+    TEST(V2PinBusComposite, setPin)
     {
-        const byte maxBytes = test::randomNumber(5, 10);
-        byte *target1State = new byte[maxBytes]();
-        TestPinBus target1(maxBytes);
+        // bus1
+        const byte target1Bytes = test::randomNumber(5, 10);
+        byte *target1State = new byte[target1Bytes]();
+        TestPinBus target1(target1Bytes);
         target1.pendingTestState = target1State;
         target1.readState();
 
-        v2::PinBus *targets[1] = {(v2::PinBus *)&target1};
-        v2::CompositePinBus composite(1, targets);
+        // bus2
+        const byte target2Bytes = test::randomNumber(5, 10);
+        byte *target2State = new byte[target2Bytes]();
+        TestPinBus target2(target2Bytes);
+        target2.pendingTestState = target2State;
+        target2.readState();
 
-        byte *randomState1 = new byte[maxBytes]();
-        for (size_t byteIndex = 0; byteIndex < maxBytes; byteIndex++)
+        // composite bus
+        v2::PinBus *targets[2] = {(v2::PinBus *)&target1, (v2::PinBus *)&target2};
+        v2::CompositePinBus composite(2, targets);
+
+        // set state1
+        byte *randomState1 = new byte[target1Bytes]();
+        for (size_t byteIndex = 0; byteIndex < target1Bytes; byteIndex++)
         {
             const auto byteVal = test::randomNumber(0, 255);
             randomState1[byteIndex] = byteVal;
@@ -199,11 +186,31 @@ namespace
             }
         }
 
-        target1.writeState();
+        // set state2
+        const auto target2PinsOffset = target1Bytes * 8;
+        byte *randomState2 = new byte[target2Bytes]();
+        for (size_t byteIndex = 0; byteIndex < target2Bytes; byteIndex++)
+        {
+            const auto byteVal = test::randomNumber(0, 255);
+            randomState2[byteIndex] = byteVal;
+            for (size_t bit = 0; bit < 8; bit++)
+            {
+                composite.setPin(target2PinsOffset + (byteIndex * 8) + bit, bitRead(byteVal, bit));
+            }
+        }
 
-        for (size_t byteIndex = 0; byteIndex < maxBytes; byteIndex++)
+        // commit state
+        target1.writeState();
+        target2.writeState();
+
+        // assert states
+        for (size_t byteIndex = 0; byteIndex < target1Bytes; byteIndex++)
         {
             EXPECT_EQ(target1State[byteIndex], randomState1[byteIndex]);
+        }
+        for (size_t byteIndex = 0; byteIndex < target2Bytes; byteIndex++)
+        {
+            EXPECT_EQ(target2State[byteIndex], randomState2[byteIndex]);
         }
     }
 

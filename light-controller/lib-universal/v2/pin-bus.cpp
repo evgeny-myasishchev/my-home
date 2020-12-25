@@ -20,7 +20,7 @@ namespace v2
             for (size_t j = 0; j < target->getBusSizeBytes(); j++)
             {
                 byteSlots[slotIndex] = slot;
-                // printf("target: %zu, busByte: %zu, slot: %d, pinsFrom: %d\n", i, j, slotIndex, slotIndex * 8);
+                // printf("target: %zu, busByte: %zu, slot: %d, pinsFrom: %d, totalPins: %d\n", i, j, slotIndex, slotIndex * 8, target->getBusSizeBytes() * 8);
                 slotIndex++;
             }
         }
@@ -36,12 +36,15 @@ namespace v2
         const byte slotIndex = pinIndex / 8;
         const auto slot = byteSlots[slotIndex];
         // printf("getPin: %d, slotIndex: %d, firstSlot: %d, actualPin: %d\n", pinIndex, slotIndex, slot.firstSlot, pinIndex - slot.firstSlot*8);
-        return byteSlots[slotIndex].bus->getPin(pinIndex - slot.firstSlot*8);
+        return slot.bus->getPin(pinIndex - slot.firstSlot*8);
     }
 
     const void CompositePinBus::setPin(const byte pinIndex, byte state)
     {
-        byteSlots[0].bus->setPin(pinIndex, state);
+        const byte slotIndex = pinIndex / 8;
+        const auto slot = byteSlots[slotIndex];
+        // printf("setPin: %d, slotIndex: %d\n", pinIndex, slotIndex);
+        slot.bus->setPin(pinIndex - slot.firstSlot*8, state);
     }
 
     const byte CompositePinBus::getBusSizeBytes() const
