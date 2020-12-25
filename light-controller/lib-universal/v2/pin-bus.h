@@ -10,6 +10,13 @@
 
 namespace v2
 {
+
+#ifdef PIN_BUS_VERBOSE
+#define pin_bus_log logger_log
+#else
+#define pin_bus_log
+#endif
+
     class PinBus
     {
     public:
