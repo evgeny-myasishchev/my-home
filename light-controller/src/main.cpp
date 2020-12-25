@@ -20,7 +20,7 @@
 
 using namespace v2;
 
-PCF8574Bus bus(RELAY_BOARDS, INPUT_BOARDS, true);
+PCF8574Bus pcf8574bus(RELAY_BOARDS, INPUT_BOARDS, true);
 
 SwitchesRouter *router;
 
@@ -31,14 +31,14 @@ at::Engine atEngine(&atStream);
 ArduinoDigitalWrite arduinoDigitalWrite(digitalWrite);
 ATPing atPing;
 ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
-ATGetPin atGetPin(&bus);
-ATSetPin atSetPin(&bus);
+ATGetPin atGetPin(&pcf8574bus);
+ATSetPin atSetPin(&pcf8574bus);
 
 rtc::RTCClock clock;
 // Dusk2Dawn location(50, 36, +2);
 Dusk2Dawn location(34, 118, -10);
 rtc::ArduinoSolar solar(&clock, &location);
-SolarSwitch solarSwitch(&solar, &bus);
+SolarSwitch solarSwitch(&solar, &pcf8574bus);
 
 ArrayPtr<Switch *> routes = createRoutes(&solarSwitch);
 
@@ -52,12 +52,12 @@ void setup()
     logger_setup(&Serial);
 
     router = new SwitchesRouter(SwitchRouterServices{
-        .bus = &bus,
+        .bus = &pcf8574bus,
         .pushBtnSwitchSvc = new PushButtonSwitchService(SwitchServiceConfig()),
         .toggleBtnSwitchSvc = new ToggleButtonSwitchService(SwitchServiceConfig()),
     });
 
-    bus.setup(0x00, 0x00);
+    pcf8574bus.setup(0x00, 0x00);
 
     solarSwitch.setup();
 
@@ -72,7 +72,7 @@ void setup()
 
 void loop()
 {
-    bus.readState();
+    pcf8574bus.readState();
 
     atEngine.loop();
 
@@ -81,8 +81,8 @@ void loop()
     router->processRoutes(routes);
 
 #else
-    auto now = clock.now();
-    solarSwitch.loop(now);
+    // auto now = clock.now();
+    // solarSwitch.loop(now);
 
     for (size_t relayIndex = 0; relayIndex < RELAY_BOARDS; relayIndex++)
     {
@@ -90,20 +90,20 @@ void loop()
         {
             const byte relayAddress = relayIndex * 8 + bit;
             const byte relaySwitchAddress = RELAY_BOARDS * 8 + relayAddress;
-            const auto relaySwitchState = bus.getPin(relaySwitchAddress);
-            bus.setPin(relayAddress, relaySwitchState);
+            const auto relaySwitchState = pcf8574bus.getPin(relaySwitchAddress);
+            pcf8574bus.setPin(relayAddress, relaySwitchState);
         }
     }
 
-    const byte switchAllState = bus.getPin((RELAY_BOARDS + INPUT_BOARDS - 1) * 8);
+    const byte switchAllState = pcf8574bus.getPin((RELAY_BOARDS + INPUT_BOARDS - 1) * 8);
     if (switchAllState == HIGH)
     {
         for (size_t i = 0; i < RELAY_BOARDS * 8; i++)
         {
-            bus.setPin(i, HIGH);
+            pcf8574bus.setPin(i, HIGH);
         }
     }
 #endif
 
-    bus.writeState();
+    pcf8574bus.writeState();
 }

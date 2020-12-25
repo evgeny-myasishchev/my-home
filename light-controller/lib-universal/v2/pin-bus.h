@@ -49,7 +49,7 @@ namespace v2
         const byte getBusSizeBytes() const;
     };
 
-    class PersistablePinBus : public PinBus
+    class InMemoryPinBus : public PinBus
     {
     private:
         byte *busState;
@@ -60,18 +60,11 @@ namespace v2
         const byte getStateByte(const byte byteIndex);
 
     public:
-        PersistablePinBus(const byte busSize);
-        virtual ~PersistablePinBus();
+        InMemoryPinBus(const byte busSize);
+        virtual ~InMemoryPinBus();
         const byte getBusSizeBytes() const;
         const byte getPin(const byte pinIndex) const;
         const void setPin(const byte pinIndex, byte state);
-
-        // Read bus state from underlying implementation (e.g hardware)
-        // and initialize internal state
-        virtual void readState() = 0;
-
-        // Write current state to underlying implementation (e.g hardware)
-        virtual void writeState() = 0;
     };
 
 #ifdef ARDUINO
@@ -81,7 +74,7 @@ namespace v2
     // Bus implementation based on PCF8574 boards
     // Address space starts from output boards (e.g relays)
     // followed by input boards (e.g switches)
-    class PCF8574Bus : public PersistablePinBus
+    class PCF8574Bus : public InMemoryPinBus
     {
     private:
         byte outputBoardsNum;

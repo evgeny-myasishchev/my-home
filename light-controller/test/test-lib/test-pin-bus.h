@@ -3,7 +3,7 @@
 
 #include <pin-bus.h>
 
-class TestPinBus : public v2::PersistablePinBus
+class TestPinBus : public v2::InMemoryPinBus
 {
 public:
     byte *pendingTestState;

@@ -1,6 +1,6 @@
 #include "test-pin-bus.h"
 
-TestPinBus::TestPinBus(const byte busSize) : PersistablePinBus(busSize)
+TestPinBus::TestPinBus(const byte busSize) : InMemoryPinBus(busSize)
 {
     pendingTestState = new byte[2]();
 }

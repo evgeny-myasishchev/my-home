@@ -52,23 +52,23 @@ namespace v2
         return totalSize;
     }
 
-    PersistablePinBus::PersistablePinBus(const byte busSize)
+    InMemoryPinBus::InMemoryPinBus(const byte busSize)
     {
         this->busSize = busSize;
         this->busState = new byte[busSize]();
     }
 
-    PersistablePinBus::~PersistablePinBus()
+    InMemoryPinBus::~InMemoryPinBus()
     {
         delete this->busState;
     }
 
-    const byte PersistablePinBus::getBusSizeBytes() const
+    const byte InMemoryPinBus::getBusSizeBytes() const
     {
         return busSize;
     }
 
-    void PersistablePinBus::setStateByte(const byte byteIndex, const byte state)
+    void InMemoryPinBus::setStateByte(const byte byteIndex, const byte state)
     {
         if (byteIndex >= this->busSize)
         {
@@ -77,12 +77,12 @@ namespace v2
         this->busState[byteIndex] = state;
     }
 
-    const byte PersistablePinBus::getStateByte(const byte byteIndex)
+    const byte InMemoryPinBus::getStateByte(const byte byteIndex)
     {
         return this->busState[byteIndex];
     }
 
-    const byte PersistablePinBus::getPin(const byte pinIndex) const
+    const byte InMemoryPinBus::getPin(const byte pinIndex) const
     {
         const byte byteIndex = pinIndex / 8;
         const byte bit = pinIndex % 8;
@@ -94,7 +94,7 @@ namespace v2
         return bitRead(byte, bit);
     }
 
-    const void PersistablePinBus::setPin(const byte pinIndex, byte state)
+    const void InMemoryPinBus::setPin(const byte pinIndex, byte state)
     {
         const byte byteIndex = pinIndex / 8;
         const byte bit = pinIndex % 8;
@@ -108,7 +108,7 @@ namespace v2
 #ifdef ARDUINO
 
     PCF8574Bus::PCF8574Bus(const byte outputBoardsNum, const byte inputBoardsNum, bool invert)
-        : outputBoardsNum(outputBoardsNum), inputBoardsNum(inputBoardsNum), PersistablePinBus(outputBoardsNum + inputBoardsNum)
+        : outputBoardsNum(outputBoardsNum), inputBoardsNum(inputBoardsNum), InMemoryPinBus(outputBoardsNum + inputBoardsNum)
     {
         const auto busSize = this->getBusSizeBytes();
         byte initialAddress = PCF8574_BASE_ADDR;
