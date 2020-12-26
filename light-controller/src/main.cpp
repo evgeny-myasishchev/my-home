@@ -44,7 +44,7 @@ ATSetPin atSetPin(&bus);
 
 rtc::RTCClock clock;
 Dusk2Dawn location(50.04, 36.30, +2);
-rtc::ArduinoSolar solar(&clock, &location);
+rtc::ArduinoSolar solar(&location);
 SolarSwitch solarSwitch(&solar, &bus);
 
 ArrayPtr<Switch *> routes = createRoutes(&solarSwitch);
@@ -72,7 +72,8 @@ void setup()
 
     pcf8574bus.setup(0x00, 0x00);
 
-    solarSwitch.setup();
+    auto now = clock.now();
+    solarSwitch.setup(now);
 
     atEngine.addCommandHandler(&atPing);
     atEngine.addCommandHandler(&atLed);

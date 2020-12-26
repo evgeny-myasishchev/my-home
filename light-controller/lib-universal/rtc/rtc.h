@@ -16,8 +16,8 @@ namespace rtc
     class Solar
     {
     public:
-        virtual DateTime sunrise() = 0;
-        virtual DateTime sunset() = 0;
+        virtual int sunriseOffsetMinutes(DateTime now) = 0;
+        virtual int sunsetOffsetMinutes(DateTime now) = 0;
     };
 
     class Clock
@@ -30,12 +30,11 @@ namespace rtc
     class ArduinoSolar : public Solar
     {
     public:
-        ArduinoSolar(Clock *clock, Dusk2Dawn *location);
-        DateTime sunrise();
-        DateTime sunset();
+        ArduinoSolar(Dusk2Dawn *location);
+        int sunriseOffsetMinutes(DateTime now);
+        int sunsetOffsetMinutes(DateTime now);
 
     private:
-        Clock *_clock;
         Dusk2Dawn *_location;
     };
 

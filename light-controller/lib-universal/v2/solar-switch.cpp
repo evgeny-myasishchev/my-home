@@ -9,36 +9,38 @@ namespace v2
         _bus = bus;
     }
 
-    void SolarSwitch::setup()
+    void SolarSwitch::setup(DateTime now)
     {
-        logger_log("Solar switch setup: pin=%d, day state=%d, night state=%d", _pinIndex, _dayState, _nightState);
+        auto sunriseOffsetMins = _solar->sunriseOffsetMinutes(now) + _sunrizeOffsetMinutes;
+        auto sunsetOffsetMins = _solar->sunsetOffsetMinutes(now) + _sunsetOffsetMinutes;
+
+        logger_log("Solar switch setup: now=%d:%d:%d %d:%d:%d, effective sunrise offset=%d:%d, effective sunset offset=%d:%d, pin=%d, day state=%d, night state=%d", 
+            now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second(),
+            sunriseOffsetMins / 60, sunriseOffsetMins % 60,
+            sunsetOffsetMins / 60, sunsetOffsetMins % 60,
+            _pinIndex, _dayState, _nightState
+        );
     }
 
     void SolarSwitch::loop(DateTime now)
     {
-        auto sunrise = _solar->sunrise();
-        auto sunset = _solar->sunset();
+        auto sunriseOffsetMins = _solar->sunriseOffsetMinutes(now) + _sunrizeOffsetMinutes;
+        auto sunsetOffsetMins = _solar->sunsetOffsetMinutes(now) + _sunsetOffsetMinutes;
+        auto nowOffsetMins = now.hour() * 60 + now.minute();
 
         auto state = _nightState;
 
-        uint8_t sunriseHour = sunrise.hour() + _sunrizeOffsetMinutes / 60;
-        uint8_t sunriseMinute = sunrise.minute() + _sunrizeOffsetMinutes % 60;
-        auto sunsetHour = sunset.hour() + _sunsetOffsetMinutes / 60;
-        auto sunsetMinute = sunset.minute() + _sunsetOffsetMinutes % 60;
-
-        if (
-            (now.hour() >= sunriseHour && now.hour() <= sunsetHour) &&
-            (now.minute()) >= sunriseMinute && now.minute() <= sunsetMinute)
+        if (nowOffsetMins >= sunriseOffsetMins && nowOffsetMins <= sunsetOffsetMins)
         {
             state = _dayState;
         }
         const auto currentState = _bus->getPin(_pinIndex);
         if (currentState != state)
         {
-            logger_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, sunrise: %d:%d, sunset: %d:%d, old=%d, new=%d",
+            logger_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, effective sunrise offset: %d:%d, effective sunset offset: %d:%d, old=%d, new=%d",
                        now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second(),
-                       sunrise.hour(), sunrise.minute(),
-                       sunset.hour(), sunset.minute(),
+                       sunriseOffsetMins / 60, sunriseOffsetMins % 60,
+                       sunsetOffsetMins / 60, sunsetOffsetMins % 60,
                        currentState, state);
             _bus->setPin(_pinIndex, state);
         }

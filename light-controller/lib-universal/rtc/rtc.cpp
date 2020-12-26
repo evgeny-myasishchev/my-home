@@ -30,28 +30,21 @@ namespace rtc
         clock.enableOscillator(true, true, 3);
     }
 
-    ArduinoSolar::ArduinoSolar(Clock *clock, Dusk2Dawn *location)
+    ArduinoSolar::ArduinoSolar(Dusk2Dawn *location)
     {
-        _clock = clock;
         _location = location;
     }
 
-    DateTime ArduinoSolar::sunrise()
+    int ArduinoSolar::sunriseOffsetMinutes(DateTime now)
     {
-        auto now = _clock->now();
-        auto offset = _location->sunrise(now.year(), now.month(), now.day(), false);
-        auto offsetHours = offset / 60;
-        auto offsetMinutes = offset % 60;
-        return DateTime(now.year(), now.month(), now.day(), offsetHours, offsetMinutes, 0);
+        // TODO: Support DST
+        return _location->sunrise(now.year(), now.month(), now.day(), false);
     }
 
-    DateTime ArduinoSolar::sunset()
+    int ArduinoSolar::sunsetOffsetMinutes(DateTime now)
     {
-        auto now = _clock->now();
-        auto offset = _location->sunset(now.year(), now.month(), now.day(), false);
-        auto offsetHours = offset / 60;
-        auto offsetMinutes = offset % 60;
-        return DateTime(now.year(), now.month(), now.day(), offsetHours, offsetMinutes, 0);
+        // TODO: Support DST
+        return _location->sunset(now.year(), now.month(), now.day(), false);
     }
 
     DateTime RTCClock::now()

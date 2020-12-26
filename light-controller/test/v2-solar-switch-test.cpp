@@ -11,15 +11,14 @@ namespace
     {
     protected:
         TestPinBus bus;
-        DateTime sunrise;
-        DateTime sunset;
         TestSolar solar;
 
         SolarSwitchLoop() : 
-            bus(2), 
-            sunrise(2020, 12, 13, 07, 26, 0), 
-            sunset(2020, 12, 13, 15, 33, 0),
-            solar(sunrise, sunset)
+            bus(2),
+            solar(
+                7 * 60 + 26, // sunraise 
+                15 * 60 + 33 // sunset
+            )
         {
         }
     };

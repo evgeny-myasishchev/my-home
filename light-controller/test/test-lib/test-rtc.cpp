@@ -1,23 +1,23 @@
 #include "test-rtc.h"
 
-TestSolar::TestSolar(DateTime sunrise, DateTime sunset)
+TestSolar::TestSolar(int sunriseOffsetMins, int sunsetOffsetMins)
 {
-    _sunrise = sunrise;
-    _sunset = sunset;
+    _sunriseOffsetMins = sunriseOffsetMins;
+    _sunsetOffsetMins = sunsetOffsetMins;
 };
 
 TestSolar::~TestSolar()
 {
 }
 
-DateTime TestSolar::sunrise()
+int TestSolar::sunriseOffsetMinutes(DateTime now)
 {
-    return _sunrise;
+    return _sunriseOffsetMins;
 }
 
-DateTime TestSolar::sunset()
+int TestSolar::sunsetOffsetMinutes(DateTime now)
 {
-    return _sunset;
+    return _sunsetOffsetMins;
 }
 
 TestClock::TestClock(DateTime *now)

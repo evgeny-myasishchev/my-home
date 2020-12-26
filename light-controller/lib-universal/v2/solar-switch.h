@@ -11,7 +11,7 @@ namespace v2
     {
     public:
         SolarSwitch(rtc::Solar *solar, PinBus *bus);
-        void setup();
+        void setup(DateTime now);
         void loop(DateTime now);
         // Positive - after, negative - before
         void setSunriseOffsetMinutes(const uint8_t offset);
