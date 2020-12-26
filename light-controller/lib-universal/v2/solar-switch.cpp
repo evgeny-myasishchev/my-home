@@ -14,7 +14,7 @@ namespace v2
         auto sunriseOffsetMins = _solar->sunriseOffsetMinutes(now) + _sunrizeOffsetMinutes;
         auto sunsetOffsetMins = _solar->sunsetOffsetMinutes(now) + _sunsetOffsetMinutes;
 
-        logger_log("Solar switch setup: now=%d:%d:%d %d:%d:%d, effective sunrise offset=%d:%d, effective sunset offset=%d:%d, pin=%d, day state=%d, night state=%d", 
+        solar_switch_log("Solar switch setup: now=%d:%d:%d %d:%d:%d, effective sunrise offset=%d:%d, effective sunset offset=%d:%d, pin=%d, day state=%d, night state=%d", 
             now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second(),
             sunriseOffsetMins / 60, sunriseOffsetMins % 60,
             sunsetOffsetMins / 60, sunsetOffsetMins % 60,
@@ -37,7 +37,7 @@ namespace v2
         const auto currentState = _bus->getPin(_pinIndex);
         if (currentState != state)
         {
-            logger_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, effective sunrise offset: %d:%d, effective sunset offset: %d:%d, pin=%d, old=%d, new=%d",
+            solar_switch_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, effective sunrise offset: %d:%d, effective sunset offset: %d:%d, pin=%d, old=%d, new=%d",
                        now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second(),
                        sunriseOffsetMins / 60, sunriseOffsetMins % 60,
                        sunsetOffsetMins / 60, sunsetOffsetMins % 60,

@@ -7,6 +7,13 @@
 
 namespace v2
 {
+
+#ifdef SOLAR_SWITCH_VERBOSE
+#define solar_switch_log logger_log
+#else
+#define solar_switch_log
+#endif
+
     class SolarSwitch
     {
     public:
