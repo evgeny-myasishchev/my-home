@@ -90,14 +90,13 @@ void loop()
 
     atEngine.loop();
 
-#ifdef TEST_MODE
+#ifndef TEST_MODE
 
+    auto now = clock.now();
+    solarSwitch.loop(now);
     router->processRoutes(routes);
 
 #else
-    auto now = clock.now();
-    solarSwitch.loop(now);
-
     for (size_t relayIndex = 0; relayIndex < RELAY_BOARDS; relayIndex++)
     {
         for (size_t bit = 0; bit < 8; bit++)
