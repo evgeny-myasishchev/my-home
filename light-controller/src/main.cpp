@@ -8,6 +8,7 @@
 #include <solar-switch.h>
 #include <at.h>
 #include <at-commands.h>
+#include <Wire.h>
 
 
 // Test mode will only use pin bus, see below
@@ -50,12 +51,18 @@ ArrayPtr<Switch *> routes = createRoutes(&solarSwitch);
 
 void setup()
 {
+    Wire.begin();
+
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
     while (!Serial)
     {
     }
     logger_setup(&Serial);
+
+#ifdef RTC_SETUP
+    rtc::setupClockToCompileTime();
+#endif
 
     router = new SwitchesRouter(SwitchRouterServices{
         .bus = &pcf8574bus,
