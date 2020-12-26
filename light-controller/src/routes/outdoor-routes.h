@@ -12,9 +12,15 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     const byte relaysCount = RELAY_BOARDS * 8;
     const byte switchesCount = INPUT_BOARDS * 8;
 
-    Switch **routesArray = new Switch *[switchesCount];
+    Switch **routesArray = new Switch *[4];
     byte routeNumber = 0;
     Switch* route;
+
+    // virtual
+    const auto virtualAddressStart = relaysCount + switchesCount;
+    solarSwitch->setPin(virtualAddressStart, 0, 1);
+    solarSwitch->setSunriseOffsetMinutes(0);
+    solarSwitch->setSunriseOffsetMinutes(0);
 
     // =================== Barn ===================
     // barn
@@ -35,14 +41,15 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 1)
         ->withSwitchType(SwitchType::Toggle)
-        ->withTargetAddresses(3, new byte[2]{0, 3});
+        ->withTargetAddresses(2, new byte[2]{0, 3});
     routesArray[routeNumber++] = route;
-
-    // virtual bus
-    const auto virtualAddressStart = relaysCount + switchesCount;
-    solarSwitch->setPin(virtualAddressStart, 0, 1);
-    solarSwitch->setSunriseOffsetMinutes(0);
-    solarSwitch->setSunriseOffsetMinutes(0);
+    
+    // night land + shed (from solar)
+    route = (new Switch())
+        ->withSwitchAddress(virtualAddressStart + 0)
+        ->withSwitchType(SwitchType::Toggle)
+        ->withTargetAddresses(2, new byte[2]{0, 3});
+    routesArray[routeNumber++] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
 }
