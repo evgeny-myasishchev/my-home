@@ -28,9 +28,18 @@ namespace
     {
         v2::SolarSwitch sw(&solar, &bus);
         sw.setPin(9, 1, 0);
-        sw.loop(DateTime(2020, 12, 13, 10, 30, 55));
 
-        ASSERT_EQ(1, bus.getPin(9));
+        sw.loop(DateTime(2020, 12, 13, 10, 27, 55));
+        ASSERT_EQ(1, bus.getPin(9)) << "minute after sunrise";
+
+        sw.loop(DateTime(2020, 12, 13, 11, 34, 55));
+        ASSERT_EQ(1, bus.getPin(9)) << "day hour but minute after sunset";
+
+        sw.loop(DateTime(2020, 12, 13, 12, 25, 55));
+        ASSERT_EQ(1, bus.getPin(9)) << "day hour but minute before sunraise";
+
+        sw.loop(DateTime(2020, 12, 13, 15, 27, 55));
+        ASSERT_EQ(1, bus.getPin(9)) << "sunset day hour but minute after sunraise";;
     }
 
     TEST_F(SolarSwitchLoop, SetDayStateWithOffsetsLessThanHour)
