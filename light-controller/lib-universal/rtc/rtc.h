@@ -2,6 +2,7 @@
 #define rtc_h
 
 #include "rtc-compat.h"
+#include <logger.h>
 
 #ifdef ARDUINO
 #include <Dusk2Dawn.h>
@@ -10,6 +11,8 @@
 
 namespace rtc
 {
+    void setupClockToCompileTime();
+
     class Solar
     {
     public:
