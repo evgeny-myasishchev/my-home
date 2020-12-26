@@ -65,7 +65,7 @@ void setup()
 #endif
 
     router = new SwitchesRouter(SwitchRouterServices{
-        .bus = &pcf8574bus,
+        .bus = &bus,
         .pushBtnSwitchSvc = new PushButtonSwitchService(SwitchServiceConfig()),
         .toggleBtnSwitchSvc = new ToggleButtonSwitchService(SwitchServiceConfig()),
     });

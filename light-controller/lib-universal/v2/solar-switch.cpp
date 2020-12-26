@@ -37,11 +37,11 @@ namespace v2
         const auto currentState = _bus->getPin(_pinIndex);
         if (currentState != state)
         {
-            logger_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, effective sunrise offset: %d:%d, effective sunset offset: %d:%d, old=%d, new=%d",
+            logger_log("Solar state changed. Now=%d:%d:%d %d:%d:%d, effective sunrise offset: %d:%d, effective sunset offset: %d:%d, pin=%d, old=%d, new=%d",
                        now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second(),
                        sunriseOffsetMins / 60, sunriseOffsetMins % 60,
                        sunsetOffsetMins / 60, sunsetOffsetMins % 60,
-                       currentState, state);
+                       _pinIndex, currentState, state);
             _bus->setPin(_pinIndex, state);
         }
     }
