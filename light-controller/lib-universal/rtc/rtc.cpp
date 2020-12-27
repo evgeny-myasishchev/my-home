@@ -25,7 +25,7 @@ namespace rtc
         clock.setHour(now.hour());
         clock.setMinute(now.minute());
         clock.setSecond(now.second());
-        clock.enableOscillator(true, true, 3);
+        clock.enableOscillator(true, false, 3);
     }
 
     ArduinoSolar::ArduinoSolar(Dusk2Dawn *location)
