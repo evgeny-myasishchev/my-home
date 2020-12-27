@@ -2,7 +2,6 @@
 #define rtc_h
 
 #include "rtc-compat.h"
-#include <logger.h>
 
 #ifdef ARDUINO
 #include <Dusk2Dawn.h>
@@ -45,6 +44,12 @@ namespace rtc
 
     private:
         RTClib _rtcLib;
+    };
+#else
+    class UniversalClock : public Clock
+    {
+    public:
+        DateTime now();
     };
 #endif
 

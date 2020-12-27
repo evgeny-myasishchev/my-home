@@ -16,8 +16,6 @@ namespace rtc
     {
         const auto now = DateTime(RTC_DATE, RTC_TIME);
 
-        logger_log("Setup clock to: %d:%d:%d %d:%d:%d", now.year(), now.month(), now.day(), now.hour(), now.minute(), now.second());
-
         DS3231 clock;
         clock.enableOscillator(false, false, 3);
         clock.setClockMode(false);
@@ -50,6 +48,17 @@ namespace rtc
     DateTime RTCClock::now()
     {
         return _rtcLib.now();
+    }
+#else
+    #include <time.h>
+    DateTime UniversalClock::now()
+    {
+        time_t t = time(NULL);
+        const auto loctime = localtime(&t);
+        return DateTime(
+            loctime->tm_year, loctime->tm_mon, loctime->tm_mday,
+            loctime->tm_hour, loctime->tm_min, loctime->tm_sec
+        );
     }
 #endif
 } // namespace rtc

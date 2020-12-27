@@ -10,9 +10,8 @@
 #include <at-commands.h>
 #include <Wire.h>
 
-
 // Test mode will only use pin bus, see below
-// #define TEST_MODE 
+// #define TEST_MODE
 
 // #include "routes/test-routes.h"
 // #include "routes/fl-1-routes.h"
@@ -26,12 +25,11 @@ PCF8574Bus pcf8574bus(RELAY_BOARDS, INPUT_BOARDS, true);
 // Virtual bus is used by software switches (like solar)
 InMemoryPinBus virtualBus(1);
 
-const auto busses = new PinBus*[2]{&pcf8574bus, &virtualBus};
+const auto busses = new PinBus *[2] { &pcf8574bus, &virtualBus };
 
 CompositePinBus bus(2, busses);
 
 SwitchesRouter *router;
-
 
 io::SerialTextStream atStream(&Serial);
 at::Engine atEngine(&atStream);
@@ -58,10 +56,16 @@ void setup()
     while (!Serial)
     {
     }
-    logger_setup(&Serial);
 
 #ifdef RTC_SETUP
-    rtc::setupClockToCompileTime();
+    {
+        rtc::setupClockToCompileTime();
+    }
+#endif
+    logger_setup(&clock, &Serial);
+
+#ifdef RTC_SETUP
+    logger_log("RTC clock setup performed.");
 #endif
 
     router = new SwitchesRouter(SwitchRouterServices{
