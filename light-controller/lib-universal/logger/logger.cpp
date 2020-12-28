@@ -20,16 +20,17 @@ namespace logger
     }
 #endif
 
-    Logger::Logger(Timers * timers, Output * output) {
+    Logger::Logger(Timers *timers, rtc::Clock *clock, Output * output) {
         this->timers = timers;
+        this->clock = clock;
         this->output = output;
     }
 
     LoggingSystem * defaultLoggingSystem;
 
-    void setupLoggingSystem(Output *output) {
+    void setupLoggingSystem(rtc::Clock *clock, Output *output) {
         defaultLoggingSystem = new LoggingSystem();
-        defaultLoggingSystem->logger = new Logger(new Timers(), output);
+        defaultLoggingSystem->logger = new Logger(new Timers(), clock, output);
     }
 
     LoggingSystem * getLoggingSystem() {

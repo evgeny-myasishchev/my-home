@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   ::testing::InitGoogleTest(&argc, argv);
   ::testing::InitGoogleMock(&argc, argv);
   std::ofstream testLogOutput("test.log", std::ofstream::out | std::ofstream::trunc);
-  logger::setupLoggingSystem(new FileOutput(&testLogOutput));
+  logger::setupLoggingSystem(new rtc::UniversalClock(), new FileOutput(&testLogOutput));
 
   ::testing::TestEventListeners &listeners = ::testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new TestProgressLogger);

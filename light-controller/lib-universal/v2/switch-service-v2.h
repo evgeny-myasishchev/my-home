@@ -3,8 +3,9 @@
 
 #include <arduino-compat.h>
 #include <Timers.h>
-#include <switch.h>
 #include <logger.h>
+
+#include "switch.h"
 
 namespace v2
 {

@@ -21,14 +21,18 @@ CPP_SRC := \
 	$(wildcard test/*.cpp) \
 	$(wildcard test/**/*.cpp) \
 	$(wildcard lib-universal/*/*.cpp)
+
 CC_SRC := \
-	$(wildcard $(PIO_USER_LIBS_HOME)/googletest_ID5976/*/src/*.cc)
+	$(wildcard $(PIO_USER_LIBS_HOME)/googletest/googlemock/src/gmock-all.cc) \
+	$(wildcard $(PIO_USER_LIBS_HOME)/googletest/googletest/src/gtest-all.cc)
+
 OBJECTS := $(CPP_SRC:%.cpp=$(OBJ_DIR)/%.o) $(CC_SRC:%.cc=$(OBJ_DIR)/%.o)
 
 INCLUDE += \
-	-I$(PIO_USER_LIBS_HOME)/googletest_ID5976/googlemock/include/ \
-	-I$(PIO_USER_LIBS_HOME)/googletest_ID5976/googletest/include/ \
-	-I$(PIO_USER_LIBS_HOME)/googletest_ID5976/googletest/
+	-I$(PIO_USER_LIBS_HOME)/googletest/googlemock/include/ \
+	-I$(PIO_USER_LIBS_HOME)/googletest/googlemock/ \
+	-I$(PIO_USER_LIBS_HOME)/googletest/googletest/include/ \
+	-I$(PIO_USER_LIBS_HOME)/googletest/googletest/
 
 all: build $(APP_DIR)/$(TARGET)
 

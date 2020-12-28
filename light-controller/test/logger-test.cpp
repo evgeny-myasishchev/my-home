@@ -2,6 +2,7 @@
 #include <logger.h>
 #include <stdio.h>
 #include "mocks/FakeTimers.h"
+#include "test-lib/test-rtc.h"
 
 namespace
 {
@@ -74,13 +75,21 @@ namespace
 
     TEST(logger, Logger)
     {
+
         const int rnd = std::rand();
+        DateTime now(2020, 12, 26, 12, 43, 57);
+        TestClock clock(&now);
         FakeTimers fakeTimers;
         fakeTimers.setMillis(rnd);
+
         MockOutput out;
-        logger::Logger logger(&fakeTimers, &out);
+        logger::Logger logger(&fakeTimers, &clock, &out);
         logger.log("Info message: %s", "some val");
-        std::string expected = "[INFO " + std::to_string(rnd) + "] Info message: some val\n";
+        std::string expected = "[INFO " + 
+            std::to_string(now.year()) + ":" + std::to_string(now.month()) + ":" + std::to_string(now.day()) + "T" +
+            std::to_string(now.hour()) + ":" + std::to_string(now.minute()) + ":" + std::to_string(now.second()) + "." +
+            std::to_string(rnd) +
+        "] Info message: some val\n";
         EXPECT_EQ(expected, out.currentOutput());
     }
 } // namespace

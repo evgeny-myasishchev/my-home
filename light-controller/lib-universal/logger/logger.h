@@ -7,6 +7,7 @@
 #include <arduino-compat.h>
 #include <stdarg.h>
 #include <Timers.h>
+#include <rtc.h>
 
 #ifndef ARDUINO
 #include <iostream>
@@ -48,11 +49,17 @@ namespace logger
     {
     private:
         Output * output;
-        Timers * timers;
+        Timers *timers;
+        rtc::Clock *clock;
     public:
-        Logger(Timers * timers, Output * output);
+        Logger(Timers *timers, rtc::Clock *clock, Output * output);
         template<typename... Args> void log(const char * msg, Args... args) {
-            logger::printf(this->output, "[INFO %d] ", this->timers->millis());
+            const auto now = clock->now();
+            logger::printf(this->output, "[INFO %d:%d:%dT%d:%d:%d.%d] ", 
+                now.year(), now.month(), now.day(),
+                now.hour(), now.minute(), now.second(),
+                this->timers->millis()
+            );
             logger::printf(this->output, msg, args...);
             printf(this->output, "\n");
         }
@@ -62,16 +69,16 @@ namespace logger
         Logger * logger;
     };
 
-    void setupLoggingSystem(Output *output);
+    void setupLoggingSystem(rtc::Clock *clock, Output *output);
     LoggingSystem * getLoggingSystem();
     // LoggingSystem * defaultLoggingSystem;
 } // namespace logger
 
 #ifndef DISABLE_LOGGING
-#define logger_setup(out) logger::setupLoggingSystem(new logger::PrintOutput(out))
+#define logger_setup(clock, out) logger::setupLoggingSystem(clock, new logger::PrintOutput(out))
 #define logger_log(msg, ...)  logger::getLoggingSystem()->logger->log(msg, ##__VA_ARGS__)
 #else
-#define logger_setup(out)
+#define logger_setup(clock, out)
 #define logger_log(msg, ...)
 #endif
 

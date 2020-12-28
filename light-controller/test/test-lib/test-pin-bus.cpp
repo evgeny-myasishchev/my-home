@@ -1,6 +1,6 @@
 #include "test-pin-bus.h"
 
-TestPinBus::TestPinBus(const byte busSize) : PinBus(busSize)
+TestPinBus::TestPinBus(const byte busSize) : InMemoryPinBus(busSize)
 {
     pendingTestState = new byte[2]();
 }
@@ -12,7 +12,7 @@ TestPinBus::~TestPinBus()
 
 void TestPinBus::readState()
 {
-    for (size_t i = 0; i < this->getBusSize(); i++)
+    for (size_t i = 0; i < this->getBusSizeBytes(); i++)
     {
         logger_log("Reading test pin bus state byte: %d, value: %d", i, pendingTestState[i]);
         this->setStateByte(i, pendingTestState[i]);
@@ -21,7 +21,7 @@ void TestPinBus::readState()
 
 void TestPinBus::writeState()
 {
-    for (size_t i = 0; i < this->getBusSize(); i++)
+    for (size_t i = 0; i < this->getBusSizeBytes(); i++)
     {
         pendingTestState[i] = this->getStateByte(i);
     }
