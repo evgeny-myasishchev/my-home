@@ -38,11 +38,11 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     routesArray[routeNumber++] = route;
 
     // night land + shed
-    route = (new Switch())
-        ->withSwitchAddress(relaysCount + 1)
-        ->withSwitchType(SwitchType::Toggle)
-        ->withTargetAddresses(2, new byte[2]{0, 3});
-    routesArray[routeNumber++] = route;
+    // route = (new Switch())
+    //     ->withSwitchAddress(relaysCount + 1)
+    //     ->withSwitchType(SwitchType::Toggle)
+    //     ->withTargetAddresses(2, new byte[2]{0, 3});
+    // routesArray[routeNumber++] = route;
     
     // night land + shed (from solar)
     route = (new Switch())

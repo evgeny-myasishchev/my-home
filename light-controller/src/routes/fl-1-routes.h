@@ -13,8 +13,9 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
 {
     const byte relaysCount = RELAY_BOARDS * 8;
     const byte switchesCount = INPUT_BOARDS * 8;
+    const byte actualSwitchesCount = 15; // to save mem
 
-    Switch **routesArray = new Switch *[switchesCount];
+    Switch **routesArray = new Switch *[actualSwitchesCount];
     byte routeNumber = 0;
     Switch* route;
 
@@ -40,7 +41,9 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     // hall
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 2)
-        ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_HALL_COMMON});
+        ->withTargetAddresses(3, new byte[3]{
+            0, 1, SPOT_ADDR_HALL_COMMON
+        });
     routesArray[routeNumber++] = route;
 
     // =================== Living ===================
@@ -117,24 +120,22 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     routesArray[routeNumber++] = route;
 
     // entry all
-    route = (new Switch())
-            ->withSwitchAddress(relaysCount + 23)
-            // ->withSwitchType(SwitchType::Push)
-            ->withSwitchType(SwitchType::Toggle)
-            ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_MAIN_ENTRY});
-            // ->withTargetAddresses(24, new byte[24]{
-            //     0, 1, 2, 3, 4, 5, 6, 7,
-            //     8, 9, 10, 11, 12, 13, 14, 15,
-            //     16, 17, 18, 19, 20, 21, 22, 23,
-            // });
+    // route = (new Switch())
+    //         ->withSwitchAddress(relaysCount + 23)
+    //         // ->withSwitchType(SwitchType::Push)
+    //         ->withSwitchType(SwitchType::Toggle)
+    //         ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_MAIN_ENTRY});
+    //         // ->withTargetAddresses(24, new byte[24]{
+    //         //     0, 1, 2, 3, 4, 5, 6, 7,
+    //         //     8, 9, 10, 11, 12, 13, 14, 15,
+    //         //     16, 17, 18, 19, 20, 21, 22, 23,
+    //         // });
 
     // entry solar
     route = (new Switch())
         ->withSwitchAddress(virtualAddressStart + 0)
         ->withSwitchType(SwitchType::Toggle)
         ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_MAIN_ENTRY});
-    routesArray[routeNumber++] = route;
-
     routesArray[routeNumber++] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
