@@ -6,9 +6,9 @@
 #include <switch-service-v2.h>
 #include <switches-router-v2.h>
 #include <solar-switch.h>
+#include <Wire.h>
 #include <at.h>
 #include <at-commands.h>
-#include <Wire.h>
 
 // Test mode will only use pin bus, see below
 // #define TEST_MODE
@@ -31,14 +31,15 @@ CompositePinBus bus(2, busses);
 
 SwitchesRouter *router;
 
+#ifdef AT_ENABLED
 io::SerialTextStream atStream(&Serial);
 at::Engine atEngine(&atStream);
-
 ArduinoDigitalWrite arduinoDigitalWrite(digitalWrite);
 ATPing atPing;
 ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
 ATGetPin atGetPin(&bus);
 ATSetPin atSetPin(&bus);
+#endif
 
 rtc::RTCClock clock;
 Dusk2Dawn location(50.04, 36.30, +2);
@@ -79,11 +80,13 @@ void setup()
     auto now = clock.now();
     solarSwitch.setup(now);
 
+#ifdef AT_ENABLED
     atEngine.addCommandHandler(&atPing);
     atEngine.addCommandHandler(&atLed);
     atEngine.addCommandHandler(&atGetPin);
     atEngine.addCommandHandler(&atSetPin);
     atEngine.setup();
+#endif
 
     logger_log("Controller initialized.");
 }
@@ -92,7 +95,9 @@ void loop()
 {
     pcf8574bus.readState();
 
+#ifdef AT_ENABLED
     atEngine.loop();
+#endif
 
 #ifndef TEST_MODE
 
