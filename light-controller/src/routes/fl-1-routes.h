@@ -1,4 +1,5 @@
 #include <switch.h>
+#include <solar-switch.h>
 
 using namespace v2;
 
