@@ -7,6 +7,8 @@
 namespace v2
 {
 
+#define PRIMARY_TARGET_UNDEFINED 255
+
 enum SwitchType
 {
     Push = 0, // Will change state when switch pushed
@@ -32,6 +34,10 @@ struct Switch
     byte switchAddress;
     ArrayPtr<byte> targetAddresses;
 
+    // if primary address is defined then it's state will be used
+    // when toggling targets
+    byte primaryTargetAddress = PRIMARY_TARGET_UNDEFINED;
+
     Switch *withSwitchType(SwitchType type)
     {
         this->type = type;
@@ -53,6 +59,12 @@ struct Switch
     Switch *withTargetAddresses(byte size, byte* addresses)
     {
         this->targetAddresses = ArrayPtr<byte>(size, addresses);
+        return this;
+    }
+
+    Switch *withPrimaryTargetAddress(byte primaryTargetAddress)
+    {
+        this->primaryTargetAddress = primaryTargetAddress;
         return this;
     }
 };
