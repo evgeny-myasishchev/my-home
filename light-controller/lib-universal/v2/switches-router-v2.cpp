@@ -32,15 +32,19 @@ namespace v2
                 if (sw->stateChanged)
                 {
                     router_log("Route %d status changed to %d", i, sw->state);
+                    auto primaryTargetValue = PRIMARY_TARGET_UNDEFINED;
+                    if (sw->primaryTargetAddress != PRIMARY_TARGET_UNDEFINED)
+                    {
+                        primaryTargetValue = this->services.bus->getPin(sw->primaryTargetAddress);
+                    }
                     for (byte addrNum = 0; addrNum < sw->targetAddresses.size(); addrNum++)
                     {
                         const auto address = sw->targetAddresses[addrNum];
-                        auto targetAddress = address;
-                        if (sw->primaryTargetAddress != PRIMARY_TARGET_UNDEFINED)
+                        byte currentTargetValue = this->services.bus->getPin(address);
+                        if (primaryTargetValue != PRIMARY_TARGET_UNDEFINED)
                         {
-                            targetAddress = sw->primaryTargetAddress;
+                            currentTargetValue = primaryTargetValue;
                         }
-                        const byte currentTargetValue = this->services.bus->getPin(targetAddress);
                         const byte newTargetValue = swSvc->getTargetState(currentTargetValue, sw);
                         router_log("State transition from %d to %d for %d address (addr num %d)", currentTargetValue, newTargetValue, address, addrNum);
                         this->services.bus->setPin(address, newTargetValue);
