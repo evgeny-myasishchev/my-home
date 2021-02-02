@@ -48,26 +48,26 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 0)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_OFFICE_COMMON});
-    routesArray[routeNumber++] = route;
+    routesArray[routeNumber] = route;
 
     // under stairs
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 1)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_UNDER_STAIRS});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // hall
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 2)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_HALL_COMMON});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // =================== Living ===================
     // kitchen store
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 3)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_KITCHEN_STORE});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // living common
     route = (new Switch())
@@ -77,58 +77,59 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                                              SPOT_ADDR_LIVING_COMM,
                                              SPOT_ADDR_LIVING_SIDE1,
                                              SPOT_ADDR_LIVING_SIDE2});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // living side
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 5)
                 ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_LIVING_SIDE1, SPOT_ADDR_LIVING_SIDE2});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // hall entry
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 6)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_HALL_ENTRY});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // =================== kitchen ===================
     // living table
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 7)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_LIVING_TABLE});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // kitchen led
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 8)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_KITCHEN_LED});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // kitchen common
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 9)
+                ->withPrimaryTargetAddress(SPOT_ADDR_KITCHEN_LED)
                 ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_KITCHEN_COMMON,
                                                      SPOT_ADDR_KITCHEN_LED});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // =================== hall ===================
     // common
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 10)
                 ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_HALL_COMMON, SPOT_ADDR_HALL_NIGHT});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // store
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 11)
                 ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_BOILER, SPOT_ADDR_WARDEROBE});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // =================== bath ===================
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 12)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_BATH_COMMON});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // =================== Entry ===================
     route = (new Switch())
@@ -138,7 +139,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                                              SPOT_ADDR_HALL_ENTRY,
                                              SPOT_ADDR_HALL_COMMON,
                                              SPOT_ADDR_HALL_NIGHT});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // entry all off
     route = (new Switch())
@@ -167,14 +168,14 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                                               SPOT_ADDR_LIVING_SIDE2,
                                               SPOT_ADDR_MAIN_ENTRY_NIGHT,
                                           });
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     // entry solar
     route = (new Switch())
                 ->withSwitchAddress(virtualAddressStart + 0)
                 ->withSwitchType(SwitchType::Toggle)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_MAIN_ENTRY_NIGHT});
-    routesArray[routeNumber++] = route;
+    routesArray[++routeNumber] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
 }

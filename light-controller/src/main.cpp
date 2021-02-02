@@ -14,9 +14,9 @@
 // #define TEST_MODE
 
 // #include "routes/test-routes.h"
-// #include "routes/fl-1-routes.h"
+#include "routes/fl-1-routes.h"
 // #include "routes/fl-2-routes.h"
-#include "routes/outdoor-routes.h"
+// #include "routes/outdoor-routes.h"
 
 using namespace v2;
 
