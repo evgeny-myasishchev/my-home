@@ -135,21 +135,8 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     routesArray[++routeNumber] = route;
 
     // =================== Entry ===================
-    route = (new Switch())
-                ->withSwitchAddress(relaysCount + 22)
-                ->withPrimaryTargetAddress(SPOT_ADDR_HALL_ENTRY)
-                ->withTargetAddresses(3, new byte[3]{
-                                             SPOT_ADDR_HALL_ENTRY,
-                                             SPOT_ADDR_HALL_COMMON,
-                                             SPOT_ADDR_HALL_NIGHT});
-    routesArray[++routeNumber] = route;
-
-    // entry all off
-    route = (new Switch())
-                ->withSwitchAddress(relaysCount + 23)
-                ->withSwitchType(SwitchType::Push)
-                ->withSwitchAction(SwitchAction::ForceOff)
-                ->withTargetAddresses(20, new byte[20]{
+    // Besides night
+    const auto allTargets = new byte[20]{
                                               SPOT_ADDR_HALL_ENTRY,
                                               SPOT_ADDR_MAIN_ENTRY,
                                               SPOT_ADDR_OFFICE_COMMON,
@@ -170,7 +157,30 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                                               SPOT_ADDR_LIVING_SIDE1,
                                               SPOT_ADDR_LIVING_SIDE2,
                                               SPOT_ADDR_MAIN_ENTRY_NIGHT,
-                                          });
+                                          };
+
+    // test all
+    route = (new Switch())
+                ->withSwitchAddress(relaysCount + 21)
+                ->withTargetAddresses(20, allTargets);
+    routesArray[++routeNumber] = route;
+
+    // entry common
+    route = (new Switch())
+                ->withSwitchAddress(relaysCount + 22)
+                ->withPrimaryTargetAddress(SPOT_ADDR_HALL_ENTRY)
+                ->withTargetAddresses(3, new byte[3]{
+                                             SPOT_ADDR_HALL_ENTRY,
+                                             SPOT_ADDR_HALL_COMMON,
+                                             SPOT_ADDR_HALL_NIGHT});
+    routesArray[++routeNumber] = route;
+
+    // entry all off
+    route = (new Switch())
+                ->withSwitchAddress(relaysCount + 23)
+                ->withSwitchType(SwitchType::Push)
+                ->withSwitchAction(SwitchAction::ForceOff)
+                ->withTargetAddresses(20, allTargets);
     routesArray[++routeNumber] = route;
 
     // entry solar
