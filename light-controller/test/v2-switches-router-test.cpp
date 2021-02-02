@@ -246,4 +246,38 @@ TEST_F(V2SwitchesRouterTest, processRoutesUsePrimaryTarget)
     EXPECT_EQ(bus->pendingTestState[1], 0b01000111);
 }
 
+TEST_F(V2SwitchesRouterTest, processRoutesReadPrimaryTargetOnce)
+{
+    const byte state = 0b00000001;
+    const byte targetState = 0b00000101;
+    bus->pendingTestState[0] = state;
+    bus->pendingTestState[1] = targetState;
+    bus->readState();
+
+    byte route1Targets[] = {8, 9, 10};
+    Switch route1{.switchAddress = 0,
+                  .targetAddresses = ArrayPtr<byte>(3, (byte *)&route1Targets),
+                  .primaryTargetAddress = 9};
+
+    Switch *routesArray[] = {&route1};
+    ArrayPtr<Switch *> routes(1, (Switch **)&routesArray);
+
+    // route 1
+    EXPECT_CALL((*pushBtnSwitchSvc), processSignal(bitRead(state, route1.switchAddress), &route1))
+        .WillOnce(Invoke(markSwitchChanged));
+
+    EXPECT_CALL((*pushBtnSwitchSvc), getTargetState(0, &route1))
+        .Times(3)
+        .WillOnce(Return(HIGH))
+        .WillOnce(Return(HIGH))
+        .WillOnce(Return(HIGH));
+    EXPECT_CALL((*pushBtnSwitchSvc), applyStateChange(&route1));
+
+    router->processRoutes(routes);
+
+    bus->writeState();
+
+    EXPECT_EQ(bus->pendingTestState[1], 0b00000111);
+}
+
 } // namespace
