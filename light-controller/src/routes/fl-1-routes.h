@@ -106,7 +106,10 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
 
     // kitchen common
     route = (new Switch())
-                ->withSwitchAddress(relaysCount + 9)
+                // using 13 since 9 has some HW issue. The signal jumps from hi to low
+                // even if you keep the switch constant ON
+                // ->withSwitchAddress(relaysCount + 9)
+                ->withSwitchAddress(relaysCount + 13)
                 ->withPrimaryTargetAddress(SPOT_ADDR_KITCHEN_COMMON)
                 ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_KITCHEN_COMMON,
                                                      SPOT_ADDR_KITCHEN_LED});
