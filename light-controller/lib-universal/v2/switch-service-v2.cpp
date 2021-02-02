@@ -23,7 +23,11 @@ namespace v2
     {
         if (signal == HIGH)
         {
-            service_log("Processing signal %d, seen times: %d, since: %d", signal, sw->seenSignalTimes, sw->seenSignalSince);
+            service_log("Processing signal: address=%d, signal=%d, seen times=%d, since=%d", 
+                sw->switchAddress,
+                signal, 
+                sw->seenSignalTimes, 
+                sw->seenSignalSince);
             sw->seenSignalTimes += 1;
             unsigned long now = cfg.timers->millis();
             if (sw->seenSignalSince == 0)
@@ -40,11 +44,19 @@ namespace v2
             {
                 sw->state = sw->pendingState = HIGH;
                 sw->stateChanged = true;
-                service_log("State change detected. Signal duration: %d, new state: %d", signalDuration, sw->state);
+                service_log("State change detected. Address: %d, signal duration: %d, seen times: %d, new state: %d",
+                            sw->switchAddress,
+                            signalDuration,
+                            sw->seenSignalTimes,
+                            sw->state);
             }
         }
         else
         {
+            if (sw->seenSignalTimes > 0)
+            {
+                service_log("Reset switch state. Address: %d", sw->switchAddress);
+            }
             sw->seenSignalTimes = 0;
             sw->seenSignalSince = 0;
             sw->pendingState = LOW;
