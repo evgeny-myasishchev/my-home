@@ -2,52 +2,61 @@
 
 namespace v2
 {
-SwitchesRouter::SwitchesRouter(SwitchRouterServices services)
-{
-    this->services = services;
-}
-
-void SwitchesRouter::processRoutes(ArrayPtr<Switch *> routes)
-{
-    for (size_t i = 0; i < routes.size(); i++)
+    SwitchesRouter::SwitchesRouter(SwitchRouterServices services)
     {
-        Switch *sw = routes[i];
-        SwitchService *swSvc = NULL;
-        switch (sw->type)
+        this->services = services;
+    }
+
+    void SwitchesRouter::processRoutes(ArrayPtr<Switch *> routes)
+    {
+        for (size_t i = 0; i < routes.size(); i++)
         {
-        case SwitchType::Push:
-            swSvc = this->services.pushBtnSwitchSvc;
-            break;
-        case SwitchType::Toggle:
-            swSvc = this->services.toggleBtnSwitchSvc;
-            break;
-        default:
-            break;
-        }
-        if (swSvc != NULL)
-        {
-            const auto switchState = this->services.bus->getPin(sw->switchAddress);
-            // router_log("Processing switch: %d, address: %d, state: %d", i, sw->switchAddress, switchState);
-            swSvc->processSignal(switchState, sw);
-            if (sw->stateChanged)
+            Switch *sw = routes[i];
+            SwitchService *swSvc = NULL;
+            switch (sw->type)
             {
-                router_log("Route %d status changed to %d", i, sw->state);
-                for (byte addrNum = 0; addrNum < sw->targetAddresses.size(); addrNum++)
+            case SwitchType::Push:
+                swSvc = this->services.pushBtnSwitchSvc;
+                break;
+            case SwitchType::Toggle:
+                swSvc = this->services.toggleBtnSwitchSvc;
+                break;
+            default:
+                break;
+            }
+            if (swSvc != NULL)
+            {
+                const auto switchState = this->services.bus->getPin(sw->switchAddress);
+                // router_log("Processing switch: %d, address: %d, state: %d", i, sw->switchAddress, switchState);
+                swSvc->processSignal(switchState, sw);
+                if (sw->stateChanged)
                 {
-                    const auto address = sw->targetAddresses[addrNum];
-                    const byte currentTargetValue = this->services.bus->getPin(address);
-                    const byte newTargetValue = swSvc->getTargetState(currentTargetValue, sw);
-                    router_log("State transition from %d to %d for %d address (addr num %d)", currentTargetValue, newTargetValue, address, addrNum);
-                    this->services.bus->setPin(address, newTargetValue);
+                    router_log("Route %d status changed to %d", i, sw->state);
+                    auto primaryTargetValue = PRIMARY_TARGET_UNDEFINED;
+                    if (sw->primaryTargetAddress != PRIMARY_TARGET_UNDEFINED)
+                    {
+                        primaryTargetValue = this->services.bus->getPin(sw->primaryTargetAddress);
+                    }
+                    for (byte addrNum = 0; addrNum < sw->targetAddresses.size(); addrNum++)
+                    {
+                        const auto address = sw->targetAddresses[addrNum];
+                        byte currentTargetValue = this->services.bus->getPin(address);
+                        if (primaryTargetValue != PRIMARY_TARGET_UNDEFINED)
+                        {
+                            currentTargetValue = primaryTargetValue;
+                        }
+                        const byte newTargetValue = swSvc->getTargetState(currentTargetValue, sw);
+                        router_log("State transition from %d to %d for %d address (addr num %d)", currentTargetValue, newTargetValue, address, addrNum);
+                        this->services.bus->setPin(address, newTargetValue);
+                    }
+                    swSvc->applyStateChange(sw);
                 }
-                swSvc->applyStateChange(sw);
+            }
+            else
+            {
+                logger_log("Unexpected switch type: %d at index: %d", sw->type, i);
             }
         }
-        else
-        {
-            logger_log("Unexpected switch type: %d at index: %d", sw->type, i);
-        }
     }
-}
 
 } // namespace v2
