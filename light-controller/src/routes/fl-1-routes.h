@@ -107,7 +107,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     // kitchen common
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 9)
-                ->withPrimaryTargetAddress(SPOT_ADDR_KITCHEN_LED)
+                ->withPrimaryTargetAddress(SPOT_ADDR_KITCHEN_COMMON)
                 ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_KITCHEN_COMMON,
                                                      SPOT_ADDR_KITCHEN_LED});
     routesArray[++routeNumber] = route;
