@@ -31,7 +31,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
 {
     const byte relaysCount = RELAY_BOARDS * 8;
     const byte switchesCount = INPUT_BOARDS * 8;
-    const byte actualSwitchesCount = 16; // to save mem
+    const byte actualSwitchesCount = 17; // to save mem
 
     Switch **routesArray = new Switch *[actualSwitchesCount];
     byte routeNumber = 0;
@@ -136,7 +136,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
 
     // =================== Entry ===================
     // Besides night
-    const auto allTargets = new byte[20]{
+    const auto allTargets = new byte[19]{
                                               SPOT_ADDR_HALL_ENTRY,
                                               SPOT_ADDR_MAIN_ENTRY,
                                               SPOT_ADDR_OFFICE_COMMON,
@@ -156,13 +156,12 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                                               SPOT_ADDR_LIVING_TABLE,
                                               SPOT_ADDR_LIVING_SIDE1,
                                               SPOT_ADDR_LIVING_SIDE2,
-                                              SPOT_ADDR_MAIN_ENTRY_NIGHT,
                                           };
 
     // test all
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 21)
-                ->withTargetAddresses(20, allTargets);
+                ->withTargetAddresses(19, allTargets);
     routesArray[++routeNumber] = route;
 
     // entry common
@@ -180,7 +179,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                 ->withSwitchAddress(relaysCount + 23)
                 ->withSwitchType(SwitchType::Push)
                 ->withSwitchAction(SwitchAction::ForceOff)
-                ->withTargetAddresses(20, allTargets);
+                ->withTargetAddresses(19, allTargets);
     routesArray[++routeNumber] = route;
 
     // entry solar
@@ -190,5 +189,5 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_MAIN_ENTRY_NIGHT});
     routesArray[++routeNumber] = route;
 
-    return ArrayPtr<Switch *>(routeNumber, routesArray);
+    return ArrayPtr<Switch *>(++routeNumber, routesArray);
 }
