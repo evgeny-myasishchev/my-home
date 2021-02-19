@@ -25,14 +25,11 @@ namespace v2
         const virtual byte getBusSizeBytes() const = 0;
     };
 
-    namespace
+    struct CompositeBusSlot
     {
-        struct CompositeBusSlot
-        {
-            PinBus *bus;
-            int firstSlot;
-        };
-    } // namespace
+        PinBus *bus;
+        int firstSlot;
+    };
 
     class CompositePinBus : public PinBus
     {
