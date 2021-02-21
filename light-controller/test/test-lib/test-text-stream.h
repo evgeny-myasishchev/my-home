@@ -1,7 +1,7 @@
 #ifndef MOCKS_TEST_TEXT_STREAM
 #define MOCKS_TEST_TEXT_STREAM
 
-#include <io.h>
+#include <text-io.h>
 #include <string>
 
 class TestTextStream : public io::TextStream

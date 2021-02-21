@@ -1,6 +1,4 @@
 #include "at-commands.h"
-#include <string.h>
-#include <numerics.h>
 
 namespace v2
 {

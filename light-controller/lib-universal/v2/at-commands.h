@@ -2,6 +2,8 @@
 #define V2_AT_COMMANDS
 
 #include <at.h>
+#include <string.h>
+#include <numerics.h>
 #include "pin-bus.h"
 
 namespace v2
