@@ -65,3 +65,6 @@ release: all
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
 	-@rm -rvf $(APP_DIR)/*
+
+reenum:
+	./tools/macosx/reenumerate -v 0x1eaf,0x0003
