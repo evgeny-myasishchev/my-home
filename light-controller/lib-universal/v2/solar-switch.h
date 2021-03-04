@@ -1,7 +1,7 @@
 #ifndef V2_SOLAR_SWITCH
 #define V2_SOLAR_SWITCH
 
-#include <rtc.h>
+#include <rtc-solar.h>
 #include <logger.h>
 #include "pin-bus.h"
 

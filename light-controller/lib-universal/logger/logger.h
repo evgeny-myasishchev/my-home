@@ -7,7 +7,7 @@
 #include <arduino-compat.h>
 #include <stdarg.h>
 #include <Timers.h>
-#include <rtc.h>
+#include <rtc-solar.h>
 
 #ifndef ARDUINO
 #include <iostream>

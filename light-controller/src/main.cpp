@@ -2,7 +2,7 @@
 #include <arduino-compat.h>
 #include <logger.h>
 #include <pin-bus.h>
-#include <rtc.h>
+#include <rtc-solar.h>
 #include <switch-service-v2.h>
 #include <switches-router-v2.h>
 #include <solar-switch.h>
@@ -13,8 +13,8 @@
 // Test mode will only use pin bus, see below
 // #define TEST_MODE
 
-// #include "routes/test-routes.h"
-#include "routes/fl-1-routes.h"
+#include "routes/test-routes.h"
+// #include "routes/fl-1-routes.h"
 // #include "routes/fl-2-routes.h"
 // #include "routes/outdoor-routes.h"
 

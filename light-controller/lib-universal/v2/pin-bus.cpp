@@ -139,7 +139,7 @@ namespace v2
             const byte rawBoardState = i < outputBoardsNum ? outputState : inputState;
             prevBusState[i] = rawBoardState;
             const byte boardState = invert ? ~rawBoardState : rawBoardState;
-            boards[i]->begin(boardState);
+            boards[i]->write8(boardState);
             pin_bus_log("Board %d: state=%d", i, rawBoardState);
         }
     }

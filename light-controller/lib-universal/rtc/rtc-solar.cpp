@@ -1,4 +1,4 @@
-#include "rtc.h"
+#include "rtc-solar.h"
 
 namespace rtc
 {
