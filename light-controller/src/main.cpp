@@ -53,10 +53,12 @@ void setup()
     Wire.begin();
 
     pinMode(LED_BUILTIN, OUTPUT);
+#ifndef DISABLE_LOGGING
     Serial.begin(115200);
     while (!Serial)
     {
     }
+#endif
 
 #ifdef RTC_SETUP
     {
