@@ -23,7 +23,13 @@ void setup()
 
 }
 
+long lastPingAgo;
 void loop()
 {
+    const auto now = millis();
+    if(now - lastPingAgo >= 1000) {
+        lastPingAgo = now;
+        logger_log("PING: %d", lastPingAgo);
+    }
     app.loop();
 }

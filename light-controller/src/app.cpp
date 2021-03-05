@@ -3,7 +3,10 @@
 App::App(byte relayBoards, byte inputBoards, ArrayPtr<Switch *> (*createRoutes)(SolarSwitch *solarSwitch))
 {
      pcf8574bus = new PCF8574Bus(relayBoards, inputBoards, true);
-     routes = createRoutes(&solarSwitch);
+     const auto busses = new PinBus *[2] { pcf8574bus, &virtualBus };
+     bus = new CompositePinBus((byte)2, busses);
+     solarSwitch = new SolarSwitch(solar, bus);
+     routes = createRoutes(solarSwitch);
 }
 
 void App::setup()
@@ -15,19 +18,19 @@ void App::setup()
     while (!Serial)
     {
     }
-    logger_setup(&clock, &Serial);
+    logger_setup(clock, &Serial);
 #endif
 
     router = new SwitchesRouter(SwitchRouterServices{
-        .bus = &bus,
+        .bus = bus,
         .pushBtnSwitchSvc = new PushButtonSwitchService(SwitchServiceConfig()),
         .toggleBtnSwitchSvc = new ToggleButtonSwitchService(SwitchServiceConfig()),
     });
 
     pcf8574bus->setup(0x00, 0x00);
 
-    auto now = clock.now();
-    solarSwitch.setup(now);
+    auto now = clock->now();
+    solarSwitch->setup(now);
 
 #ifdef AT_ENABLED
     atEngine.addCommandHandler(&atPing);
@@ -50,8 +53,8 @@ void App::loop()
 
 #ifndef TEST_MODE
 
-    auto now = clock.now();
-    solarSwitch.loop(now);
+    auto now = clock->now();
+    solarSwitch->loop(now);
     router->processRoutes(routes);
 
 #else
