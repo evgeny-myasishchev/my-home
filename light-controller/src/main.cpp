@@ -5,6 +5,11 @@
 // #include "routes/fl-2-routes.h"
 // #include "routes/outdoor-routes.h"
 
+#ifdef PING
+#include "ping.h"
+Ping ping;
+#endif
+
 App app(RELAY_BOARDS, INPUT_BOARDS, createRoutes);
 
 void setup()
@@ -23,13 +28,10 @@ void setup()
 
 }
 
-long lastPingAgo;
 void loop()
 {
-    const auto now = millis();
-    if(now - lastPingAgo >= 1000) {
-        lastPingAgo = now;
-        logger_log("PING: %d", lastPingAgo);
-    }
+#ifdef PING
+    ping.loop();
+#endif
     app.loop();
 }
