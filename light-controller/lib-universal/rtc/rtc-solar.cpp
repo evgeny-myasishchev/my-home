@@ -11,23 +11,6 @@ namespace rtc
 #ifndef RTC_TIME
 #define RTC_TIME __TIME__
 #endif
-
-    void setupClockToCompileTime()
-    {
-        const auto now = DateTime(RTC_DATE, RTC_TIME);
-
-        DS3231 clock;
-        clock.enableOscillator(false, false, 3);
-        clock.setClockMode(false);
-        clock.setYear(now.year() - 2000); // last two digits only starting from 2k
-        clock.setMonth(now.month());
-        clock.setDate(now.day());
-        clock.setHour(now.hour());
-        clock.setMinute(now.minute());
-        clock.setSecond(now.second());
-        clock.enableOscillator(true, false, 3);
-    }
-
     ArduinoSolar::ArduinoSolar(Dusk2Dawn *location)
     {
         _location = location;
