@@ -10,8 +10,6 @@
 
 namespace rtc
 {
-    void setupClockToCompileTime();
-
     class Solar
     {
     public:

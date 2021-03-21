@@ -1,7 +1,7 @@
 #ifndef V2_SOLAR_SWITCH
 #define V2_SOLAR_SWITCH
 
-#include <rtc.h>
+#include <rtc-solar.h>
 #include <logger.h>
 #include "pin-bus.h"
 
@@ -31,9 +31,9 @@ namespace v2
         SolarSwitch();
         rtc::Solar *_solar;
         PinBus *_bus;
-        byte _pinIndex;
-        byte _dayState;
-        byte _nightState;
+        byte _pinIndex = 0;
+        byte _dayState = 0;
+        byte _nightState = 0;
 
         uint8_t _sunrizeOffsetMinutes = 0;
         uint8_t _sunsetOffsetMinutes = 0;

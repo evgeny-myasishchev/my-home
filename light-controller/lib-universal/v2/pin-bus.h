@@ -39,6 +39,7 @@ namespace v2
         CompositeBusSlot *byteSlots;
 
     public:
+        CompositePinBus();
         CompositePinBus(const byte targetsCount, PinBus **targets);
         ~CompositePinBus();
         const byte getPin(const byte pinIndex) const;

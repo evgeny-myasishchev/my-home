@@ -1,7 +1,7 @@
 #ifndef MOCKS_TEST_RTC
 #define MOCKS_TEST_RTC
 
-#include <rtc.h>
+#include <rtc-solar.h>
 
 class TestSolar : public rtc::Solar
 {

@@ -20,7 +20,8 @@ INCLUDE := $(INCLUDE_FILES:%=-I%)
 CPP_SRC := \
 	$(wildcard test/*.cpp) \
 	$(wildcard test/**/*.cpp) \
-	$(wildcard lib-universal/*/*.cpp)
+	$(wildcard lib-universal/*/*.cpp) \
+	$(wildcard $(PIO_USER_LIBS_HOME)/AT-Engine/src/*.cpp)
 
 CC_SRC := \
 	$(wildcard $(PIO_USER_LIBS_HOME)/googletest/googlemock/src/gmock-all.cc) \
@@ -29,6 +30,7 @@ CC_SRC := \
 OBJECTS := $(CPP_SRC:%.cpp=$(OBJ_DIR)/%.o) $(CC_SRC:%.cc=$(OBJ_DIR)/%.o)
 
 INCLUDE += \
+	-I$(PIO_USER_LIBS_HOME)/AT-Engine/include/ \
 	-I$(PIO_USER_LIBS_HOME)/googletest/googlemock/include/ \
 	-I$(PIO_USER_LIBS_HOME)/googletest/googlemock/ \
 	-I$(PIO_USER_LIBS_HOME)/googletest/googletest/include/ \
@@ -65,3 +67,6 @@ release: all
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
 	-@rm -rvf $(APP_DIR)/*
+
+reenum:
+	./tools/macosx/reenumerate -v 0x1eaf,0x0003

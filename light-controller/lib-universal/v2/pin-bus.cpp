@@ -2,6 +2,10 @@
 
 namespace v2
 {
+    CompositePinBus::CompositePinBus()
+    {
+    }
+
     CompositePinBus::CompositePinBus(const byte targetsCount, PinBus **targets)
     {
         for (size_t i = 0; i < targetsCount; i++)
@@ -36,7 +40,7 @@ namespace v2
         const byte slotIndex = pinIndex / 8;
         const auto slot = byteSlots[slotIndex];
         // printf("getPin: %d, slotIndex: %d, firstSlot: %d, actualPin: %d\n", pinIndex, slotIndex, slot.firstSlot, pinIndex - slot.firstSlot*8);
-        return slot.bus->getPin(pinIndex - slot.firstSlot*8);
+        return slot.bus->getPin(pinIndex - slot.firstSlot * 8);
     }
 
     const void CompositePinBus::setPin(const byte pinIndex, byte state)
@@ -44,7 +48,7 @@ namespace v2
         const byte slotIndex = pinIndex / 8;
         const auto slot = byteSlots[slotIndex];
         // printf("setPin: %d, slotIndex: %d\n", pinIndex, slotIndex);
-        slot.bus->setPin(pinIndex - slot.firstSlot*8, state);
+        slot.bus->setPin(pinIndex - slot.firstSlot * 8, state);
     }
 
     const byte CompositePinBus::getBusSizeBytes() const
@@ -139,7 +143,7 @@ namespace v2
             const byte rawBoardState = i < outputBoardsNum ? outputState : inputState;
             prevBusState[i] = rawBoardState;
             const byte boardState = invert ? ~rawBoardState : rawBoardState;
-            boards[i]->begin(boardState);
+            boards[i]->write8(boardState);
             pin_bus_log("Board %d: state=%d", i, rawBoardState);
         }
     }

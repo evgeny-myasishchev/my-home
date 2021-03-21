@@ -10,11 +10,7 @@ Make sure platformio is installed. Upload:
 pio run -t upload -e nano
 ```
 
-To setup RTC time (if module connected):
-* Edit platformio.ini -> common section
-* Uncomment one of the `build_flags` section
-* Upload the firmware
-* Once setup with standard build flags
+Use [arduino-DS3231-setup](https://github.com/evgeny-myasishchev/arduino-DS3231-setup) to setup RTC clock.
 
 ## Unit tests
 

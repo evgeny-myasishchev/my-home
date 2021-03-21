@@ -7,7 +7,7 @@
 #include <arduino-compat.h>
 #include <stdarg.h>
 #include <Timers.h>
-#include <rtc.h>
+#include <rtc-solar.h>
 
 #ifndef ARDUINO
 #include <iostream>
@@ -30,8 +30,6 @@ namespace logger
     void printf(Output * out, const char *format, ...);
 
 #ifdef ARDUINO
-    #define println(msg)
-
     class PrintOutput : public Output
     {
     private:
