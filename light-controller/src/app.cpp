@@ -2,11 +2,31 @@
 
 App::App(byte relayBoards, byte inputBoards, ArrayPtr<Switch *> (*createRoutes)(SolarSwitch *solarSwitch))
 {
-     pcf8574bus = new PCF8574Bus(relayBoards, inputBoards, true);
-     const auto busses = new PinBus *[2] { pcf8574bus, &virtualBus };
-     bus = new CompositePinBus((byte)2, busses);
-     solarSwitch = new SolarSwitch(solar, bus);
-     routes = createRoutes(solarSwitch);
+    pcf8574bus = new PCF8574Bus(relayBoards, inputBoards, true);
+    const auto busses = new PinBus *[2] { pcf8574bus, &virtualBus };
+    bus = new CompositePinBus((byte)2, busses);
+    solarSwitch = new SolarSwitch(solar, bus);
+    routes = createRoutes(solarSwitch);
+
+#ifdef AT_ENABLED
+    atGetPin = new ATGetPin(bus);
+    atSetPin = new ATSetPin(bus);
+#endif
+}
+
+App::~App()
+{
+    delete pcf8574bus;
+    delete bus;
+    delete solarSwitch;
+#ifdef AT_ENABLED
+    delete atGetPin;
+    delete atSetPin;
+#endif
+
+    // TODO: We hardly ever need to destruct since it's a shutdown of the app
+    // however for consistency purposes we better do
+    // so other items needs to be added here.
 }
 
 void App::setup()
@@ -35,8 +55,8 @@ void App::setup()
 #ifdef AT_ENABLED
     atEngine.addCommandHandler(&atPing);
     atEngine.addCommandHandler(&atLed);
-    atEngine.addCommandHandler(&atGetPin);
-    atEngine.addCommandHandler(&atSetPin);
+    atEngine.addCommandHandler(atGetPin);
+    atEngine.addCommandHandler(atSetPin);
     atEngine.setup();
 #endif
 

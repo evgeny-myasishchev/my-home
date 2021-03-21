@@ -28,13 +28,13 @@ private:
     SwitchesRouter *router;
 
 #ifdef AT_ENABLED
-    io::SerialTextStream atStream(&Serial);
-    at::Engine atEngine(&atStream);
-    ArduinoDigitalWrite arduinoDigitalWrite(digitalWrite);
+    at::SerialTextStream atStream = at::SerialTextStream(&Serial);
+    at::Engine atEngine = at::Engine(&atStream);
+    ArduinoDigitalWrite arduinoDigitalWrite = ArduinoDigitalWrite(digitalWrite);
     ATPing atPing;
-    ATLed atLed(LED_BUILTIN, &arduinoDigitalWrite);
-    ATGetPin atGetPin(&bus);
-    ATSetPin atSetPin(&bus);
+    ATLed atLed = ATLed(LED_BUILTIN, &arduinoDigitalWrite);
+    ATGetPin * atGetPin;
+    ATSetPin * atSetPin;
 #endif
 
     rtc::RTCClock *clock = new rtc::RTCClock();
@@ -45,6 +45,7 @@ private:
     ArrayPtr<Switch *> routes;
 public:
     App(byte relayBoards, byte inputBoards, ArrayPtr<Switch *> (*createRoutes)(SolarSwitch *solarSwitch));
+    ~App();
     void setup();
     void loop();
 };
