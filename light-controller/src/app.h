@@ -38,7 +38,7 @@ private:
 #endif
 
     rtc::RTCClock *clock = new rtc::RTCClock();
-    Dusk2Dawn *location = new Dusk2Dawn(50.04, 36.30, +2);
+    Dusk2Dawn *location = new Dusk2Dawn(50.04, 36.30, +3);
     rtc::ArduinoSolar *solar = new rtc::ArduinoSolar(location);
     SolarSwitch *solarSwitch;
 
