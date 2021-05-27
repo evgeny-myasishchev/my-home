@@ -37,18 +37,18 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
         ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_BARN_COM});
     routesArray[routeNumber++] = route;
 
-    // pavilion
-    route = (new Switch())
-        ->withSwitchAddress(relaysCount + 1)
-        ->withSwitchType(SwitchType::Toggle)
-        ->withTargetAddresses(1, new byte[2]{SPOT_ADDR_LAND_PAVILION});
-    routesArray[routeNumber++] = route;
+    // // pavilion (broken wire)
+    // route = (new Switch())
+    //     ->withSwitchAddress(relaysCount + 1)
+    //     ->withSwitchType(SwitchType::Toggle)
+    //     ->withTargetAddresses(1, new byte[2]{SPOT_ADDR_LAND_PAVILION});
+    // routesArray[routeNumber++] = route;
     
     // shed normal
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 2)
         ->withSwitchType(SwitchType::Push)
-        ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_SHED_COM});
+        ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_SHED_COM, SPOT_ADDR_LAND_PAVILION});
     routesArray[routeNumber++] = route;
 
     // night land + shed
