@@ -59,7 +59,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     // hall
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 2)
-                ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_HALL_COMMON});
+                ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_HALL_COMMON, SPOT_ADDR_HALL_NIGHT});
     routesArray[++routeNumber] = route;
 
     // =================== Living ===================
@@ -69,7 +69,7 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                 ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_KITCHEN_STORE});
     routesArray[++routeNumber] = route;
 
-    // living common
+    // living common (upper)
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 4)
                 ->withPrimaryTargetAddress(SPOT_ADDR_LIVING_COMM)
@@ -79,10 +79,24 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
                                              SPOT_ADDR_LIVING_SIDE2});
     routesArray[++routeNumber] = route;
 
-    // living side
+    // living secondary (lower)
     route = (new Switch())
                 ->withSwitchAddress(relaysCount + 5)
-                ->withTargetAddresses(2, new byte[2]{SPOT_ADDR_LIVING_SIDE1, SPOT_ADDR_LIVING_SIDE2});
+                ->withPrimaryTargetAddress(SPOT_ADDR_LIVING_COMM)
+                ->withTargetAddresses(10, new byte[10]{
+                                             // Hall
+                                             SPOT_ADDR_HALL_ENTRY,
+                                             SPOT_ADDR_HALL_COMMON,
+                                             SPOT_ADDR_HALL_NIGHT,
+                                             // Living
+                                             SPOT_ADDR_LIVING_COMM,
+                                             SPOT_ADDR_LIVING_SIDE1,
+                                             SPOT_ADDR_LIVING_SIDE2,
+                                             // Kitchen
+                                             SPOT_ADDR_KITCHEN_COMMON,
+                                             SPOT_ADDR_LIVING_TABLE,
+                                             SPOT_ADDR_KITCHEN_LED,
+                                             SPOT_ADDR_KITCHEN_STORE});
     routesArray[++routeNumber] = route;
 
     // hall entry
@@ -137,26 +151,26 @@ ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
     // =================== Entry ===================
     // Besides night
     const auto allTargets = new byte[19]{
-                                              SPOT_ADDR_HALL_ENTRY,
-                                              SPOT_ADDR_MAIN_ENTRY,
-                                              SPOT_ADDR_OFFICE_COMMON,
-                                              SPOT_ADDR_BOILER,
-                                              SPOT_ADDR_ENTRY_BACK1,
-                                              SPOT_ADDR_ENTRY_BAC2,
-                                              SPOT_ADDR_HALL_COMMON,
-                                              SPOT_ADDR_HALL_NIGHT,
-                                              SPOT_ADDR_STAIRS_NIGHT,
-                                              SPOT_ADDR_UNDER_STAIRS,
-                                              SPOT_ADDR_BATH_COMMON,
-                                              SPOT_ADDR_WARDEROBE,
-                                              SPOT_ADDR_KITCHEN_COMMON,
-                                              SPOT_ADDR_KITCHEN_STORE,
-                                              SPOT_ADDR_KITCHEN_LED,
-                                              SPOT_ADDR_LIVING_COMM,
-                                              SPOT_ADDR_LIVING_TABLE,
-                                              SPOT_ADDR_LIVING_SIDE1,
-                                              SPOT_ADDR_LIVING_SIDE2,
-                                          };
+        SPOT_ADDR_HALL_ENTRY,
+        SPOT_ADDR_MAIN_ENTRY,
+        SPOT_ADDR_OFFICE_COMMON,
+        SPOT_ADDR_BOILER,
+        SPOT_ADDR_ENTRY_BACK1,
+        SPOT_ADDR_ENTRY_BAC2,
+        SPOT_ADDR_HALL_COMMON,
+        SPOT_ADDR_HALL_NIGHT,
+        SPOT_ADDR_STAIRS_NIGHT,
+        SPOT_ADDR_UNDER_STAIRS,
+        SPOT_ADDR_BATH_COMMON,
+        SPOT_ADDR_WARDEROBE,
+        SPOT_ADDR_KITCHEN_COMMON,
+        SPOT_ADDR_KITCHEN_STORE,
+        SPOT_ADDR_KITCHEN_LED,
+        SPOT_ADDR_LIVING_COMM,
+        SPOT_ADDR_LIVING_TABLE,
+        SPOT_ADDR_LIVING_SIDE1,
+        SPOT_ADDR_LIVING_SIDE2,
+    };
 
     // test all
     route = (new Switch())
