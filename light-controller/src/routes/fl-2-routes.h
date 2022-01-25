@@ -7,25 +7,23 @@ using namespace v2;
 #define RELAY_BOARDS 2
 #define INPUT_BOARDS 3
 
-ArrayPtr<Switch *> createRoutes()
+#define SPOT_ADDR_BALCONY 2
+#define SPOT_ADDR_WARDEROBE 9
+
+ArrayPtr<Switch *> createRoutes(SolarSwitch *solarSwitch)
 {
     const byte relaysCount = RELAY_BOARDS * 8;
     const byte switchesCount = INPUT_BOARDS * 8;
 
-    Switch * *routesArray = new Switch*[switchesCount];
-
-    // First two switch boards are controlling corresponding pins
-    // for now
-    // for (byte switchNr = 0; switchNr < 15; switchNr++)
-    // {
-    //     Switch* route = (new Switch())
-    //         ->withSwitchAddress(relaysCount + switchNr)
-    //         ->withTargetAddresses(1, new byte[1]{switchNr});
-    //     routesArray[switchNr] = route;
-    // }
-
+    Switch **routesArray = new Switch*[switchesCount];
     byte routeNumber = 0;
     Switch* route;
+
+    // virtual
+    const auto virtualAddressStart = relaysCount + switchesCount;
+    solarSwitch->setPin(virtualAddressStart, 0, 1);
+    solarSwitch->setSunriseOffsetMinutes(0);
+    solarSwitch->setSunriseOffsetMinutes(0);
 
     // =================== Kids bedroom (green) ===================
     // hall
@@ -119,8 +117,14 @@ ArrayPtr<Switch *> createRoutes()
     // balcony (for now used for store)
     route = (new Switch())
         ->withSwitchAddress(relaysCount + 15)
-        // ->withTargetAddresses(1, new byte[1]{2});
-        ->withTargetAddresses(1, new byte[1]{9});
+        ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_BALCONY}); 
+    routesArray[routeNumber++] = route;
+
+    // =================== Warderobe ===================
+    // warderobe
+    route = (new Switch())
+        ->withSwitchAddress(relaysCount + 16)
+        ->withTargetAddresses(1, new byte[1]{SPOT_ADDR_WARDEROBE});
     routesArray[routeNumber++] = route;
 
     return ArrayPtr<Switch *>(routeNumber, routesArray);
